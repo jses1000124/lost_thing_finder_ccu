@@ -1,4 +1,5 @@
 import 'package:final_project/screens/login_screen.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
 
@@ -11,7 +12,13 @@ final theme = ThemeData(
     textTheme: GoogleFonts.latoTextTheme());
 
 void main() {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]).then((fn) {
+    runApp(const MyApp());
+  });
 }
 
 class MyApp extends StatelessWidget {

@@ -1,9 +1,34 @@
 import 'package:flutter/material.dart';
 import '../drawer/main_drawer.dart';
+import '../widgets/lost_things_list.dart';
+import '../models/lost_thing.dart';
 
-class LostThingScreen extends StatelessWidget {
+class LostThingScreen extends StatefulWidget {
   const LostThingScreen({super.key});
 
+  @override
+  State<LostThingScreen> createState() => _LostThingScreenState();
+}
+
+class _LostThingScreenState extends State<LostThingScreen> {
+  final List<LostThing> _registedlostThings = [
+    LostThing(
+      lostThingName: 'iPhone 12',
+      content: 'HI, I lost my iPhone 12, please help me to find it.',
+      imageUrl:
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/IPhone_15_Pro_Vector.svg/800px-IPhone_15_Pro_Vector.svg.png',
+      date: DateTime.now(),
+      location: 'Taipei City',
+    ),
+    LostThing(
+      lostThingName: 'MacBook Pro',
+      content: 'HI, I lost my MacBook Pro, please help me to find it.',
+      imageUrl:
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/MacBook_Pro_15_inch_%282017%29_Touch_Bar.jpg/1920px-MacBook_Pro_15_inch_%282017%29_Touch_Bar.jpg',
+      date: DateTime.now(),
+      location: 'Taipei City',
+    ),
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -12,17 +37,14 @@ class LostThingScreen extends StatelessWidget {
         title: const Text('Lost Thing'),
       ),
       drawer: const MainDrawer(),
-      body: const Center(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.search, size: 100),
-              SizedBox(height: 20),
-              Text('No Lost Thing Yet',
-                  style: TextStyle(fontSize: 30, color: Colors.white)),
-            ],
-          ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Expanded(
+              child: LostThingsList(lostThings: _registedlostThings),
+            )
+          ],
         ),
       ),
     );

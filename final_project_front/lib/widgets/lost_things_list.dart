@@ -1,0 +1,16 @@
+import 'package:final_project/models/lost_thing.dart';
+import 'package:flutter/material.dart';
+import '../widgets/lost_thing_item.dart';
+
+class LostThingsList extends StatelessWidget {
+  const LostThingsList({super.key, required this.lostThings});
+  final List<LostThing> lostThings;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: lostThings.length,
+      itemBuilder: (ctx, index) => LostThingItem(lostThings[index]),
+    );
+  }
+}

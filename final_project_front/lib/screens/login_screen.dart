@@ -16,12 +16,13 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _accountController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   var canSeePassword = true; //Can't see
+  var url = 'http://25.14.26.180:5000';
 
   Future<void> _login() async {
     final String account = _accountController.text;
     final String password = _passwordController.text;
 
-    final Uri apiUrl = Uri.parse('http://25.14.26.180:5000/login');
+    final Uri apiUrl = Uri.parse('$url/login');
     final Map<String, String> requestBody = {
       'account': account,
       'password': password,

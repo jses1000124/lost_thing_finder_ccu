@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import '../screens/login_screen.dart';
 
-class MainDrawer extends StatelessWidget{
+class MainDrawer extends StatelessWidget {
   const MainDrawer({super.key});
 
   @override
-  Widget build(BuildContext context){
-    return Drawer(
+  Widget build(BuildContext context) {
+    return Container(
+      width: 180,
+      child: Drawer(
         child: Column(
           children: [
             DrawerHeader(
@@ -32,7 +34,7 @@ class MainDrawer extends StatelessWidget{
                           .copyWith(color: Colors.white)),
                 ],
               ),
-            ),  
+            ),
             ListTile(
               leading: const Icon(Icons.home),
               title: const Text('Home'),
@@ -50,7 +52,7 @@ class MainDrawer extends StatelessWidget{
             ),
           ],
         ),
-      );
+      ),
+    );
   }
 }
-    
