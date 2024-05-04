@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart ';
 import '../screens/finded_lost_thing_screen.dart';
 import '../screens/lost_thing_screen.dart';
+import '../drawer/main_drawer.dart';
 
 class BottomBar extends StatefulWidget {
   const BottomBar({super.key});
@@ -11,6 +12,7 @@ class BottomBar extends StatefulWidget {
 
 class _BottomBarState extends State<BottomBar> {
   int _selectedIndex = 0;
+  String _title = 'Lost Thing';
   static final List<Widget> _widgetOptions = <Widget>[
     const LostThingScreen(),
     const FindedThingScreen(),
@@ -19,12 +21,21 @@ class _BottomBarState extends State<BottomBar> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      if (index == 0) {
+        _title = 'Lost Thing';
+      } else {
+        _title = 'Finded Thing';
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text(_title),
+      ),
+      drawer: const MainDrawer(),
       body: Center(child: _widgetOptions[_selectedIndex]),
       bottomNavigationBar: BottomNavigationBar(
         onTap: _onItemTapped,
