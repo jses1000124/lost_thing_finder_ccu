@@ -3,32 +3,32 @@ import '../drawer/main_drawer.dart';
 import '../widgets/lost_things_list.dart';
 import '../models/lost_thing.dart';
 
-class LostThingScreen extends StatefulWidget {
-  const LostThingScreen({super.key});
+class FindedThingScreen extends StatefulWidget {
+  const FindedThingScreen({super.key});
 
   @override
-  State<LostThingScreen> createState() => _LostThingScreenState();
+  State<FindedThingScreen> createState() => _FindedThingScreenState();
 }
 
-class _LostThingScreenState extends State<LostThingScreen> {
-  final List<LostThing> _registedlostThings = [
+class _FindedThingScreenState extends State<FindedThingScreen> {
+  final List<LostThing> _registedFindedThings = [
     LostThing(
-      lostThingName: 'iPhone 12',
-      content: 'HI, I lost my iPhone 12, please help me to find it.',
+      lostThingName: 'iPhone 11',
+      content: '我找到了一台iPhone 11，請聯絡我。',
       imageUrl:
           'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/IPhone_15_Pro_Vector.svg/800px-IPhone_15_Pro_Vector.svg.png',
       date: DateTime.now(),
-      location: 'Taipei City',
-      postUser: 'John Doe',
+      location: '共同教室2樓',
+      postUser: 'Box159',
     ),
     LostThing(
-      lostThingName: 'MacBook Pro',
-      content: 'HI, I lost my MacBook Pro, please help me to find it.',
+      lostThingName: 'MacBook Air',
+      content: '我找到了一台MacBook Air，請聯絡我。',
       imageUrl:
           'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/MacBook_Pro_15_inch_%282017%29_Touch_Bar.jpg/1920px-MacBook_Pro_15_inch_%282017%29_Touch_Bar.jpg',
       date: DateTime.now(),
-      location: 'Taipei City',
-      postUser: 'Jane Doe',
+      location: '共同教室1樓',
+      postUser: 'Chengen Li',
     ),
   ];
   @override
@@ -36,7 +36,7 @@ class _LostThingScreenState extends State<LostThingScreen> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0.4,
-        title: const Text('Lost Thing'),
+        title: const Text('Finded Thing'),
       ),
       drawer: const MainDrawer(),
       body: Center(
@@ -44,7 +44,7 @@ class _LostThingScreenState extends State<LostThingScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Expanded(
-              child: LostThingsList(lostThings: _registedlostThings),
+              child: LostThingsList(lostThings: _registedFindedThings),
             )
           ],
         ),

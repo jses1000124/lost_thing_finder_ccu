@@ -1,8 +1,8 @@
 import 'dart:convert';
+import 'package:final_project/screens/bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'regist_screen.dart';
-import 'package:final_project/screens/lost_thing_screen.dart';
 import 'package:final_project/widgets/user_input_login_signup.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -33,7 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
         headers: {'Content-Type': 'application/json'}).then((response) {
       if (response.statusCode == 200) {
         Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const LostThingScreen()));
+            MaterialPageRoute(builder: (context) => const BottomBar()));
       } else if (response.statusCode == 401) {
         _showAlertDialog('Failed', 'Invalid password');
       } else if (response.statusCode == 404) {

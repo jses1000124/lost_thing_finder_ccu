@@ -6,8 +6,8 @@ class MainDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 180,
+    return SizedBox(
+      width: 200,
       child: Drawer(
         child: Column(
           children: [

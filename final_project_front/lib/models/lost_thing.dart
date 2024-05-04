@@ -8,11 +8,13 @@ class LostThing {
     required this.lostThingName,
     required this.content,
     required this.date,
+    required this.postUser,
     required this.imageUrl,
     required this.location,
   }) : id = uuid.v4();
 
   final String id;
+  final String postUser;
   final String imageUrl;
   final String lostThingName;
   final String content;

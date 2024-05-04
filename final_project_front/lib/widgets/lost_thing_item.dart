@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:final_project/models/lost_thing.dart';
+import 'package:final_project/screens/lost_thing_detail_screen.dart';
 
 class LostThingItem extends StatelessWidget {
   const LostThingItem(this.lostThing, {super.key});
@@ -16,6 +17,13 @@ class LostThingItem extends StatelessWidget {
           vertical: 16,
         ),
         child: InkWell(
+          splashColor: const Color.fromARGB(0, 255, 255, 255),
+          onTap: () {
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => LostThingDetailScreen(
+                      lostThings: lostThing,
+                    )));
+          },
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -40,12 +48,12 @@ class LostThingItem extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      'Location: ${lostThing.location}',
-                      style: const TextStyle(color: Colors.white),
+                      '位置: ${lostThing.location}',
+                      style: const TextStyle(color: Colors.white, fontSize: 16),
                     ),
                     Text(
-                      'Date: ${lostThing.formattedDate}',
-                      style: const TextStyle(color: Colors.white),
+                      '日期: ${lostThing.formattedDate}',
+                      style: const TextStyle(color: Colors.white, fontSize: 16),
                     ),
                   ],
                 ),
