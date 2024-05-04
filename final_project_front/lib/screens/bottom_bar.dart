@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart ';
+import 'package:flutter/material.dart';
+import '../screens/add_lost_thing.dart';
 import '../screens/finded_lost_thing_screen.dart';
 import '../screens/lost_thing_screen.dart';
 import '../drawer/main_drawer.dart';
@@ -18,6 +19,14 @@ class _BottomBarState extends State<BottomBar> {
     const FindedThingScreen(),
   ];
   // fun to change index
+
+  void _openAddLostThing() {
+    showModalBottomSheet(
+        context: context,
+        builder: (ctx) => const AddLostThing(),
+        isScrollControlled: true);
+  }
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -37,25 +46,42 @@ class _BottomBarState extends State<BottomBar> {
       ),
       drawer: const MainDrawer(),
       body: Center(child: _widgetOptions[_selectedIndex]),
-      bottomNavigationBar: BottomNavigationBar(
-        onTap: _onItemTapped,
-        currentIndex: _selectedIndex,
-        elevation: 10,
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
-        selectedItemColor: const Color.fromARGB(255, 35, 108, 243),
-        unselectedItemColor: const Color(0xFF546480),
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(
-              icon: Icon(Icons.home_outlined),
-              activeIcon: Icon(Icons.home_filled),
-              label: "Lost Thing"),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.search_outlined),
-              activeIcon: Icon(Icons.search_rounded),
-              label: "Finded Thing"),
-        ],
+      floatingActionButton: FloatingActionButton(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+        onPressed: () {
+          _openAddLostThing();
+        },
+        child: const Icon(Icons.add),
+        backgroundColor: Theme.of(context).colorScheme.background,
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: Theme(
+        data: ThemeData(
+          splashColor: Colors.transparent,
+        ),
+        child: BottomNavigationBar(
+          onTap: _onItemTapped,
+          currentIndex: _selectedIndex,
+          elevation: 10,
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
+          backgroundColor: Theme.of(context).colorScheme.background,
+          selectedItemColor: const Color.fromARGB(255, 35, 108, 243),
+          unselectedItemColor: const Color(0xFF546480),
+          type: BottomNavigationBarType.fixed,
+          items: const [
+            BottomNavigationBarItem(
+                icon: Icon(Icons.home_outlined),
+                activeIcon: Icon(Icons.home_filled),
+                backgroundColor: Color.fromARGB(0, 255, 255, 255),
+                label: "Lost Thing"),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.search_outlined),
+                activeIcon: Icon(Icons.search_rounded),
+                backgroundColor: Color.fromARGB(0, 255, 255, 255),
+                label: "Finded Thing"),
+          ],
+        ),
       ),
     );
   }

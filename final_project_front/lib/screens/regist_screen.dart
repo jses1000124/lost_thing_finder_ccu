@@ -17,9 +17,62 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
-  var canSeePassword = true; //Can't see
+  final _formKey = GlobalKey<FormState>();
+  var canSeePassword = true;
+
+  String? _usernameError;
+  String? _emailError;
+  String? _passwordError;
+  String? _confirmPasswordError;
+
+  void _validateUsername(String value) {
+    setState(() {
+      if (value.isEmpty) {
+        _usernameError = 'Username is required';
+      } else {
+        _usernameError = null;
+      }
+    });
+  }
+
+  void _validateEmail(String value) {
+    setState(() {
+      if (value.isEmpty) {
+        _emailError = 'Email is required';
+      } else {
+        // Add additional email validation logic if needed
+        _emailError = null;
+      }
+    });
+  }
+
+  void _validatePassword(String value) {
+    setState(() {
+      if (value.isEmpty) {
+        _passwordError = 'Password is required';
+      } else {
+        _passwordError = null;
+      }
+    });
+  }
+
+  void _validateConfirmPassword(String value) {
+    setState(() {
+      if (value.isEmpty) {
+        _confirmPasswordError = 'Confirm Password is required';
+      } else if (value != _passwordController.text) {
+        _confirmPasswordError = 'Passwords do not match';
+      } else {
+        _confirmPasswordError = null;
+      }
+    });
+  }
 
   Future<void> _signUp() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
     final String username = _usernameController.text;
     final String account = _accountController.text;
     final String password = _passwordController.text;
@@ -41,20 +94,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
         _clearTextFields();
         _showAlertDialog('Failed', 'Account already exists');
       } else {
-        if (_passwordController.text != _confirmPasswordController.text) {
-          _showAlertDialog('Failed', 'Passwords do not match');
-        } else {
-          _showAlertDialog('Error', 'An unexpected error occurred');
-        }
+        _showAlertDialog('Error', 'An unexpected error occurred');
       }
     });
-    return;
   }
 
   void _clearTextFields() {
     _usernameController.clear();
     _accountController.clear();
     _passwordController.clear();
+    _confirmPasswordController.clear();
   }
 
   void _showAlertDialog(String title, String message,
@@ -97,6 +146,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _usernameController.dispose();
     _accountController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -105,86 +155,99 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       body: Container(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            InputToLoginSignUp(
-                controller: _usernameController,
-                icon: const Icon(Icons.person),
-                labelText: '使用者名稱'),
-            const SizedBox(height: 20),
-            InputToLoginSignUp(
-                controller: _accountController,
-                icon: const Icon(Icons.mail),
-                labelText: '信箱'),
-            const SizedBox(height: 20),
-            TextField(
-              style: const TextStyle(color: Colors.white),
-              controller: _passwordController,
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.lock),
-                labelText: '密碼',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              InputToLoginSignUp(
+                  controller: _usernameController,
+                  icon: const Icon(Icons.person),
+                  labelText: '使用者名稱',
+                  errorText: _usernameError,
+                  onChanged: _validateUsername),
+              const SizedBox(height: 20),
+              InputToLoginSignUp(
+                  controller: _accountController,
+                  icon: const Icon(Icons.mail),
+                  labelText: '信箱',
+                  errorText: _emailError,
+                  onChanged: _validateEmail),
+              const SizedBox(height: 20),
+              TextFormField(
+                style: const TextStyle(color: Colors.white),
+                controller: _passwordController,
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.lock),
+                  labelText: '密碼',
+                  errorText: _passwordError,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  suffixIcon: IconButton(
+                    icon: Icon(canSeePassword
+                        ? Icons.visibility
+                        : Icons.visibility_off),
+                    onPressed: () {
+                      setState(() {
+                        canSeePassword = !canSeePassword;
+                      });
+                    },
+                  ),
                 ),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                      canSeePassword ? Icons.visibility : Icons.visibility_off),
-                  onPressed: () {
-                    setState(() {
-                      canSeePassword = !canSeePassword;
-                    });
-                  },
-                ),
+                obscureText: canSeePassword,
+                onChanged: _validatePassword,
               ),
-              obscureText: canSeePassword,
-            ),
-            const SizedBox(height: 20),
-            TextField(
-              style: const TextStyle(color: Colors.white),
-              controller: _confirmPasswordController,
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.lock_outline),
-                labelText: '確認密碼',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+              const SizedBox(height: 20),
+              TextFormField(
+                style: const TextStyle(color: Colors.white),
+                controller: _confirmPasswordController,
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.lock_outline),
+                  labelText: '確認密碼',
+                  errorText: _confirmPasswordError,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  suffixIcon: IconButton(
+                    icon: Icon(canSeePassword
+                        ? Icons.visibility
+                        : Icons.visibility_off),
+                    onPressed: () {
+                      setState(() {
+                        canSeePassword = !canSeePassword;
+                      });
+                    },
+                  ),
                 ),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                      canSeePassword ? Icons.visibility : Icons.visibility_off),
-                  onPressed: () {
-                    setState(() {
-                      canSeePassword = !canSeePassword;
-                    });
-                  },
-                ),
+                obscureText: canSeePassword,
+                onChanged: _validateConfirmPassword,
               ),
-              obscureText: canSeePassword,
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                fixedSize: const Size(150, 50),
-              ),
-              onPressed: _signUp,
-              child: const Text('註冊', style: TextStyle(fontSize: 25)),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text('已有帳號?',
-                    style: TextStyle(color: Colors.white, fontSize: 18)),
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (context) => const LoginScreen()));
-                  },
-                  child: const Text('登入', style: TextStyle(fontSize: 18)),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  fixedSize: const Size(150, 50),
                 ),
-              ],
-            ),
-          ],
+                onPressed: _signUp,
+                child: const Text('註冊', style: TextStyle(fontSize: 25)),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('已有帳號?',
+                      style: TextStyle(color: Colors.white, fontSize: 18)),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (context) => const LoginScreen()));
+                    },
+                    child: const Text('登入', style: TextStyle(fontSize: 18)),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
