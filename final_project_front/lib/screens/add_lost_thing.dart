@@ -30,7 +30,7 @@ class _AddLostThingState extends State<AddLostThing> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(16, 128, 16, 16),
       child: Form(
         key: _formKey,
