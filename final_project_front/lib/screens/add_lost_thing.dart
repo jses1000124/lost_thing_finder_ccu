@@ -1,8 +1,9 @@
 import 'dart:io';
-
-import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+import 'dart:math';
 import 'package:flutter/widgets.dart';
+
+import '../models/lost_thing.dart';
+import 'package:flutter/material.dart';
 import '../widgets/upload_image_widget.dart';
 
 class AddLostThing extends StatefulWidget {
@@ -18,6 +19,7 @@ class _AddLostThingState extends State<AddLostThing> {
   final _descriptionController = TextEditingController();
   final _locationController = TextEditingController();
   String _path = "";
+  DateTime? _selectedDate;
 
   void _submitForm() {
     final isValid = _formKey.currentState!.validate();
@@ -26,6 +28,28 @@ class _AddLostThingState extends State<AddLostThing> {
     }
     _formKey.currentState!.save();
     // Here you might add code to handle the submission, like sending data to a server or local database
+  }
+
+  void _presentDatePicker() async {
+    final now = DateTime.now();
+    final firstDate = DateTime(now.year - 1, now.month, now.day);
+    final pickedDate = await showDatePicker(
+      context: context,
+      initialDate: now,
+      firstDate: firstDate,
+      lastDate: now,
+    );
+    setState(() {
+      _selectedDate = pickedDate;
+    });
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _descriptionController.dispose();
+    _locationController.dispose();
+    super.dispose();
   }
 
   @override
@@ -37,21 +61,50 @@ class _AddLostThingState extends State<AddLostThing> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            TextFormField(
-              decoration: const InputDecoration(
-                labelText: '遺失物',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.inventory_2),
-                labelStyle: TextStyle(fontSize: 18),
-              ),
-              style: const TextStyle(fontSize: 18, color: Colors.white),
-              controller: _titleController,
-              validator: (value) {
-                if (value!.isEmpty) {
-                  return '請輸入物品名稱';
-                }
-                return null;
-              },
+            Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                      labelText: '遺失物',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.inventory_2),
+                      labelStyle: TextStyle(fontSize: 18),
+                    ),
+                    style: const TextStyle(fontSize: 18, color: Colors.white),
+                    controller: _titleController,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return '請輸入物品名稱';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                          _selectedDate == null
+                              ? '日期還沒選擇'
+                              : formatter.format(_selectedDate!),
+                          style: const TextStyle(
+                              fontSize: 16, color: Colors.white)),
+                      IconButton(
+                        onPressed: _presentDatePicker,
+                        style: const ButtonStyle(
+                            iconSize: MaterialStatePropertyAll(30)),
+                        icon: const Icon(
+                          Icons.calendar_month,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 20),
             TextFormField(

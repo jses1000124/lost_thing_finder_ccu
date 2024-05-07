@@ -1,6 +1,8 @@
 import 'package:uuid/uuid.dart';
 import 'package:intl/intl.dart';
 
+final formatter = DateFormat('yyyy/MM/dd');
+
 const uuid = Uuid();
 
 class LostThing {
@@ -22,6 +24,6 @@ class LostThing {
   final DateTime date;
 
   String get formattedDate {
-    return DateFormat('yyyy/MM/dd').format(date);
+    return formatter.format(date);
   }
 }
