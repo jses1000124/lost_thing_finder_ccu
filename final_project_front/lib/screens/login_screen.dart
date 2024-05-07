@@ -168,7 +168,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: ElevatedButton.styleFrom(
                       fixedSize: const Size(150, 50),
                     ),
-                    onPressed: _login,
+                    onPressed: () => Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                const BottomBar())), //正式版要是 _login,
                     child: const Text('登入', style: TextStyle(fontSize: 25)),
                   ),
                 ],
