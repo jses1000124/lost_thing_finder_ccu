@@ -3,6 +3,7 @@ import '../screens/add_lost_thing.dart';
 import '../screens/finded_lost_thing_screen.dart';
 import '../screens/lost_thing_screen.dart';
 import '../drawer/main_drawer.dart';
+import '../screens/chatlist_screen.dart';
 
 class BottomBar extends StatefulWidget {
   const BottomBar({super.key});
@@ -41,9 +42,13 @@ class _BottomBarState extends State<BottomBar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_title),
-      ),
+      appBar: AppBar(title: Text(_title), actions: <Widget>[
+        IconButton(
+          icon: const Icon(Icons.chat),
+          onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => const ChatListScreen())),
+        )
+      ]),
       drawer: const MainDrawer(),
       body: Center(child: _widgetOptions[_selectedIndex]),
       floatingActionButton: FloatingActionButton(
