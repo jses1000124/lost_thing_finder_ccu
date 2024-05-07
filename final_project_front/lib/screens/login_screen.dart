@@ -111,96 +111,99 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
+        alignment: Alignment.center,
         padding: const EdgeInsets.all(20.0),
         child: Form(
           key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                '中正大學\n失物招領系統',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 40,
-                  color: Colors.white,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 60),
-              InputToLoginSignUp(
-                controller: _accountController,
-                icon: const Icon(Icons.mail),
-                labelText: '信箱',
-                errorText: _emailError,
-                onChanged: _validateEmail,
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                style: const TextStyle(color: Colors.white),
-                controller: _passwordController,
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.lock),
-                  labelText: '密碼',
-                  errorText: _passwordError,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  '中正大學\n失物招領系統',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 40,
+                    color: Colors.white,
                   ),
-                  suffixIcon: IconButton(
-                    icon: Icon(canSeePassword
-                        ? Icons.visibility
-                        : Icons.visibility_off),
-                    onPressed: () {
-                      setState(() {
-                        canSeePassword = !canSeePassword;
-                      });
-                    },
-                  ),
+                  textAlign: TextAlign.center,
                 ),
-                obscureText: canSeePassword,
-                onChanged: _validatePassword,
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      fixedSize: const Size(150, 50),
+                const SizedBox(height: 60),
+                InputToLoginSignUp(
+                  controller: _accountController,
+                  icon: const Icon(Icons.mail),
+                  labelText: '信箱',
+                  errorText: _emailError,
+                  onChanged: _validateEmail,
+                ),
+                const SizedBox(height: 20),
+                TextFormField(
+                  style: const TextStyle(color: Colors.white),
+                  controller: _passwordController,
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.lock),
+                    labelText: '密碼',
+                    errorText: _passwordError,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    onPressed: () => Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                const BottomBar())), //正式版要是 _login,
-                    child: const Text('登入', style: TextStyle(fontSize: 25)),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    '還沒有帳號?',
-                    style: TextStyle(color: Colors.white, fontSize: 18),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const RegisterScreen(),
-                        ),
-                      );
-                    },
-                    child: const Text(
-                      '立即註冊',
-                      style: TextStyle(fontSize: 18),
+                    suffixIcon: IconButton(
+                      icon: Icon(canSeePassword
+                          ? Icons.visibility
+                          : Icons.visibility_off),
+                      onPressed: () {
+                        setState(() {
+                          canSeePassword = !canSeePassword;
+                        });
+                      },
                     ),
                   ),
-                ],
-              ),
-            ],
+                  obscureText: canSeePassword,
+                  onChanged: _validatePassword,
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        fixedSize: const Size(150, 50),
+                      ),
+                      onPressed: () => Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const BottomBar())), //正式版要是 _login,
+                      child: const Text('登入', style: TextStyle(fontSize: 25)),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      '還沒有帳號?',
+                      style: TextStyle(color: Colors.white, fontSize: 18),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const RegisterScreen(),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        '立即註冊',
+                        style: TextStyle(fontSize: 18),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

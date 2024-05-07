@@ -1,7 +1,4 @@
 import 'dart:io';
-import 'dart:math';
-import 'package:flutter/widgets.dart';
-
 import '../models/lost_thing.dart';
 import 'package:flutter/material.dart';
 import '../widgets/upload_image_widget.dart';
@@ -20,14 +17,13 @@ class _AddLostThingState extends State<AddLostThing> {
   final _locationController = TextEditingController();
   String _path = "";
   DateTime? _selectedDate;
+  String? _postType;
 
   void _submitForm() {
-    final isValid = _formKey.currentState!.validate();
-    if (!isValid) {
-      return;
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      // Handle the submission, like sending data to a server or local database
     }
-    _formKey.currentState!.save();
-    // Here you might add code to handle the submission, like sending data to a server or local database
   }
 
   void _presentDatePicker() async {
@@ -55,7 +51,7 @@ class _AddLostThingState extends State<AddLostThing> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(16, 128, 16, 16),
+      padding: const EdgeInsets.fromLTRB(16, 128, 16, 32),
       child: Form(
         key: _formKey,
         child: Column(
@@ -74,6 +70,7 @@ class _AddLostThingState extends State<AddLostThing> {
                     ),
                     style: const TextStyle(fontSize: 18, color: Colors.white),
                     controller: _titleController,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) {
                       if (value!.isEmpty) {
                         return '請輸入物品名稱';
@@ -107,21 +104,59 @@ class _AddLostThingState extends State<AddLostThing> {
               ],
             ),
             const SizedBox(height: 20),
-            TextFormField(
-              decoration: const InputDecoration(
-                labelText: '地點',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.place),
-                labelStyle: TextStyle(fontSize: 18),
-              ),
-              style: const TextStyle(fontSize: 18, color: Colors.white),
-              controller: _locationController,
-              validator: (value) {
-                if (value!.isEmpty) {
-                  return '請輸入地點';
-                }
-                return null;
-              },
+            Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                      labelText: '地點',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.place),
+                      labelStyle: TextStyle(fontSize: 18),
+                    ),
+                    style: const TextStyle(fontSize: 18, color: Colors.white),
+                    controller: _locationController,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return '請輸入地點';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                const SizedBox(
+                    width: 10), // Space between the text field and dropdown
+                Expanded(
+                  flex: 1,
+                  child: DropdownButtonFormField<String>(
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: '類型',
+                      labelStyle: TextStyle(fontSize: 18),
+                    ),
+                    value: _postType,
+                    items: const [
+                      DropdownMenuItem(value: '遺失物', child: Text('遺失物')),
+                      DropdownMenuItem(value: '待尋物', child: Text('待尋物')),
+                    ],
+                    hint: const Text('請選取'),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        _postType = newValue;
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return '請選擇類型';
+                      }
+                      return null;
+                    },
+                    style: const TextStyle(fontSize: 18, color: Colors.white),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 20),
             TextFormField(
@@ -133,6 +168,7 @@ class _AddLostThingState extends State<AddLostThing> {
               style: const TextStyle(fontSize: 18, color: Colors.white),
               controller: _descriptionController,
               maxLines: 6,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               validator: (value) {
                 if (value!.isEmpty) {
                   return '請輸入物品描述';
@@ -170,12 +206,16 @@ class _AddLostThingState extends State<AddLostThing> {
                     style: TextStyle(fontSize: 18),
                   ),
                 ),
+                const SizedBox(width: 40),
                 TextButton(
-                    onPressed: Navigator.of(context).pop,
-                    child: const Text(
-                      '取消',
-                      style: TextStyle(fontSize: 18),
-                    )),
+                  onPressed: Navigator.of(context).pop,
+                  child: const Text(
+                    '取消',
+                    style: TextStyle(
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
               ],
             ),
           ],

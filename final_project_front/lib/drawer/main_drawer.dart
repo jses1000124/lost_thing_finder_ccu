@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../screens/setting_screen.dart';
 import '../screens/login_screen.dart';
 
 class MainDrawer extends StatelessWidget {
@@ -9,48 +10,54 @@ class MainDrawer extends StatelessWidget {
     return SizedBox(
       width: 200,
       child: Drawer(
-        child: Column(
-          children: [
-            DrawerHeader(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: <Color>[
-                    Theme.of(context).colorScheme.secondary.withOpacity(0.7),
-                    Theme.of(context).colorScheme.secondary.withOpacity(0.3),
+        child: SafeArea(
+          child: Column(
+            children: [
+              DrawerHeader(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: <Color>[
+                      Theme.of(context).colorScheme.secondary.withOpacity(0.7),
+                      Theme.of(context).colorScheme.secondary.withOpacity(0.3),
+                    ],
+                  ),
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Icon(Icons.account_circle, size: 50),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: Text('使用者名稱',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              overflow: TextOverflow.ellipsis)),
+                    ),
                   ],
                 ),
               ),
-              child: Row(
-                children: [
-                  const Icon(Icons.account_circle, size: 50),
-                  const SizedBox(width: 10),
-                  Text('User',
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleLarge!
-                          .copyWith(color: Colors.white)),
-                ],
+              ListTile(
+                leading: const Icon(Icons.settings),
+                title: const Text('設定'),
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const SettingsScreen()));
+                },
               ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.home),
-              title: const Text('Home'),
-              onTap: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.logout),
-              title: const Text('Logout'),
-              onTap: () {
-                Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (context) => const LoginScreen()));
-              },
-            ),
-          ],
+              ListTile(
+                leading: const Icon(Icons.logout),
+                title: const Text('登出'),
+                onTap: () {
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (context) => const LoginScreen()));
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -13,7 +13,7 @@ class BottomBar extends StatefulWidget {
 
 class _BottomBarState extends State<BottomBar> {
   int _selectedIndex = 0;
-  String _title = 'Lost Thing';
+  String _title = '遺失物';
   static final List<Widget> _widgetOptions = <Widget>[
     const LostThingScreen(),
     const FindedThingScreen(),
@@ -31,9 +31,9 @@ class _BottomBarState extends State<BottomBar> {
     setState(() {
       _selectedIndex = index;
       if (index == 0) {
-        _title = 'Lost Thing';
+        _title = '遺失物';
       } else {
-        _title = 'Finded Thing';
+        _title = '待尋物';
       }
     });
   }
@@ -51,8 +51,8 @@ class _BottomBarState extends State<BottomBar> {
         onPressed: () {
           _openAddLostThing();
         },
-        child: const Icon(Icons.add),
         backgroundColor: Theme.of(context).colorScheme.background,
+        child: const Icon(Icons.add),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: Theme(

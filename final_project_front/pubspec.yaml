@@ -41,6 +41,7 @@ dependencies:
   transparent_image: ^2.0.1
   fluentui_system_icons: ^1.1.238
   image_picker: ^1.1.1
+  flutter_settings_screens: ^0.3.4
 
 dev_dependencies:
   flutter_test:
