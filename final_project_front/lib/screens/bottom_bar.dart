@@ -17,13 +17,16 @@ class _BottomBarState extends State<BottomBar> {
   String _title = '遺失物';
   static String searchVal = '';
   String searchType = 'title';
-  final List<Widget> _widgetOptions = <Widget>[
-    const LostThingScreen(),
-    FindedThingScreen(
-      searchedThingName: searchVal,
-    ),
-  ];
-  // fun to change index
+  List<Widget>? _widgetOptions;
+
+  @override
+  void initState() {
+    super.initState();
+    _widgetOptions = [
+      const LostThingScreen(),
+      FindedThingScreen(searchedThingName: searchVal),
+    ];
+  }
 
   void _openAddLostThing() {
     showModalBottomSheet(
@@ -43,17 +46,24 @@ class _BottomBarState extends State<BottomBar> {
     });
   }
 
+  void _updateSearch(String value) {
+    setState(() {
+      searchVal = value;
+      _widgetOptions = [
+        LostThingScreen(searchedThingName: searchVal),
+        FindedThingScreen(searchedThingName: searchVal),
+      ];
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: SearchAppBar(
           hintLabel: '$_title搜尋',
-          onSubmitted: (value) {
-            setState(() {
-              searchVal = value;
-            });
-          },
+          onSubmitted: _updateSearch,
+          clearSearch: _updateSearch,
         ),
         titleSpacing: 0,
         elevation: 0,
@@ -66,12 +76,9 @@ class _BottomBarState extends State<BottomBar> {
         ],
       ),
       drawer: const MainDrawer(),
-      body: Center(child: _widgetOptions[_selectedIndex]),
+      body: Center(child: _widgetOptions?[_selectedIndex]),
       floatingActionButton: FloatingActionButton(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
-        onPressed: () {
-          _openAddLostThing();
-        },
+        onPressed: _openAddLostThing,
         backgroundColor: Theme.of(context).colorScheme.background,
         child: const Icon(Icons.add),
       ),
@@ -94,12 +101,10 @@ class _BottomBarState extends State<BottomBar> {
             BottomNavigationBarItem(
                 icon: Icon(Icons.home_outlined),
                 activeIcon: Icon(Icons.home_filled),
-                backgroundColor: Color.fromARGB(0, 255, 255, 255),
                 label: "Lost Thing"),
             BottomNavigationBarItem(
                 icon: Icon(Icons.search_outlined),
                 activeIcon: Icon(Icons.search_rounded),
-                backgroundColor: Color.fromARGB(0, 255, 255, 255),
                 label: "Finded Thing"),
           ],
         ),
@@ -109,36 +114,36 @@ class _BottomBarState extends State<BottomBar> {
 }
 
 class SearchAppBar extends StatefulWidget {
-  const SearchAppBar(
-      {super.key, required this.hintLabel, required this.onSubmitted});
+  const SearchAppBar({
+    super.key,
+    required this.hintLabel,
+    required this.onSubmitted,
+    this.clearSearch,
+  });
+
   final String hintLabel;
-  // 回调函数
   final Function(String) onSubmitted;
+  final Function(String)? clearSearch;
 
   @override
   State<StatefulWidget> createState() => _SearchAppBarState();
 }
 
 class _SearchAppBarState extends State<SearchAppBar> {
-  // 文本的值
-  String searchVal = '';
-  //用于清空输入框
   final TextEditingController _controller = TextEditingController();
+
+  void _clearSearch() {
+    _controller.clear();
+    widget.clearSearch?.call(''); // Invoke the clear search callback
+  }
 
   @override
   Widget build(BuildContext context) {
-    // 获取屏幕尺寸
-    MediaQueryData queryData = MediaQuery.of(context);
     return Container(
-      // 宽度为屏幕的0.8
-      width: queryData.size.width * 0.8,
-      // appBar默认高度是56，这里搜索框设置为40
+      width: MediaQuery.of(context).size.width * 0.8,
       height: 40,
-      // 设置padding
       padding: const EdgeInsets.only(left: 20),
-      // 设置子级位置
       alignment: Alignment.centerLeft,
-      // 设置修饰
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         color: Theme.of(context).colorScheme.secondaryContainer,
@@ -147,41 +152,21 @@ class _SearchAppBarState extends State<SearchAppBar> {
         controller: _controller,
         style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
-            hintText: widget.hintLabel,
-            hintStyle: const TextStyle(color: Colors.grey),
-            // 取消掉文本框下面的边框
-            border: InputBorder.none,
-            icon: const Padding(
-                padding: EdgeInsets.only(left: 0, top: 0),
-                child: Icon(
-                  Icons.search,
-                  size: 18,
-                  color: Colors.white,
-                )),
-            //  关闭按钮，有值时才显示
-            suffixIcon: searchVal.isNotEmpty
-                ? IconButton(
-                    icon: const Icon(Icons.close),
-                    style: ButtonStyle(
-                      iconColor: MaterialStateProperty.all(Colors.white),
-                    ),
-                    onPressed: () {
-                      //   清空内容
-                      setState(() {
-                        searchVal = '';
-                        _controller.clear();
-                      });
-                    },
-                  )
-                : null),
+          hintText: widget.hintLabel,
+          hintStyle: const TextStyle(color: Colors.grey),
+          border: InputBorder.none,
+          icon: const Icon(Icons.search, size: 18, color: Colors.white),
+          suffixIcon: _controller.text.isNotEmpty
+              ? IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: _clearSearch,
+                )
+              : null,
+        ),
         onChanged: (value) {
-          setState(() {
-            searchVal = value;
-          });
+          setState(() => _controller.text = value);
         },
-        onSubmitted: (value) {
-          widget.onSubmitted(value);
-        },
+        onSubmitted: widget.onSubmitted,
       ),
     );
   }

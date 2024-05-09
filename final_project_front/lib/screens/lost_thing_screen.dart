@@ -3,13 +3,45 @@ import '../widgets/lost_things_list.dart';
 import '../models/lost_thing.dart';
 
 class LostThingScreen extends StatefulWidget {
-  const LostThingScreen({super.key});
+  final String searchedThingName; // Add this
+
+  const LostThingScreen({super.key, this.searchedThingName = ''});
 
   @override
   State<LostThingScreen> createState() => _LostThingScreenState();
 }
 
 class _LostThingScreenState extends State<LostThingScreen> {
+  List<LostThing> filteredLostThings = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _filterItems();
+  }
+
+  void _filterItems() {
+    setState(() {
+      if (widget.searchedThingName.isEmpty) {
+        filteredLostThings = registedlostThings; // Show all if no search
+      } else {
+        filteredLostThings = registedlostThings.where((item) {
+          return item.lostThingName
+              .toLowerCase()
+              .contains(widget.searchedThingName.toLowerCase());
+        }).toList();
+      }
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant LostThingScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.searchedThingName != oldWidget.searchedThingName) {
+      _filterItems();
+    }
+  }
+
   final List<LostThing> registedlostThings = [
     LostThing(
       lostThingName: 'iPhone 12',
@@ -29,14 +61,15 @@ class _LostThingScreenState extends State<LostThingScreen> {
       location: 'Taipei City',
       postUser: 'Jane Doe',
     ),
-  ];
+  ]; // Your items
+
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Expanded(
-          child: LostThingsList(lostThings: registedlostThings),
+          child: LostThingsList(lostThings: filteredLostThings),
         )
       ],
     );

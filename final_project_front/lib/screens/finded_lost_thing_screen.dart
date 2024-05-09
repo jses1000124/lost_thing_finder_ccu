@@ -11,7 +11,7 @@ class FindedThingScreen extends StatefulWidget {
 }
 
 class _FindedThingScreenState extends State<FindedThingScreen> {
-  final List<LostThing> registedFindedThings = [
+  static List<LostThing> registedFindedThings = [
     LostThing(
       lostThingName: 'iPhone 11',
       content: '我找到了一台iPhone 11，請聯絡我。',
@@ -31,13 +31,43 @@ class _FindedThingScreenState extends State<FindedThingScreen> {
       postUser: 'Chengen Li',
     ),
   ];
+
+  List<LostThing> filteredFindedThings = [];
+
+  @override
+  void initState() {
+    super.initState();
+    // Initially filter items based on initial search value
+    filterItems();
+  }
+
+  void filterItems() {
+    setState(() {
+      filteredFindedThings = registedFindedThings.where((item) {
+        return item.lostThingName.contains(widget.searchedThingName);
+      }).toList();
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant FindedThingScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Refilter items if the search query changes
+    if (widget.searchedThingName != oldWidget.searchedThingName) {
+      filterItems();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Expanded(
-          child: LostThingsList(lostThings: registedFindedThings),
+          child: LostThingsList(
+              lostThings: filteredFindedThings.isEmpty
+                  ? registedFindedThings
+                  : filteredFindedThings),
         )
       ],
     );
