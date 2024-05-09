@@ -10,34 +10,67 @@ class LostThingDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Lost Thing Detail',
-            style: TextStyle(color: Colors.white)),
+        title: Text(
+          lostThings.lostThingName,
+          style: const TextStyle(color: Colors.white, fontSize: 20),
+        ),
       ),
       body: SingleChildScrollView(
         child: Container(
           padding: const EdgeInsets.all(20),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(lostThings.lostThingName,
-                  style: const TextStyle(color: Colors.white, fontSize: 30)),
+              Card(
+                elevation: 5,
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              lostThings.location,
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 16),
+                            ),
+                            const SizedBox(height: 5),
+                            Text(
+                              lostThings.postUser,
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 16),
+                            ),
+                          ],
+                        ),
+                      ),
+                      CircleAvatar(
+                        backgroundImage: NetworkImage(lostThings
+                            .imageUrl), // Consider adding a user image property to the model
+                        radius: 24,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               const SizedBox(height: 20),
-              Text(lostThings.location,
-                  style: const TextStyle(color: Colors.white, fontSize: 20)),
+              Text(
+                lostThings.content,
+                style: const TextStyle(color: Colors.white, fontSize: 16),
+              ),
               const SizedBox(height: 20),
-              Text(lostThings.postUser,
-                  style: const TextStyle(color: Colors.white, fontSize: 20)),
-              const SizedBox(height: 20),
-              Text(lostThings.content,
-                  style: const TextStyle(color: Colors.white, fontSize: 20)),
-              const SizedBox(height: 20),
-              SizedBox(
-                // color: Colors.black12,
-                child: FadeInImage(
-                  placeholder: MemoryImage(kTransparentImage),
-                  image: NetworkImage(lostThings.imageUrl),
-                  height: 300,
-                  width: 300,
+              Center(
+                child: ClipRRect(
+                  // Added ClipRRect to ensure the image does not overflow
+                  borderRadius: BorderRadius.circular(8.0),
+                  child: FadeInImage(
+                    placeholder: MemoryImage(kTransparentImage),
+                    image: NetworkImage(lostThings.imageUrl),
+                    height: 300,
+                    width: double.infinity, // Adapt to screen width
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ],

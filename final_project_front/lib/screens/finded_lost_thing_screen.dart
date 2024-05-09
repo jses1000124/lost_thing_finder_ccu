@@ -3,8 +3,8 @@ import '../widgets/lost_things_list.dart';
 import '../models/lost_thing.dart';
 
 class FindedThingScreen extends StatefulWidget {
-  const FindedThingScreen({super.key, required this.searchedThingName});
   final String searchedThingName;
+  const FindedThingScreen({super.key, this.searchedThingName = ''});
 
   @override
   State<FindedThingScreen> createState() => _FindedThingScreenState();
@@ -44,7 +44,9 @@ class _FindedThingScreenState extends State<FindedThingScreen> {
   void filterItems() {
     setState(() {
       filteredFindedThings = registedFindedThings.where((item) {
-        return item.lostThingName.contains(widget.searchedThingName);
+        return item.lostThingName
+            .toLowerCase()
+            .contains(widget.searchedThingName.toLowerCase());
       }).toList();
     });
   }

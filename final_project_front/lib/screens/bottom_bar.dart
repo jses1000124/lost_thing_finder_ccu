@@ -17,14 +17,14 @@ class _BottomBarState extends State<BottomBar> {
   String _title = '遺失物';
   static String searchVal = '';
   String searchType = 'title';
-  List<Widget>? _widgetOptions;
+  List<Widget> _widgetOptions = [];
 
   @override
   void initState() {
     super.initState();
     _widgetOptions = [
       const LostThingScreen(),
-      FindedThingScreen(searchedThingName: searchVal),
+      const FindedThingScreen(),
     ];
   }
 
@@ -76,7 +76,7 @@ class _BottomBarState extends State<BottomBar> {
         ],
       ),
       drawer: const MainDrawer(),
-      body: Center(child: _widgetOptions?[_selectedIndex]),
+      body: Center(child: _widgetOptions[_selectedIndex]),
       floatingActionButton: FloatingActionButton(
         onPressed: _openAddLostThing,
         backgroundColor: Theme.of(context).colorScheme.background,
