@@ -15,11 +15,13 @@ class BottomBar extends StatefulWidget {
 class _BottomBarState extends State<BottomBar> {
   int _selectedIndex = 0;
   String _title = '遺失物';
-  String searchVal = '';
+  static String searchVal = '';
   String searchType = 'title';
-  static final List<Widget> _widgetOptions = <Widget>[
+  final List<Widget> _widgetOptions = <Widget>[
     const LostThingScreen(),
-    const FindedThingScreen(),
+    FindedThingScreen(
+      searchedThingName: searchVal,
+    ),
   ];
   // fun to change index
 
@@ -138,8 +140,9 @@ class _SearchAppBarState extends State<SearchAppBar> {
       alignment: Alignment.centerLeft,
       // 设置修饰
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: Theme.of(context).colorScheme.background),
+        borderRadius: BorderRadius.circular(10),
+        color: Theme.of(context).colorScheme.secondaryContainer,
+      ),
       child: TextField(
         controller: _controller,
         style: const TextStyle(color: Colors.white),
