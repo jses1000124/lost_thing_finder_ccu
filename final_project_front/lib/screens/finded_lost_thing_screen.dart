@@ -10,79 +10,7 @@ class FindedThingScreen extends StatefulWidget {
 }
 
 class _FindedThingScreenState extends State<FindedThingScreen> {
-  final List<LostThing> _registedFindedThings = [
-    LostThing(
-      lostThingName: 'iPhone 11',
-      content: '我找到了一台iPhone 11，請聯絡我。',
-      imageUrl:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/IPhone_15_Pro_Vector.svg/800px-IPhone_15_Pro_Vector.svg.png',
-      date: DateTime.now(),
-      location: '共同教室2樓',
-      postUser: 'Box159',
-    ),
-    LostThing(
-      lostThingName: 'MacBook Air',
-      content: '我找到了一台MacBook Air，請聯絡我。',
-      imageUrl:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/MacBook_Pro_15_inch_%282017%29_Touch_Bar.jpg/1920px-MacBook_Pro_15_inch_%282017%29_Touch_Bar.jpg',
-      date: DateTime.now(),
-      location: '共同教室1樓',
-      postUser: 'Chengen Li',
-    ),
-    LostThing(
-      lostThingName: 'iPhone 11',
-      content: '我找到了一台iPhone 11，請聯絡我。',
-      imageUrl:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/IPhone_15_Pro_Vector.svg/800px-IPhone_15_Pro_Vector.svg.png',
-      date: DateTime.now(),
-      location: '共同教室2樓',
-      postUser: 'Box159',
-    ),
-    LostThing(
-      lostThingName: 'MacBook Air',
-      content: '我找到了一台MacBook Air，請聯絡我。',
-      imageUrl:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/MacBook_Pro_15_inch_%282017%29_Touch_Bar.jpg/1920px-MacBook_Pro_15_inch_%282017%29_Touch_Bar.jpg',
-      date: DateTime.now(),
-      location: '共同教室1樓',
-      postUser: 'Chengen Li',
-    ),
-    LostThing(
-      lostThingName: 'iPhone 11',
-      content: '我找到了一台iPhone 11，請聯絡我。',
-      imageUrl:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/IPhone_15_Pro_Vector.svg/800px-IPhone_15_Pro_Vector.svg.png',
-      date: DateTime.now(),
-      location: '共同教室2樓',
-      postUser: 'Box159',
-    ),
-    LostThing(
-      lostThingName: 'MacBook Air',
-      content: '我找到了一台MacBook Air，請聯絡我。',
-      imageUrl:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/MacBook_Pro_15_inch_%282017%29_Touch_Bar.jpg/1920px-MacBook_Pro_15_inch_%282017%29_Touch_Bar.jpg',
-      date: DateTime.now(),
-      location: '共同教室1樓',
-      postUser: 'Chengen Li',
-    ),
-    LostThing(
-      lostThingName: 'iPhone 11',
-      content: '我找到了一台iPhone 11，請聯絡我。',
-      imageUrl:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/IPhone_15_Pro_Vector.svg/800px-IPhone_15_Pro_Vector.svg.png',
-      date: DateTime.now(),
-      location: '共同教室2樓',
-      postUser: 'Box159',
-    ),
-    LostThing(
-      lostThingName: 'MacBook Air',
-      content: '我找到了一台MacBook Air，請聯絡我。',
-      imageUrl:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/MacBook_Pro_15_inch_%282017%29_Touch_Bar.jpg/1920px-MacBook_Pro_15_inch_%282017%29_Touch_Bar.jpg',
-      date: DateTime.now(),
-      location: '共同教室1樓',
-      postUser: 'Chengen Li',
-    ),
+  final List<LostThing> registedFindedThings = [
     LostThing(
       lostThingName: 'iPhone 11',
       content: '我找到了一台iPhone 11，請聯絡我。',
@@ -108,7 +36,7 @@ class _FindedThingScreenState extends State<FindedThingScreen> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Expanded(
-          child: LostThingsList(lostThings: _registedFindedThings),
+          child: LostThingsList(lostThings: registedFindedThings),
         )
       ],
     );

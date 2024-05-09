@@ -15,6 +15,8 @@ class BottomBar extends StatefulWidget {
 class _BottomBarState extends State<BottomBar> {
   int _selectedIndex = 0;
   String _title = '遺失物';
+  String searchVal = '';
+  String searchType = 'title';
   static final List<Widget> _widgetOptions = <Widget>[
     const LostThingScreen(),
     const FindedThingScreen(),
@@ -42,13 +44,25 @@ class _BottomBarState extends State<BottomBar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(_title), actions: <Widget>[
-        IconButton(
-          icon: const Icon(Icons.chat),
-          onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => const ChatListScreen())),
-        )
-      ]),
+      appBar: AppBar(
+        title: SearchAppBar(
+          hintLabel: '$_title搜尋',
+          onSubmitted: (value) {
+            setState(() {
+              searchVal = value;
+            });
+          },
+        ),
+        titleSpacing: 0,
+        elevation: 0,
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.chat),
+            onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => const ChatListScreen())),
+          )
+        ],
+      ),
       drawer: const MainDrawer(),
       body: Center(child: _widgetOptions[_selectedIndex]),
       floatingActionButton: FloatingActionButton(
@@ -87,6 +101,84 @@ class _BottomBarState extends State<BottomBar> {
                 label: "Finded Thing"),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class SearchAppBar extends StatefulWidget {
+  const SearchAppBar(
+      {super.key, required this.hintLabel, required this.onSubmitted});
+  final String hintLabel;
+  // 回调函数
+  final Function(String) onSubmitted;
+
+  @override
+  State<StatefulWidget> createState() => _SearchAppBarState();
+}
+
+class _SearchAppBarState extends State<SearchAppBar> {
+  // 文本的值
+  String searchVal = '';
+  //用于清空输入框
+  final TextEditingController _controller = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    // 获取屏幕尺寸
+    MediaQueryData queryData = MediaQuery.of(context);
+    return Container(
+      // 宽度为屏幕的0.8
+      width: queryData.size.width * 0.8,
+      // appBar默认高度是56，这里搜索框设置为40
+      height: 40,
+      // 设置padding
+      padding: const EdgeInsets.only(left: 20),
+      // 设置子级位置
+      alignment: Alignment.centerLeft,
+      // 设置修饰
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Theme.of(context).colorScheme.background),
+      child: TextField(
+        controller: _controller,
+        style: const TextStyle(color: Colors.white),
+        decoration: InputDecoration(
+            hintText: widget.hintLabel,
+            hintStyle: const TextStyle(color: Colors.grey),
+            // 取消掉文本框下面的边框
+            border: InputBorder.none,
+            icon: const Padding(
+                padding: EdgeInsets.only(left: 0, top: 0),
+                child: Icon(
+                  Icons.search,
+                  size: 18,
+                  color: Colors.white,
+                )),
+            //  关闭按钮，有值时才显示
+            suffixIcon: searchVal.isNotEmpty
+                ? IconButton(
+                    icon: const Icon(Icons.close),
+                    style: ButtonStyle(
+                      iconColor: MaterialStateProperty.all(Colors.white),
+                    ),
+                    onPressed: () {
+                      //   清空内容
+                      setState(() {
+                        searchVal = '';
+                        _controller.clear();
+                      });
+                    },
+                  )
+                : null),
+        onChanged: (value) {
+          setState(() {
+            searchVal = value;
+          });
+        },
+        onSubmitted: (value) {
+          widget.onSubmitted(value);
+        },
       ),
     );
   }
