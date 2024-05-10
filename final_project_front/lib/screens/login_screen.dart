@@ -5,6 +5,7 @@ import 'bottom_bar.dart';
 import 'package:final_project/widgets/user_input_login_signup.dart';
 import 'regist_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:email_validator/email_validator.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -27,8 +28,9 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       if (value.isEmpty) {
         _emailError = 'Email is required';
+      } else if (!EmailValidator.validate(value)) {
+        _emailError = 'Invalid email format';
       } else {
-        // Add further email validation logic if needed
         _emailError = null;
       }
     });

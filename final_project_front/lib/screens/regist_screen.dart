@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'login_screen.dart';
 import 'package:final_project/widgets/user_input_login_signup.dart';
+import 'package:email_validator/email_validator.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -39,8 +40,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     setState(() {
       if (value.isEmpty) {
         _emailError = 'Email is required';
+      } else if (!EmailValidator.validate(value)) {
+        _emailError = 'Invalid email format';
       } else {
-        // Add additional email validation logic if needed
         _emailError = null;
       }
     });
