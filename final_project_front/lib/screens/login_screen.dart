@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'bottom_bar.dart';
 import 'package:final_project/widgets/user_input_login_signup.dart';
@@ -63,14 +62,12 @@ class _LoginScreenState extends State<LoginScreen> {
         headers: {'Content-Type': 'application/json'});
 
     if (response.statusCode == 200) {
-      // 保存登录状态
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setBool('isLoggedIn', true);
       await prefs.setBool('autoLogin', _autoLogin).then((value) =>
           Navigator.of(context).pushReplacement(
               MaterialPageRoute(builder: (context) => const BottomBar())));
     } else {
-      // 处理错误...
       if (response.statusCode == 401) {
         _showAlertDialog('Failed', 'Invalid password');
       } else if (response.statusCode == 404) {

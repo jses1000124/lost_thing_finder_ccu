@@ -19,7 +19,6 @@ class InputToLoginSignUp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      style: const TextStyle(color: Colors.white),
       controller: controller,
       decoration: InputDecoration(
         prefixIcon: icon,

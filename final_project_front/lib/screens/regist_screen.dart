@@ -178,7 +178,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     onChanged: _validateEmail),
                 const SizedBox(height: 20),
                 TextFormField(
-                  style: const TextStyle(color: Colors.white),
                   controller: _passwordController,
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.lock),
@@ -203,7 +202,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 const SizedBox(height: 20),
                 TextFormField(
-                  style: const TextStyle(color: Colors.white),
                   controller: _confirmPasswordController,
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.lock_outline),

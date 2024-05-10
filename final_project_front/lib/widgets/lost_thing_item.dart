@@ -11,6 +11,7 @@ class LostThingItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 3,
       child: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: 20,
@@ -49,11 +50,11 @@ class LostThingItem extends StatelessWidget {
                     ),
                     Text(
                       '位置: ${lostThing.location}',
-                      style: const TextStyle(color: Colors.white, fontSize: 16),
+                      style: const TextStyle(fontSize: 16),
                     ),
                     Text(
                       '日期: ${lostThing.formattedDate}',
-                      style: const TextStyle(color: Colors.white, fontSize: 16),
+                      style: const TextStyle(fontSize: 16),
                     ),
                   ],
                 ),
