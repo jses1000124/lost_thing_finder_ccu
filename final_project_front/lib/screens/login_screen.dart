@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'bottom_bar.dart';
 import 'package:final_project/widgets/user_input_login_signup.dart';
 import 'regist_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:email_validator/email_validator.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -28,8 +28,9 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       if (value.isEmpty) {
         _emailError = 'Email is required';
+      } else if (!EmailValidator.validate(value)) {
+        _emailError = 'Invalid email format';
       } else {
-        // Add further email validation logic if needed
         _emailError = null;
       }
     });
@@ -63,7 +64,6 @@ class _LoginScreenState extends State<LoginScreen> {
         headers: {'Content-Type': 'application/json'});
 
     if (response.statusCode == 200) {
-      // 保存登录状态
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('account', account);
       await prefs.setBool('isLoggedIn', true);
@@ -71,7 +71,6 @@ class _LoginScreenState extends State<LoginScreen> {
           Navigator.of(context).pushReplacement(
               MaterialPageRoute(builder: (context) => const BottomBar())));
     } else {
-      // 处理错误...
       if (response.statusCode == 401) {
         _showAlertDialog('Failed', 'Invalid password');
       } else if (response.statusCode == 404) {

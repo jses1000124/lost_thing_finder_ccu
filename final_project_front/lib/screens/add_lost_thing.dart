@@ -60,75 +60,6 @@ class _AddLostThingState extends State<AddLostThing> {
             Row(
               children: [
                 Expanded(
-                  flex: 2,
-                  child: TextFormField(
-                    decoration: const InputDecoration(
-                      labelText: '遺失物',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.inventory_2),
-                      labelStyle: TextStyle(fontSize: 18),
-                    ),
-                    style: const TextStyle(fontSize: 18, color: Colors.white),
-                    controller: _titleController,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return '請輸入物品名稱';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                          _selectedDate == null
-                              ? '日期還沒選擇'
-                              : formatter.format(_selectedDate!),
-                          style: const TextStyle(
-                              fontSize: 16, color: Colors.white)),
-                      IconButton(
-                        onPressed: _presentDatePicker,
-                        style: const ButtonStyle(
-                            iconSize: MaterialStatePropertyAll(30)),
-                        icon: const Icon(
-                          Icons.calendar_month,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: TextFormField(
-                    decoration: const InputDecoration(
-                      labelText: '地點',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.place),
-                      labelStyle: TextStyle(fontSize: 18),
-                    ),
-                    style: const TextStyle(fontSize: 18, color: Colors.white),
-                    controller: _locationController,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return '請輸入地點';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-                const SizedBox(
-                    width: 10), // Space between the text field and dropdown
-                Expanded(
                   flex: 1,
                   child: DropdownButtonFormField<String>(
                     decoration: const InputDecoration(
@@ -153,9 +84,78 @@ class _AddLostThingState extends State<AddLostThing> {
                       }
                       return null;
                     },
-                    style: const TextStyle(fontSize: 18, color: Colors.white),
+                    style: const TextStyle(fontSize: 18),
                   ),
                 ),
+                const SizedBox(width: 20),
+                Expanded(
+                  flex: 2,
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                      labelText: _postType,
+                      border: const OutlineInputBorder(),
+                      prefixIcon: const Icon(Icons.inventory_2),
+                      labelStyle: const TextStyle(fontSize: 18),
+                    ),
+                    style: const TextStyle(fontSize: 18),
+                    controller: _titleController,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return '請輸入物品名稱';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                          _selectedDate == null
+                              ? '日期還沒選擇'
+                              : formatter.format(_selectedDate!),
+                          style: const TextStyle(fontSize: 16)),
+                      IconButton(
+                        onPressed: _presentDatePicker,
+                        style: const ButtonStyle(
+                            iconSize: MaterialStatePropertyAll(30)),
+                        icon: const Icon(
+                          Icons.calendar_month,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 20),
+                Expanded(
+                  flex: 2,
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                      labelText: '地點',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.place),
+                      labelStyle: TextStyle(fontSize: 18),
+                    ),
+                    style: const TextStyle(fontSize: 18),
+                    controller: _locationController,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return '請輸入地點';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                // Space between the text field and dropdown
               ],
             ),
             const SizedBox(height: 20),
@@ -165,7 +165,7 @@ class _AddLostThingState extends State<AddLostThing> {
                   labelText: '物品描述',
                   border: OutlineInputBorder(),
                   labelStyle: TextStyle(fontSize: 22)),
-              style: const TextStyle(fontSize: 18, color: Colors.white),
+              style: const TextStyle(fontSize: 18),
               controller: _descriptionController,
               maxLines: 6,
               autovalidateMode: AutovalidateMode.onUserInteraction,

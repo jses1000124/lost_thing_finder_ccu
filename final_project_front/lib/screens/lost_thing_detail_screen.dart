@@ -1,3 +1,4 @@
+import 'package:final_project/main.dart';
 import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:final_project/models/lost_thing.dart';
@@ -33,19 +34,18 @@ class LostThingDetailScreen extends StatelessWidget {
                           children: [
                             Text(
                               lostThings.location,
-                              style: const TextStyle(
-                                  color: Colors.white, fontSize: 16),
+                              style: const TextStyle(fontSize: 16),
                             ),
                             const SizedBox(height: 5),
                             Text(
                               lostThings.postUser,
-                              style: const TextStyle(
-                                  color: Colors.white, fontSize: 16),
+                              style: const TextStyle(fontSize: 16),
                             ),
                           ],
                         ),
                       ),
                       CircleAvatar(
+                        backgroundColor: theme.backgroundColor,
                         backgroundImage: NetworkImage(lostThings
                             .headShotUrl), // Consider adding a user image property to the model
                         radius: 24,
