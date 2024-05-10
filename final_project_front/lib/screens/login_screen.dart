@@ -53,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final String account = _accountController.text;
     final String password = _passwordController.text;
 
-    final Uri apiUrl = Uri.parse('http://25.14.26.180:5000/login');
+    final Uri apiUrl = Uri.parse('http://140.123.101.199:5000/login');
     final Map<String, String> requestBody = {
       'account': account,
       'password': password,
@@ -196,10 +196,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: ElevatedButton.styleFrom(
                         fixedSize: const Size(150, 50),
                       ),
-                      onPressed: () => Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  const BottomBar())), //正式版要是 _login,
+                      onPressed: _login,
+                      // onPressed: () => Navigator.of(context).pushReplacement(
+                      //     MaterialPageRoute(
+                      //         builder: (context) =>
+                      //             const BottomBar())),
                       child: const Text('登入', style: TextStyle(fontSize: 25)),
                     ),
                   ],

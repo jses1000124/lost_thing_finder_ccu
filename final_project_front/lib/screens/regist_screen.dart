@@ -77,7 +77,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final String account = _accountController.text;
     final String password = _passwordController.text;
 
-    final Uri apiUrl = Uri.parse('http://25.14.26.180:5000/register');
+    final Uri apiUrl = Uri.parse('http://140.123.101.199:5000/register');
     final Map<String, String> requestBody = {
       'account': account,
       'password': password,
