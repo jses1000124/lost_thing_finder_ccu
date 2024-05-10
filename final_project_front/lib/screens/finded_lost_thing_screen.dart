@@ -16,10 +16,11 @@ class _FindedThingScreenState extends State<FindedThingScreen> {
       lostThingName: 'iPhone 11',
       content: '我找到了一台iPhone 11，請聯絡我。',
       imageUrl:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/IPhone_15_Pro_Vector.svg/800px-IPhone_15_Pro_Vector.svg.png',
+          'https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/iphone-card-40-iphone15prohero-202309?wid=680&hei=528&fmt=p-jpg&qlt=95&.v=1693086290312',
       date: DateTime.now(),
       location: '共同教室2樓',
       postUser: 'Box159',
+      headShotUrl: 'https://i.pravatar.cc/150?u=a042581f4e29026704d',
     ),
     LostThing(
       lostThingName: 'MacBook Air',
@@ -29,6 +30,7 @@ class _FindedThingScreenState extends State<FindedThingScreen> {
       date: DateTime.now(),
       location: '共同教室1樓',
       postUser: 'Chengen Li',
+      headShotUrl: 'https://i.pravatar.cc/150?u=a042581f4e29026704d',
     ),
   ];
 

@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'bottom_bar.dart';
 import 'package:final_project/widgets/user_input_login_signup.dart';
 import 'regist_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,6 +19,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   var canSeePassword = true;
+  bool _autoLogin = false;
 
   String? _emailError;
   String? _passwordError;
@@ -55,21 +58,27 @@ class _LoginScreenState extends State<LoginScreen> {
       'account': account,
       'password': password,
     };
-
-    await http.post(apiUrl,
+    final response = await http.post(apiUrl,
         body: jsonEncode(requestBody),
-        headers: {'Content-Type': 'application/json'}).then((response) {
-      if (response.statusCode == 200) {
-        Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const BottomBar()));
-      } else if (response.statusCode == 401) {
+        headers: {'Content-Type': 'application/json'});
+
+    if (response.statusCode == 200) {
+      // 保存登录状态
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('isLoggedIn', true);
+      await prefs.setBool('autoLogin', _autoLogin).then((value) =>
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => const BottomBar())));
+    } else {
+      // 处理错误...
+      if (response.statusCode == 401) {
         _showAlertDialog('Failed', 'Invalid password');
       } else if (response.statusCode == 404) {
         _showAlertDialog('Failed', 'Account not found');
       } else {
         _showAlertDialog('Error', 'An unexpected error occurred');
       }
-    });
+    }
   }
 
   void _showAlertDialog(String title, String message) {
@@ -161,6 +170,23 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   obscureText: canSeePassword,
                   onChanged: _validatePassword,
+                ),
+                SizedBox(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Checkbox(
+                        value: _autoLogin,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            _autoLogin = value!;
+                          });
+                        },
+                      ),
+                      const Text('自動登入',
+                          style: TextStyle(color: Colors.white, fontSize: 16)),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 20),
                 Row(

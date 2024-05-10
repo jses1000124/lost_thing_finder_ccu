@@ -44,6 +44,7 @@ dependencies:
   flutter_settings_screens: ^0.3.4
   firebase_core: ^2.31.0
   cloud_firestore: 4.17.3
+  shared_preferences: ^2.2.3
 
 dev_dependencies:
   flutter_test:

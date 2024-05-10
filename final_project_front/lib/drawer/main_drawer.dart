@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
 import '../screens/setting_screen.dart';
 import '../screens/login_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MainDrawer extends StatelessWidget {
   const MainDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {
+    Future<void> logout() async {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('autoLogin', false);
+      await prefs.setBool('isLoggedIn', false).then((value) =>
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => const LoginScreen())));
+    }
+
     return SizedBox(
       width: 200,
       child: Drawer(
@@ -51,10 +60,7 @@ class MainDrawer extends StatelessWidget {
               ListTile(
                 leading: const Icon(Icons.logout),
                 title: const Text('登出'),
-                onTap: () {
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => const LoginScreen()));
-                },
+                onTap: logout,
               ),
             ],
           ),

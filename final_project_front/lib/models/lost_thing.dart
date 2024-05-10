@@ -13,6 +13,7 @@ class LostThing {
     required this.postUser,
     required this.imageUrl,
     required this.location,
+    required this.headShotUrl,
   }) : id = uuid.v4();
 
   final String id;
@@ -22,6 +23,7 @@ class LostThing {
   final String content;
   final String location;
   final DateTime date;
+  final String headShotUrl;
 
   String get formattedDate {
     return formatter.format(date);
