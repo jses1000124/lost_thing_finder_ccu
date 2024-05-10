@@ -21,7 +21,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         body: SafeArea(
           child: ListView(
             padding: const EdgeInsets.all(24),
-            children: [SettingsGroup(title: 'General', children: [])],
+            children: const [SettingsGroup(title: 'General', children: [])],
           ),
         ));
   }

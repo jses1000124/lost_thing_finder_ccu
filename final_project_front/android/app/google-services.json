@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "576926243486",
+    "project_id": "ccu-final-project",
+    "storage_bucket": "ccu-final-project.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:576926243486:android:6d465a8b2335e5b018798f",
+        "android_client_info": {
+          "package_name": "com.example.final_project"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_GJZ086MT2Ccu_DHYs4aSEkidMn1IApY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:576926243486:android:69d44188bce6207a18798f",
+        "android_client_info": {
+          "package_name": "com.example.first_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_GJZ086MT2Ccu_DHYs4aSEkidMn1IApY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
