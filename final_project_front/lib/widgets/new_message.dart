@@ -1,11 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class NewMessage extends StatefulWidget {
+  
   const NewMessage({super.key});
 
   @override
   State<NewMessage> createState() => _NewMessageState();
-  
 }
 
 class _NewMessageState extends State<NewMessage> {
@@ -17,13 +19,18 @@ class _NewMessageState extends State<NewMessage> {
     super.dispose();
   }
 
-  void _submitMessage(){
+  void _submitMessage() async{
     final enteredMessage = _messagecontroller.text;
     if(enteredMessage.trim().isEmpty){
       return;
     }
-    
-    // TODO: send message to firebase
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    FirebaseFirestore.instance.collection('chat').add({
+      'text': enteredMessage,
+      'createdAt': Timestamp.now(),
+      'userId': prefs.getString('account'),
+      
+    });
 
     _messagecontroller.clear();
   }
