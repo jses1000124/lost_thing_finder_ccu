@@ -196,11 +196,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: ElevatedButton.styleFrom(
                         fixedSize: const Size(150, 50),
                       ),
-                      onPressed: _login,
-                      // onPressed: () => Navigator.of(context).pushReplacement(
-                      //     MaterialPageRoute(
-                      //         builder: (context) =>
-                      //             const BottomBar())),
+                      // onPressed: _login,
+                      onPressed: () => Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const BottomBar())),
                       child: const Text('登入', style: TextStyle(fontSize: 25)),
                     ),
                   ],
