@@ -5,9 +5,9 @@ import 'package:http/http.dart' as http;
 import 'login_screen.dart';
 
 class NewPassword extends StatefulWidget {
-  NewPassword({super.key, required this.email, required this.code});
-  String email;
-  String code;
+  const NewPassword({super.key, required this.email, required this.code});
+  final String email;
+  final String code;
 
   @override
   State<NewPassword> createState() => _NewPasswordState();

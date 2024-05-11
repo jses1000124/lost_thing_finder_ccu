@@ -15,7 +15,7 @@ class ChatMessage extends StatelessWidget {
     
     String authaccount = '';
     _getPrefs().then((prefs) {
-      authaccount = prefs.getString('account') ?? '';
+      authaccount = prefs.getString('nickname') ?? '';
     });
 
     return StreamBuilder(
