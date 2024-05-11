@@ -62,6 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (response.statusCode == 200) {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('account', account);
       await prefs.setBool('isLoggedIn', true);
       await prefs.setBool('autoLogin', _autoLogin).then((value) =>
           Navigator.of(context).pushReplacement(
