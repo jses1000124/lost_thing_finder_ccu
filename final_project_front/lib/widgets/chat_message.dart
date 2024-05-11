@@ -14,11 +14,13 @@ class ChatMessage extends StatelessWidget {
   Widget build(BuildContext context) {
     String authaccount = '';
     _getPrefs().then((prefs) {
-        authaccount = prefs.getString('account') ?? '';
+      authaccount = prefs.getString('account') ?? '';
     });
     return StreamBuilder(
-      stream:
-          FirebaseFirestore.instance.collection('chat').orderBy('createdAt',descending: true).snapshots(),
+      stream: FirebaseFirestore.instance
+          .collection('chat')
+          .orderBy('createdAt', descending: true)
+          .snapshots(),
       builder: (ctx, chatSnapshot) {
         if (chatSnapshot.connectionState == ConnectionState.waiting) {
           return const Center(
@@ -27,13 +29,13 @@ class ChatMessage extends StatelessWidget {
         }
         if (!chatSnapshot.hasData || chatSnapshot.data!.docs.isEmpty) {
           return const Center(
-            child: Text('No chat messages yet! Start chatting!'),
+            child: Text('還沒有訊息喔！快來聊天吧！'),
           );
         }
 
         if (chatSnapshot.hasError) {
           return const Center(
-            child: Text('An error occurred!'),
+            child: Text('ERROR!'),
           );
         }
 
@@ -44,30 +46,28 @@ class ChatMessage extends StatelessWidget {
           itemCount: chatDocs.length,
           itemBuilder: (ctx, index) {
             final chatMessage = chatDocs[index].data();
-            final nextChatMessage = index + 1 < chatDocs.length
-                ? chatDocs[index + 1].data()
-                : null;
+            final nextChatMessage =
+                index + 1 < chatDocs.length ? chatDocs[index + 1].data() : null;
 
             final currentUser = chatMessage['userId'];
-            final nextUser = nextChatMessage != null
-                ? nextChatMessage['userId']
-                : null;
+            final nextUser =
+                nextChatMessage != null ? nextChatMessage['userId'] : null;
 
             final nextUserIsSame = currentUser == nextUser;
-            
-            if(nextUserIsSame){
+
+            if (nextUserIsSame) {
               return MessageBubble.next(
-                message: chatMessage['text'], 
+                message: chatMessage['text'],
                 isMe: currentUser == authaccount,
-                );
-            }
-            else{
+              );
+            } else {
               return MessageBubble.first(
-                userImage: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+                userImage:
+                    'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
                 username: currentUser,
-                message: chatMessage['text'], 
+                message: chatMessage['text'],
                 isMe: currentUser == authaccount,
-                );
+              );
             }
           },
         );

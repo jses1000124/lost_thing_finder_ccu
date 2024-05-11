@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NewMessage extends StatefulWidget {
-  
   const NewMessage({super.key});
 
   @override
@@ -19,9 +18,9 @@ class _NewMessageState extends State<NewMessage> {
     super.dispose();
   }
 
-  void _submitMessage() async{
+  void _submitMessage() async {
     final enteredMessage = _messagecontroller.text;
-    if(enteredMessage.trim().isEmpty){
+    if (enteredMessage.trim().isEmpty) {
       return;
     }
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -29,7 +28,6 @@ class _NewMessageState extends State<NewMessage> {
       'text': enteredMessage,
       'createdAt': Timestamp.now(),
       'userId': prefs.getString('account'),
-      
     });
 
     _messagecontroller.clear();
@@ -42,15 +40,29 @@ class _NewMessageState extends State<NewMessage> {
       child: Row(
         children: [
           Expanded(
-            child: TextField(
-              controller: _messagecontroller,
-              enableSuggestions: true,
-              autocorrect: true,
-              textCapitalization: TextCapitalization.sentences,
-              decoration: const InputDecoration(labelText: 'Send a message...'),
+            child: Container(
+              height: 50,
+              padding: const EdgeInsets.only(bottom: 10),
+              child: TextField(
+                controller: _messagecontroller,
+                enableSuggestions: true,
+                autocorrect: true,
+                textCapitalization: TextCapitalization.sentences,
+                decoration: InputDecoration(
+                  labelText: 'Send a message...',
+                  fillColor: const Color.fromARGB(255, 84, 84, 84),
+                  filled: true,
+                  border: OutlineInputBorder(
+                    borderRadius:
+                        BorderRadius.circular(20.0), // Set the border radius
+                    borderSide: BorderSide.none, // Remove the border
+                  ),
+                ),
+              ),
             ),
           ),
           IconButton(
+            padding: const EdgeInsets.only(bottom: 10),
             icon: const Icon(Icons.send),
             onPressed: _submitMessage,
           )
