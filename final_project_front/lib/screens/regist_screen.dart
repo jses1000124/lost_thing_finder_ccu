@@ -110,10 +110,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 TextButton(
                   onPressed: () async {
-                    final Uri apiUrl = Uri.parse(
-                        'http://140.123.101.199:5000/verification_code');
+                    final Uri apiUrl =
+                        Uri.parse('http://140.123.101.199:5000/verification');
                     await http.post(apiUrl,
                         body: jsonEncode({
+                          'email': _accountController.text,
                           'code': codeController.text,
                         }),
                         headers: {
@@ -141,11 +142,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> verifyEmail() async {
     final Uri apiUrl =
-        Uri.parse('http://140.123.101.199:5000/verification_code');
+        Uri.parse('http://140.123.101.199:5000/send_verification_code');
     Map<String, String> requestBody = {
       'email': _accountController.text,
     };
-    await http.post(apiUrl,
+    await http.post(apiUrl, 
         body: jsonEncode(requestBody),
         headers: {'Content-Type': 'application/json'}).then((response) {
       if (response.statusCode == 200) {
