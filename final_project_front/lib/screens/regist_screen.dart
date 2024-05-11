@@ -23,6 +23,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   var canSeePassword = true;
   bool _emailVerified = false;
+  bool _isLoading = false;
 
   String? _usernameError;
   String? _emailError;
@@ -79,7 +80,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
       _showAlertDialog('錯誤', '尚未輸入信箱或格式不正確');
       return;
     } else {
-      verifyEmail();
+      _showLoadingDialog(); // 顯示加載對話框
+      verifyEmail().catchError((error) {
+        Navigator.of(context).pop(); // 有錯誤也需要關閉加載對話框
+        _showAlertDialog('錯誤', '出現錯誤: $error');
+      });
     }
   }
 
@@ -140,7 +145,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               actions: <Widget>[
                 TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
                   child: const Text('取消'),
                 ),
                 TextButton(
@@ -150,6 +157,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ],
             );
           },
+        );
+      },
+    );
+  }
+
+  void _showLoadingDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // 用戶不能通過點擊外部來關閉對話框
+      builder: (BuildContext context) {
+        return const Dialog(
+          child: Padding(
+            padding: EdgeInsets.all(20),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(width: 20), // 提供一些水平空間
+                Text("正在處理...", style: TextStyle(fontSize: 16)), // 顯示加載信息
+              ],
+            ),
+          ),
         );
       },
     );
@@ -168,6 +197,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               headers: {'Content-Type': 'application/json'})
           .timeout(const Duration(seconds: 5)) // 設定超時時間
           .then((response) {
+            Navigator.of(context).pop(); // 關閉加載對話框
             if (response.statusCode == 200) {
               _showVerificationCodeDialog();
             } else {
