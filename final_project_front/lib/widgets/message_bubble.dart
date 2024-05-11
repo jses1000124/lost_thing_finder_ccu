@@ -39,6 +39,9 @@ class MessageBubble extends StatelessWidget {
   // Controls how the MessageBubble will be aligned.
   final bool isMe;
 
+  // Show the user context menu when the user image is tapped.
+  void _showUserContextMenu() {}
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -56,6 +59,11 @@ class MessageBubble extends StatelessWidget {
               ),
               backgroundColor: theme.colorScheme.primary.withAlpha(180),
               radius: 23,
+              child: GestureDetector(
+                onTap: () {
+                  _showUserContextMenu();
+                },
+              ),
             ),
           ),
         Container(

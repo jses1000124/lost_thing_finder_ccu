@@ -23,7 +23,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   var canSeePassword = true;
   bool _emailVerified = false;
-  bool _isLoading = false;
 
   String? _usernameError;
   String? _emailError;
