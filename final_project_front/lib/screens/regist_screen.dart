@@ -23,7 +23,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   var canSeePassword = true;
   bool _emailVerified = false;
-  bool _isLoading = false;
 
   String? _usernameError;
   String? _emailError;
@@ -109,7 +108,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 });
                 Navigator.of(context).pop(); // Close the dialog
               } else {
-                _showAlertDialog('錯誤', '驗證碼錯誤', popTwice: true);
+                _showAlertDialog('錯誤', '驗證碼錯誤');
                 codeController.clear();
               }
             },

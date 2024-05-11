@@ -6,6 +6,7 @@ import 'bottom_bar.dart';
 import 'package:final_project/widgets/user_input_login_signup.dart';
 import 'regist_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'verify_email_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -70,6 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('account', account);
         await prefs.setBool('isLoggedIn', true);
+        await prefs.setString('token', jsonDecode(response.body)['token']);
         await prefs.setBool('autoLogin', _autoLogin).then((value) =>
             Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (context) => const BottomBar())));
@@ -194,6 +196,21 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const Text('自動登入',
                           style: TextStyle(color: Colors.white, fontSize: 16)),
+                      const Spacer(),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const VerifyEmailScreen(),
+                            ),
+                          );
+                        },
+                        child: const Text(
+                          '忘記密碼?',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
                     ],
                   ),
                 ),
