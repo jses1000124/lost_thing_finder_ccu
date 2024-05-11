@@ -112,13 +112,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 TextButton(
                   onPressed: () async {
                     final Uri apiUrl = Uri.parse(
-                        'http://140.123.101.199:5000/verification_code');
+                        'http://140.123.101.199:5000/verification');
                     try {
                       await http
                           .post(apiUrl,
-                              body: jsonEncode({'code': codeController.text}),
+                              body: jsonEncode({'code': codeController.text,'email': _accountController.text,}),
                               headers: {'Content-Type': 'application/json'})
-                          .timeout(const Duration(seconds: 10)) // 設定超時時間
+                          .timeout(const Duration(seconds: 5)) // 設定超時時間
                           .then((response) {
                             if (response.statusCode == 200) {
                               setState(() {
@@ -147,7 +147,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> verifyEmail() async {
     final Uri apiUrl =
-        Uri.parse('http://140.123.101.199:5000/verification_code');
+        Uri.parse('http://140.123.101.199:5000/send_verification_code');
     Map<String, String> requestBody = {
       'email': _accountController.text,
     };
@@ -156,7 +156,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           .post(apiUrl,
               body: jsonEncode(requestBody),
               headers: {'Content-Type': 'application/json'})
-          .timeout(const Duration(seconds: 10)) // 設定超時時間
+          .timeout(const Duration(seconds: 5)) // 設定超時時間
           .then((response) {
             if (response.statusCode == 200) {
               _showVerificationCodeDialog();
