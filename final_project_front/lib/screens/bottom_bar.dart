@@ -75,8 +75,8 @@ class _BottomBarState extends State<BottomBar> {
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.chat),
-            onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const ChatScreen())),
+            onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => const ChatListScreen())),
           )
         ],
       ),

@@ -12,11 +12,13 @@ class ChatMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
     String authaccount = '';
     _getPrefs().then((prefs) {
       authaccount = prefs.getString('nickname') ?? '';
       debugPrint(authaccount);
     });
+
     return StreamBuilder(
       stream: FirebaseFirestore.instance
           .collection('chat')
