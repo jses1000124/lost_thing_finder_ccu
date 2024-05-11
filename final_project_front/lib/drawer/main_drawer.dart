@@ -16,7 +16,8 @@ class MainDrawer extends StatelessWidget {
     Future<void> logout() async {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setBool('autoLogin', false);
-      await prefs.setBool('isLoggedIn', false).then((value) =>
+      await prefs.setString('account', '');
+      await prefs.setString('password', '').then((value) =>
           Navigator.of(context).pushReplacement(
               MaterialPageRoute(builder: (context) => const LoginScreen())));
     }

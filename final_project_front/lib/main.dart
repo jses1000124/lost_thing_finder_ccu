@@ -1,5 +1,4 @@
 import 'package:final_project/firebase_options.dart';
-import 'package:final_project/screens/bottom_bar.dart';
 import 'package:final_project/screens/login_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
@@ -24,27 +23,36 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  final SharedPreferences prefs = await SharedPreferences.getInstance();
-  final bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
-  final bool autoLogin = prefs.getBool('autoLogin') ?? false;
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]).then((fn) {
-    runApp(MyApp(isLoggedIn: isLoggedIn && autoLogin));
+    runApp(const MyApp());
   });
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key, required this.isLoggedIn});
-  final bool isLoggedIn;
+  const MyApp({super.key});
+
+  Future<bool> _checkAutoLogin() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('autoLogin') ?? false;
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: theme,
-      home: isLoggedIn ? const BottomBar() : const LoginScreen(),
+      home: FutureBuilder<bool>(
+        future: _checkAutoLogin(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const CircularProgressIndicator();
+          }
+          return const LoginScreen();
+        },
+      ),
     );
   }
 }

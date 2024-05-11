@@ -25,6 +25,22 @@ class _LoginScreenState extends State<LoginScreen> {
   String? _emailOrAccountError;
   String? _passwordError;
 
+  @override
+  void initState() {
+    super.initState();
+    _checkPreferences();
+  }
+
+  Future<void> _checkPreferences() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool('autoLogin') ?? false) {
+      _accountController.text = prefs.getString('account') ?? '';
+      _passwordController.text = prefs.getString('password') ?? '';
+      _autoLogin = true;
+      _login();
+    }
+  }
+
   void _validateEmail(String value) {
     setState(() {
       if (value.isEmpty) {
@@ -128,7 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('account', account);
-        await prefs.setBool('isLoggedIn', true);
+        await prefs.setString('password', password);
         await prefs.setString('token', jsonDecode(response.body)['token']);
         await _getUserData();
         await prefs.setBool('autoLogin', _autoLogin).then((value) =>
