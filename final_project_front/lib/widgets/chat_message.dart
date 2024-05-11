@@ -14,7 +14,7 @@ class ChatMessage extends StatelessWidget {
   Widget build(BuildContext context) {
     String authaccount = '';
     _getPrefs().then((prefs) {
-      authaccount = prefs.getString('account') ?? '';
+      authaccount = prefs.getString('nickname') ?? '';
     });
     return StreamBuilder(
       stream: FirebaseFirestore.instance
