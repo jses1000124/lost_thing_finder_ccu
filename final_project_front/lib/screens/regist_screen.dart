@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'login_screen.dart';
@@ -18,8 +19,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
+  final TextEditingController codeController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   var canSeePassword = true;
+  bool _emailVerified = false;
 
   String? _usernameError;
   String? _emailError;
@@ -29,7 +32,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void _validateUsername(String value) {
     setState(() {
       if (value.isEmpty) {
-        _usernameError = 'Username is required';
+        _usernameError = '請輸入帳號';
       } else {
         _usernameError = null;
       }
@@ -39,9 +42,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void _validateEmail(String value) {
     setState(() {
       if (value.isEmpty) {
-        _emailError = 'Email is required';
+        _emailError = '請輸入信箱';
       } else if (!EmailValidator.validate(value)) {
-        _emailError = 'Invalid email format';
+        _emailError = '信箱格式錯誤';
       } else {
         _emailError = null;
       }
@@ -51,7 +54,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void _validatePassword(String value) {
     setState(() {
       if (value.isEmpty) {
-        _passwordError = 'Password is required';
+        _passwordError = '請輸入密碼';
       } else {
         _passwordError = null;
       }
@@ -61,16 +64,118 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void _validateConfirmPassword(String value) {
     setState(() {
       if (value.isEmpty) {
-        _confirmPasswordError = 'Confirm Password is required';
+        _confirmPasswordError = '請輸入確認密碼';
       } else if (value != _passwordController.text) {
-        _confirmPasswordError = 'Passwords do not match';
+        _confirmPasswordError = '密碼並不一致';
       } else {
         _confirmPasswordError = null;
       }
     });
   }
 
+  void _sendVerificationEmail() {
+    if (_accountController.text.isEmpty ||
+        !EmailValidator.validate(_accountController.text)) {
+      _showAlertDialog('錯誤', '尚未輸入信箱或格式不正確');
+      return;
+    } else {
+      verifyEmail();
+    }
+  }
+
+  void _showVerificationCodeDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Makes dialog modal
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('輸入驗證碼'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: codeController,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                      hintText: '6位數驗證碼',
+                    ),
+                  ),
+                ],
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('取消'),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    final Uri apiUrl = Uri.parse(
+                        'http://140.123.101.199:5000/verification');
+                    try {
+                      await http
+                          .post(apiUrl,
+                              body: jsonEncode({'code': codeController.text,'email': _accountController.text,}),
+                              headers: {'Content-Type': 'application/json'})
+                          .timeout(const Duration(seconds: 5)) // 設定超時時間
+                          .then((response) {
+                            if (response.statusCode == 200) {
+                              setState(() {
+                                _emailVerified = true;
+                              });
+                              Navigator.of(context).pop();
+                            } else {
+                              _showAlertDialog('錯誤', '驗證碼錯誤');
+                            }
+                          });
+                    } on TimeoutException catch (_) {
+                      _showAlertDialog('超時', '驗證碼請求超時');
+                    } catch (e) {
+                      _showAlertDialog('錯誤', '未知錯誤：$e');
+                    }
+                  },
+                  child: const Text('確認'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> verifyEmail() async {
+    final Uri apiUrl =
+        Uri.parse('http://140.123.101.199:5000/send_verification_code');
+    Map<String, String> requestBody = {
+      'email': _accountController.text,
+    };
+    try {
+      await http
+          .post(apiUrl,
+              body: jsonEncode(requestBody),
+              headers: {'Content-Type': 'application/json'})
+          .timeout(const Duration(seconds: 5)) // 設定超時時間
+          .then((response) {
+            if (response.statusCode == 200) {
+              _showVerificationCodeDialog();
+            } else {
+              _showAlertDialog('錯誤', '請稍後再試');
+            }
+          });
+    } on TimeoutException catch (_) {
+      _showAlertDialog('超時', '驗證郵件請求超時');
+    } catch (e) {
+      _showAlertDialog('錯誤', '未知錯誤：$e');
+    }
+  }
+
   Future<void> _signUp() async {
+    if (!_emailVerified) {
+      _showAlertDialog('錯誤', '請先驗證您的信箱');
+      return;
+    }
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -86,19 +191,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
       'username': username,
     };
 
-    await http.post(apiUrl,
-        body: jsonEncode(requestBody),
-        headers: {'Content-Type': 'application/json'}).then((response) {
-      if (response.statusCode == 201) {
-        _showAlertDialog('Success', 'Account created successfully',
-            isRegister: true);
-      } else if (response.statusCode == 400) {
-        _clearTextFields();
-        _showAlertDialog('Failed', 'Account already exists');
-      } else {
-        _showAlertDialog('Error', 'An unexpected error occurred');
-      }
-    });
+    try {
+      await http
+          .post(apiUrl,
+              body: jsonEncode(requestBody),
+              headers: {'Content-Type': 'application/json'})
+          .timeout(const Duration(seconds: 10)) // 設定超時時間
+          .then((response) {
+            if (response.statusCode == 201) {
+              _showAlertDialog('成功', '帳號已成功建立', isRegister: true);
+            } else if (response.statusCode == 400) {
+              _clearTextFields();
+              _showAlertDialog('失敗', '帳號已存在');
+            } else {
+              _showAlertDialog('錯誤', '請稍後再試');
+            }
+          });
+    } on TimeoutException catch (_) {
+      _showAlertDialog('超時', '註冊請求超時');
+    } catch (e) {
+      _showAlertDialog('錯誤', '未知錯誤：$e');
+    }
   }
 
   void _clearTextFields() {
@@ -168,16 +281,37 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 InputToLoginSignUp(
                     controller: _usernameController,
                     icon: const Icon(Icons.person),
-                    labelText: '使用者名稱',
+                    labelText: '帳號',
                     errorText: _usernameError,
                     onChanged: _validateUsername),
                 const SizedBox(height: 20),
-                InputToLoginSignUp(
-                    controller: _accountController,
-                    icon: const Icon(Icons.mail),
-                    labelText: '信箱',
-                    errorText: _emailError,
-                    onChanged: _validateEmail),
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 6,
+                      child: InputToLoginSignUp(
+                          controller: _accountController,
+                          icon: const Icon(Icons.mail),
+                          labelText: '信箱',
+                          errorText: _emailError,
+                          onChanged: _validateEmail),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      flex: 1,
+                      child: TextButton(
+                        onPressed:
+                            _emailVerified ? null : _sendVerificationEmail,
+                        style: TextButton.styleFrom(
+                          backgroundColor: _emailVerified
+                              ? Colors.green
+                              : null, // Use green color when verified
+                        ),
+                        child: Text(_emailVerified ? '成功' : '驗證'),
+                      ),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 20),
                 TextFormField(
                   controller: _passwordController,
