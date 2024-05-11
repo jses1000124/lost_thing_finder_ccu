@@ -1,9 +1,10 @@
+import 'package:final_project/screens/chat_screen.dart';
+import 'package:final_project/screens/chatlist_screen.dart';
 import 'package:flutter/material.dart';
 import '../screens/add_lost_thing.dart';
 import '../screens/finded_lost_thing_screen.dart';
 import '../screens/lost_thing_screen.dart';
 import '../drawer/main_drawer.dart';
-import '../screens/chatlist_screen.dart';
 
 class BottomBar extends StatefulWidget {
   const BottomBar({super.key});
@@ -70,8 +71,8 @@ class _BottomBarState extends State<BottomBar> {
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.chat),
-            onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => const ChatListScreen())),
+            onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => const ChatScreen())),
           )
         ],
       ),
