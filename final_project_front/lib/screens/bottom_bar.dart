@@ -1,14 +1,9 @@
-import 'dart:async';
-import 'dart:convert';
-
-import 'package:final_project/screens/chat_screen.dart';
+import '../screens/chatlist_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../screens/add_lost_thing.dart';
 import '../screens/finded_lost_thing_screen.dart';
 import '../screens/lost_thing_screen.dart';
 import '../drawer/main_drawer.dart';
-import 'package:http/http.dart' as http;
 
 class BottomBar extends StatefulWidget {
   const BottomBar({super.key});
