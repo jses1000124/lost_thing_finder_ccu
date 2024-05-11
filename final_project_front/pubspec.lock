@@ -185,6 +185,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.17.0"
+  firebase_messaging:
+    dependency: "direct main"
+    description:
+      name: firebase_messaging
+      sha256: e0882a7426821f7caccaabfc15a535155cd15b4daa73a5a7b3af701a552d73ab
+      url: "https://pub.dev"
+    source: hosted
+    version: "14.9.2"
+  firebase_messaging_platform_interface:
+    dependency: transitive
+    description:
+      name: firebase_messaging_platform_interface
+      sha256: "52e12cc50e1395ad7ea3552dcbe9958fb1994b5afcf58ee4c0db053932a6fce5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.5.35"
+  firebase_messaging_web:
+    dependency: transitive
+    description:
+      name: firebase_messaging_web
+      sha256: "8812cc5929380b783f92290d934bf32e2fea06701583f47cdccd5f13f4f24522"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.8.5"
   fixnum:
     dependency: transitive
     description:
@@ -244,10 +268,10 @@ packages:
     dependency: "direct main"
     description:
       name: google_fonts
-      sha256: "5b1726fee554d1cc9db1baef8061b126567ff0a1140a03ed7de936e62f2ab98b"
+      sha256: b1ac0fe2832c9cc95e5e88b57d627c5e68c223b9657f4b96e1487aa9098c7b82
       url: "https://pub.dev"
     source: hosted
-    version: "6.2.0"
+    version: "6.2.1"
   http:
     dependency: "direct main"
     description:
@@ -276,10 +300,10 @@ packages:
     dependency: transitive
     description:
       name: image_picker_android
-      sha256: "40e24f467b75cd6f4a92ee93dd13d1a7bcb4523a84fd95f00c755f01f42398c8"
+      sha256: "79455f6cff4cbef583b2b524bbf0d4ec424e5959f4d464e36ef5323715b98370"
       url: "https://pub.dev"
     source: hosted
-    version: "0.8.11"
+    version: "0.8.12"
   image_picker_for_web:
     dependency: transitive
     description:
@@ -671,4 +695,4 @@ packages:
     version: "1.0.4"
 sdks:
   dart: ">=3.3.0 <4.0.0"
-  flutter: ">=3.19.0"
+  flutter: ">=3.19.2"
