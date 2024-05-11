@@ -109,7 +109,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 });
                 Navigator.of(context).pop(); // Close the dialog
               } else {
-                _showAlertDialog('錯誤', '驗證碼錯誤', popTwice: true);
+                _showAlertDialog('錯誤', '驗證碼錯誤');
                 codeController.clear();
               }
             },
