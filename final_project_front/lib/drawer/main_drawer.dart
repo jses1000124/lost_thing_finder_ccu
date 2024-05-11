@@ -8,7 +8,7 @@ class MainDrawer extends StatelessWidget {
 
   Future<String> _getAccount() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('account') ?? '未設定';
+    return prefs.getString('nickname') ?? '未設定';
   }
 
   @override
