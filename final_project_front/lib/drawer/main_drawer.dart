@@ -6,6 +6,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 class MainDrawer extends StatelessWidget {
   const MainDrawer({super.key});
 
+  Future<String> _getAccount() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('account') ?? '未設定';
+  }
+
   @override
   Widget build(BuildContext context) {
     Future<void> logout() async {
@@ -34,19 +39,28 @@ class MainDrawer extends StatelessWidget {
                     ],
                   ),
                 ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Icon(Icons.account_circle, size: 50),
-                    SizedBox(width: 10),
-                    Expanded(
-                      child: Text('使用者名稱',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              overflow: TextOverflow.ellipsis)),
-                    ),
-                  ],
+                child: FutureBuilder<String>(
+                  future: _getAccount(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.done) {
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          const Icon(Icons.account_circle, size: 50),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(snapshot.data!,
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                    overflow: TextOverflow.ellipsis)),
+                          ),
+                        ],
+                      );
+                    } else {
+                      return const CircularProgressIndicator();
+                    }
+                  },
                 ),
               ),
               ListTile(

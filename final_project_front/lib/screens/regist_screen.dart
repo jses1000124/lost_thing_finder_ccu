@@ -83,6 +83,40 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
+  void _verifyCodeAndSetEmailVerified() async {
+    final Uri apiUrl = Uri.parse('http://140.123.101.199:5000/verification');
+    try {
+      await http
+          .post(
+            apiUrl,
+            body: jsonEncode({
+              'code': codeController.text,
+              'email': _accountController.text,
+            }),
+            headers: {'Content-Type': 'application/json'},
+          )
+          .timeout(const Duration(seconds: 5))
+          .then(
+            (response) {
+              if (response.statusCode == 200) {
+                setState(() {
+                  _emailVerified = true; // Move setState outside the dialog
+                });
+                Navigator.of(context).pop(); // Close the dialog
+              } else {
+                _showAlertDialog('錯誤', '驗證碼錯誤', popTwice: true);
+                codeController.clear();
+              }
+            },
+          );
+      // 設定超時時間
+    } on TimeoutException catch (_) {
+      _showAlertDialog('超時', '驗證碼請求超時');
+    } catch (e) {
+      _showAlertDialog('錯誤', '未知錯誤：$e');
+    }
+  }
+
   void _showVerificationCodeDialog() {
     showDialog(
       context: context,
@@ -110,31 +144,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: const Text('取消'),
                 ),
                 TextButton(
-                  onPressed: () async {
-                    final Uri apiUrl = Uri.parse(
-                        'http://140.123.101.199:5000/verification');
-                    try {
-                      await http
-                          .post(apiUrl,
-                              body: jsonEncode({'code': codeController.text,'email': _accountController.text,}),
-                              headers: {'Content-Type': 'application/json'})
-                          .timeout(const Duration(seconds: 5)) // 設定超時時間
-                          .then((response) {
-                            if (response.statusCode == 200) {
-                              setState(() {
-                                _emailVerified = true;
-                              });
-                              Navigator.of(context).pop();
-                            } else {
-                              _showAlertDialog('錯誤', '驗證碼錯誤');
-                            }
-                          });
-                    } on TimeoutException catch (_) {
-                      _showAlertDialog('超時', '驗證碼請求超時');
-                    } catch (e) {
-                      _showAlertDialog('錯誤', '未知錯誤：$e');
-                    }
-                  },
+                  onPressed: _verifyCodeAndSetEmailVerified,
                   child: const Text('確認'),
                 ),
               ],
@@ -183,12 +193,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final String username = _usernameController.text;
     final String account = _accountController.text;
     final String password = _passwordController.text;
+    final String code = codeController.text;
 
     final Uri apiUrl = Uri.parse('http://140.123.101.199:5000/register');
     final Map<String, String> requestBody = {
       'account': account,
       'password': password,
       'username': username,
+      'code': code,
     };
 
     try {
@@ -196,7 +208,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           .post(apiUrl,
               body: jsonEncode(requestBody),
               headers: {'Content-Type': 'application/json'})
-          .timeout(const Duration(seconds: 10)) // 設定超時時間
+          .timeout(const Duration(seconds: 5)) // 設定超時時間
           .then((response) {
             if (response.statusCode == 201) {
               _showAlertDialog('成功', '帳號已成功建立', isRegister: true);
@@ -219,10 +231,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _accountController.clear();
     _passwordController.clear();
     _confirmPasswordController.clear();
+    codeController.clear();
   }
 
   void _showAlertDialog(String title, String message,
-      {bool isRegister = false}) {
+      {bool isRegister = false, bool popTwice = false}) {
     showDialog(
       context: context,
       builder: (context) {
@@ -247,6 +260,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       builder: (context) => const LoginScreen()));
                 } else {
                   Navigator.of(context).pop();
+                  if (popTwice) {
+                    Navigator.of(context).pop();
+                  }
                 }
               },
             ),
@@ -300,14 +316,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     Expanded(
                       flex: 1,
                       child: TextButton(
-                        onPressed:
-                            _emailVerified ? null : _sendVerificationEmail,
+                        onPressed: _emailVerified
+                            ? null
+                            : () {
+                                if (!_emailVerified) {
+                                  _sendVerificationEmail();
+                                }
+                              },
                         style: TextButton.styleFrom(
                           backgroundColor: _emailVerified
                               ? Colors.green
                               : null, // Use green color when verified
                         ),
-                        child: Text(_emailVerified ? '成功' : '驗證'),
+                        child: Text(
+                          _emailVerified ? '成功' : '驗證',
+                          style: TextStyle(
+                            color: _emailVerified ? Colors.black : null,
+                          ),
+                        ),
                       ),
                     ),
                   ],
