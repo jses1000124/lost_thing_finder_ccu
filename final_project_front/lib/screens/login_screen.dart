@@ -5,7 +5,6 @@ import 'bottom_bar.dart';
 import 'package:final_project/widgets/user_input_login_signup.dart';
 import 'regist_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:email_validator/email_validator.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -21,17 +20,15 @@ class _LoginScreenState extends State<LoginScreen> {
   var canSeePassword = true;
   bool _autoLogin = false;
 
-  String? _emailError;
+  String? _emailOrAccountError;
   String? _passwordError;
 
   void _validateEmail(String value) {
     setState(() {
       if (value.isEmpty) {
-        _emailError = 'Email is required';
-      } else if (!EmailValidator.validate(value)) {
-        _emailError = 'Invalid email format';
+        _emailOrAccountError = '請輸入信箱或帳號';
       } else {
-        _emailError = null;
+        _emailOrAccountError = null;
       }
     });
   }
@@ -39,7 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void _validatePassword(String value) {
     setState(() {
       if (value.isEmpty) {
-        _passwordError = 'Password is required';
+        _passwordError = '請輸入密碼';
       } else {
         _passwordError = null;
       }
@@ -140,9 +137,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 60),
                 InputToLoginSignUp(
                   controller: _accountController,
-                  icon: const Icon(Icons.mail),
-                  labelText: '信箱',
-                  errorText: _emailError,
+                  icon: const Icon(Icons.person),
+                  labelText: '帳號或信箱',
+                  errorText: _emailOrAccountError,
                   onChanged: _validateEmail,
                 ),
                 const SizedBox(height: 20),
