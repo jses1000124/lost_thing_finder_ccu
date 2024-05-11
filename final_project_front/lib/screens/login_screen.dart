@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'bottom_bar.dart';
@@ -44,7 +45,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _login() async {
-    if (!_formKey.currentState!.validate()) {
+    if (_emailOrAccountError != null || _passwordError != null) {
+      _showAlertDialog('失敗', '請填寫帳號密碼');
       return;
     }
 
@@ -56,25 +58,35 @@ class _LoginScreenState extends State<LoginScreen> {
       'account': account,
       'password': password,
     };
-    final response = await http.post(apiUrl,
-        body: jsonEncode(requestBody),
-        headers: {'Content-Type': 'application/json'});
 
-    if (response.statusCode == 200) {
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('account', account);
-      await prefs.setBool('isLoggedIn', true);
-      await prefs.setBool('autoLogin', _autoLogin).then((value) =>
-          Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => const BottomBar())));
-    } else {
-      if (response.statusCode == 401) {
-        _showAlertDialog('Failed', 'Invalid password');
-      } else if (response.statusCode == 404) {
-        _showAlertDialog('Failed', 'Account not found');
+    try {
+      final response = await http.post(
+        apiUrl,
+        body: jsonEncode(requestBody),
+        headers: {'Content-Type': 'application/json'},
+      ).timeout(const Duration(seconds: 5)); // 設定5秒超時
+
+      if (response.statusCode == 200) {
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('account', account);
+        await prefs.setBool('isLoggedIn', true);
+        await prefs.setBool('autoLogin', _autoLogin).then((value) =>
+            Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => const BottomBar())));
       } else {
-        _showAlertDialog('Error', 'An unexpected error occurred');
+        // 根據不同的錯誤代碼顯示不同的錯誤信息
+        if (response.statusCode == 401) {
+          _showAlertDialog('失敗', '無效的密碼');
+        } else if (response.statusCode == 404) {
+          _showAlertDialog('失敗', '帳號未找到');
+        } else {
+          _showAlertDialog('錯誤', '發生未預期的錯誤');
+        }
       }
+    } on TimeoutException catch (_) {
+      _showAlertDialog('超時', '請求超時');
+    } catch (e) {
+      _showAlertDialog('錯誤', '發生未預期的錯誤：$e');
     }
   }
 

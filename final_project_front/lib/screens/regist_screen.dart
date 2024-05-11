@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'login_screen.dart';
@@ -112,22 +113,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   onPressed: () async {
                     final Uri apiUrl = Uri.parse(
                         'http://140.123.101.199:5000/verification_code');
-                    await http.post(apiUrl,
-                        body: jsonEncode({
-                          'code': codeController.text,
-                        }),
-                        headers: {
-                          'Content-Type': 'application/json'
-                        }).then((response) {
-                      if (response.statusCode == 200) {
-                        setState(() {
-                          _emailVerified = true;
-                        });
-                        Navigator.of(context).pop();
-                      } else {
-                        _showAlertDialog('錯誤', '驗證碼錯誤');
-                      }
-                    });
+                    try {
+                      await http
+                          .post(apiUrl,
+                              body: jsonEncode({'code': codeController.text}),
+                              headers: {'Content-Type': 'application/json'})
+                          .timeout(const Duration(seconds: 10)) // 設定超時時間
+                          .then((response) {
+                            if (response.statusCode == 200) {
+                              setState(() {
+                                _emailVerified = true;
+                              });
+                              Navigator.of(context).pop();
+                            } else {
+                              _showAlertDialog('錯誤', '驗證碼錯誤');
+                            }
+                          });
+                    } on TimeoutException catch (_) {
+                      _showAlertDialog('超時', '驗證碼請求超時');
+                    } catch (e) {
+                      _showAlertDialog('錯誤', '未知錯誤：$e');
+                    }
                   },
                   child: const Text('確認'),
                 ),
@@ -145,15 +151,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
     Map<String, String> requestBody = {
       'email': _accountController.text,
     };
-    await http.post(apiUrl,
-        body: jsonEncode(requestBody),
-        headers: {'Content-Type': 'application/json'}).then((response) {
-      if (response.statusCode == 200) {
-        _showVerificationCodeDialog();
-      } else {
-        _showAlertDialog('錯誤', '請稍後再試');
-      }
-    });
+    try {
+      await http
+          .post(apiUrl,
+              body: jsonEncode(requestBody),
+              headers: {'Content-Type': 'application/json'})
+          .timeout(const Duration(seconds: 10)) // 設定超時時間
+          .then((response) {
+            if (response.statusCode == 200) {
+              _showVerificationCodeDialog();
+            } else {
+              _showAlertDialog('錯誤', '請稍後再試');
+            }
+          });
+    } on TimeoutException catch (_) {
+      _showAlertDialog('超時', '驗證郵件請求超時');
+    } catch (e) {
+      _showAlertDialog('錯誤', '未知錯誤：$e');
+    }
   }
 
   Future<void> _signUp() async {
@@ -176,18 +191,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
       'username': username,
     };
 
-    await http.post(apiUrl,
-        body: jsonEncode(requestBody),
-        headers: {'Content-Type': 'application/json'}).then((response) {
-      if (response.statusCode == 201) {
-        _showAlertDialog('成功', '帳號已成功建立', isRegister: true);
-      } else if (response.statusCode == 400) {
-        _clearTextFields();
-        _showAlertDialog('失敗', '帳號已存在');
-      } else {
-        _showAlertDialog('錯誤', '請稍後再試');
-      }
-    });
+    try {
+      await http
+          .post(apiUrl,
+              body: jsonEncode(requestBody),
+              headers: {'Content-Type': 'application/json'})
+          .timeout(const Duration(seconds: 10)) // 設定超時時間
+          .then((response) {
+            if (response.statusCode == 201) {
+              _showAlertDialog('成功', '帳號已成功建立', isRegister: true);
+            } else if (response.statusCode == 400) {
+              _clearTextFields();
+              _showAlertDialog('失敗', '帳號已存在');
+            } else {
+              _showAlertDialog('錯誤', '請稍後再試');
+            }
+          });
+    } on TimeoutException catch (_) {
+      _showAlertDialog('超時', '註冊請求超時');
+    } catch (e) {
+      _showAlertDialog('錯誤', '未知錯誤：$e');
+    }
   }
 
   void _clearTextFields() {
