@@ -16,51 +16,63 @@ class _ChatListScreenState extends State<ChatListScreen> {
       appBar: AppBar(
         title: const Text('聊天室'),
       ),
-      body: _buildChatList(context),
+      body: _buildChatList(),
     );
   }
 
-  Widget _buildChatList(BuildContext context) {
+  final authaccount = 'aa94022728@gmail.com';
+
+  Widget _buildChatList() {
     return StreamBuilder(
-        stream: FirebaseFirestore.instance.collection('user').snapshots(),
-        builder: (ctx, userSnapshot) {
-          if (userSnapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-
-          if (!userSnapshot.hasData || userSnapshot.data!.docs.isEmpty) {
-            return const Center(
-              child: Text('還沒有訊息喔！快來聊天吧！'),
-            );
-          }
-
-          if (userSnapshot.hasError) {
-            return const Center(
-              child: Text('ERROR!'),
-            );
-          }
-
-          final userDocs = userSnapshot.data!.docs ;
-          return ListView.builder(
-            reverse: true,
-            padding: const EdgeInsets.all(10.0),
-            itemCount: userDocs.length,
-            itemBuilder: (ctx, index) {
-              final user = userDocs[index].data();
-              return ListTile(
-                title: Text(user['name']),
-                subtitle: Text(user['email']),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ChatScreen()),
-                  );
-                },
-              );
-            },
+      stream: FirebaseFirestore.instance
+          .collection('user')
+          .doc(authaccount)
+          .collection('chatlist')
+          .snapshots(),
+      builder: (ctx, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
           );
-        });
+        }
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return const Center(
+            child: Text('還沒有訊息喔！快來聊天吧！'),
+          );
+        }
+
+        if (snapshot.hasError) {
+          return const Center(
+            child: Text('ERROR!'),
+          );
+        }
+
+        return ListView(
+          children: snapshot.data!.docs
+              .map<Widget>((doc) => _buildChatItem(doc))
+              .toList(),
+        );
+      },
+    );
+  }
+
+  Widget _buildChatItem(DocumentSnapshot doc) {
+    Map<String, dynamic> data = doc.data()! as Map<String, dynamic>;
+
+    if (true) {
+      return ListTile(
+        title: Text(
+          data['name'] ?? 'No name',
+          style: const TextStyle(color: Colors.white),
+        ),
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const ChatScreen(),
+            ),
+          );
+        },
+      );
+    }
   }
 }
