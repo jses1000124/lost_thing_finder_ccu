@@ -12,11 +12,18 @@ final ThemeData lightTheme = ThemeData(
   useMaterial3: true,
   colorScheme: ColorScheme.fromSeed(
     brightness: Brightness.light,
-    seedColor: const Color.fromARGB(255, 103, 58, 183),
+    seedColor: const Color.fromARGB(255, 42, 76, 190),
+    onBackground: Colors.white,
+    background: Colors.grey[100],
   ),
   textTheme: GoogleFonts.latoTextTheme().apply(
     bodyColor: Colors.black,
     displayColor: Colors.black,
+  ),
+  appBarTheme: AppBarTheme(
+    backgroundColor: Colors.grey[450],
+    titleTextStyle: const TextStyle(color: Colors.black, fontSize: 20),
+    iconTheme: IconThemeData(color: Colors.grey[800]),
   ),
 );
 

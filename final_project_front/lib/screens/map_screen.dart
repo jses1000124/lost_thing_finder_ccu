@@ -38,38 +38,32 @@ class _MapPageState extends State<MapPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('地圖'),
-      ),
-      body: FutureBuilder<LatLng>(
-        future: _determineLatLng(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
+    return FutureBuilder<LatLng>(
+      future: _determineLatLng(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
 
-          // 確保在傳遞給 initialCenter 前，snapshot.data 是非 null 的
-          LatLng initialCenter = snapshot.data ?? const LatLng(23.48, 120.45);
+        // 確保在傳遞給 initialCenter 前，snapshot.data 是非 null 的
+        LatLng initialCenter = snapshot.data ?? const LatLng(23.48, 120.45);
 
-          return FlutterMap(
-            options: MapOptions(
-              initialCenter: initialCenter, // 使用當前位置作為地圖的初始中心點
-              initialZoom: 13.0, // Corrected from 'zoom' to 'initialZoom'
+        return FlutterMap(
+          options: MapOptions(
+            initialCenter: initialCenter, // 使用當前位置作為地圖的初始中心點
+            initialZoom: 13.0, // Corrected from 'zoom' to 'initialZoom'
+          ),
+          children: [
+            TileLayer(
+              urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+              subdomains: const ['a', 'b', 'c'],
             ),
-            children: [
-              TileLayer(
-                urlTemplate:
-                    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                subdomains: const ['a', 'b', 'c'],
-              ),
-            ],
-          );
-        },
-      ),
+          ],
+        );
+      },
     );
   }
 }

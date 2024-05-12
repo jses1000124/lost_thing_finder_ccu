@@ -12,6 +12,9 @@ class LostThingItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 3,
+      // color: Theme.of(context).brightness == Brightness.light
+      //     ? Colors.white
+      //     : null,
       child: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: 20,
@@ -29,7 +32,7 @@ class LostThingItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                color: Colors.black12,
+                color: const Color.fromARGB(0, 0, 0, 0),
                 child: FadeInImage(
                   placeholder: MemoryImage(kTransparentImage),
                   image: NetworkImage(lostThing.imageUrl),

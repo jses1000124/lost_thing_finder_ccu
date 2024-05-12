@@ -1,12 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:final_project/data/getuserdata.dart';
+import 'package:final_project/data/get_user_data.dart';
 import 'package:final_project/screens/bottom_bar.dart';
 import 'package:final_project/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 
 class AutoLoginHandler extends StatefulWidget {
   const AutoLoginHandler({super.key});
@@ -116,7 +115,7 @@ class _AutoLoginHandlerState extends State<AutoLoginHandler> {
             ),
           );
         } else {
-          return const SizedBox(); // Replace with your desired widget
+          return const SizedBox();
         }
       },
     );
