@@ -69,7 +69,7 @@ class MainDrawer extends StatelessWidget {
                 title: const Text('設定'),
                 onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const SettingsScreen()));
+                      builder: (context) => const SettingsPage()));
                 },
               ),
               ListTile(
