@@ -8,7 +8,7 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  bool darkMode = false;
+  bool darkMode = true;
   String nickname = "User";
   int avatarIndex = 0; // 預設選擇第一個頭像
 
@@ -53,7 +53,7 @@ class _SettingsPageState extends State<SettingsPage> {
               SettingsTile.switchTile(
                 title: const Text('切換暗黑模式'),
                 leading: const Icon(Icons.dark_mode),
-                initialValue: darkMode = true,
+                initialValue: darkMode,
                 onToggle: (bool value) {
                   setState(() {
                     darkMode = value;
