@@ -29,40 +29,40 @@ class _NewMessageState extends State<NewMessage> {
       'createdAt': Timestamp.now(),
       'userId': prefs.getString('nickname'),
     });
-
     _messagecontroller.clear();
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 20),
       child: Row(
         children: [
           Expanded(
-            child: Container(
-              height: 50,
-              padding: const EdgeInsets.only(bottom: 10),
-              child: TextField(
-                controller: _messagecontroller,
-                enableSuggestions: true,
-                autocorrect: true,
-                textCapitalization: TextCapitalization.sentences,
-                decoration: InputDecoration(
-                  labelText: 'Send a message...',
-                  fillColor: const Color.fromARGB(255, 84, 84, 84),
-                  filled: true,
-                  border: OutlineInputBorder(
-                    borderRadius:
-                        BorderRadius.circular(20.0), // Set the border radius
-                    borderSide: BorderSide.none, // Remove the border
+            child: Align(
+              alignment: Alignment.center,
+              child: SizedBox(
+                height: 40,
+                child: TextField(
+                  controller: _messagecontroller,
+                  enableSuggestions: true,
+                  autocorrect: true,
+                  textCapitalization: TextCapitalization.sentences,
+                  decoration: InputDecoration(
+                    hintText: '輸 入 訊 息 . . .',
+                    fillColor: const Color.fromARGB(255, 84, 84, 84),
+                    filled: true,
+                    border: OutlineInputBorder(
+                      borderRadius:
+                          BorderRadius.circular(20.0), // Set the border radius
+                      borderSide: BorderSide.none, // Remove the border
+                    ),
                   ),
                 ),
               ),
             ),
           ),
           IconButton(
-            padding: const EdgeInsets.only(bottom: 10),
             icon: const Icon(Icons.send),
             onPressed: _submitMessage,
           )
