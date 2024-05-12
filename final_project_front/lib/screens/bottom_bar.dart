@@ -5,6 +5,7 @@ import '../screens/finded_lost_thing_screen.dart';
 import '../screens/lost_thing_screen.dart';
 import 'map_screen.dart';
 import '../screens/setting_screen.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class BottomBar extends StatefulWidget {
   const BottomBar({super.key});
@@ -110,28 +111,31 @@ class _BottomBarState extends State<BottomBar> {
           currentIndex: _selectedIndex,
           elevation: 10,
           showSelectedLabels: false,
-          showUnselectedLabels: false,
+          showUnselectedLabels: true,
+          unselectedLabelStyle: const TextStyle(
+            fontSize: 14,
+          ),
           backgroundColor: Theme.of(context).colorScheme.background,
           selectedItemColor: const Color.fromARGB(255, 35, 108, 243),
           unselectedItemColor: const Color(0xFF546480),
           type: BottomNavigationBarType.fixed,
           items: const [
             BottomNavigationBarItem(
-                icon: Icon(Icons.home_outlined),
-                activeIcon: Icon(Icons.home_filled),
-                label: "Lost Thing"),
+                icon: Icon(FontAwesomeIcons.question, size: 20),
+                activeIcon: Icon(FontAwesomeIcons.question),
+                label: "遺失物"),
             BottomNavigationBarItem(
-                icon: Icon(Icons.search_outlined),
-                activeIcon: Icon(Icons.search_rounded),
-                label: "Finded Thing"),
+                icon: Icon(FontAwesomeIcons.magnifyingGlass, size: 20),
+                activeIcon: Icon(FontAwesomeIcons.magnifyingGlass),
+                label: "待尋物"),
             BottomNavigationBarItem(
                 icon: Icon(Icons.map_outlined),
-                activeIcon: Icon(Icons.map),
-                label: "Map"),
+                activeIcon: Icon(Icons.map, size: 30),
+                label: "地圖"),
             BottomNavigationBarItem(
                 icon: Icon(Icons.settings_outlined),
-                activeIcon: Icon(Icons.settings),
-                label: "Settings"),
+                activeIcon: Icon(Icons.settings, size: 30),
+                label: "設定"),
           ],
         ),
       ),
