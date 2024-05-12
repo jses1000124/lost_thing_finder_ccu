@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:settings_ui/settings_ui.dart';
+import '../models/theme_provider.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -8,12 +10,12 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  bool darkMode = true;
   String nickname = "User";
-  int avatarIndex = 0; // 預設選擇第一個頭像
+  int avatarIndex = 0;
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Settings"),
@@ -26,24 +28,17 @@ class _SettingsPageState extends State<SettingsPage> {
               SettingsTile(
                 title: const Text('更改暱稱'),
                 leading: const Icon(Icons.person),
-                onPressed: (BuildContext context) {
-                  // 加入更改暱稱的邏輯
-                },
+                onPressed: (BuildContext context) {},
               ),
               SettingsTile(
                 title: const Text('更改密碼'),
                 leading: const Icon(Icons.lock),
-                onPressed: (BuildContext context) {
-                  // 加入更改密碼的邏輯
-                },
+                onPressed: (BuildContext context) {},
               ),
               SettingsTile(
                 title: const Text('更改頭像'),
                 leading: const Icon(Icons.image),
-                onPressed: (BuildContext context) {
-                  // 弹出选择头像对话框
-                  _changeAvatar(context);
-                },
+                onPressed: (BuildContext context) => _changeAvatar(context),
               ),
             ],
           ),
@@ -53,10 +48,11 @@ class _SettingsPageState extends State<SettingsPage> {
               SettingsTile.switchTile(
                 title: const Text('切換暗黑模式'),
                 leading: const Icon(Icons.dark_mode),
-                initialValue: darkMode,
+                initialValue: themeProvider.themeMode == ThemeMode.dark,
                 onToggle: (bool value) {
                   setState(() {
-                    darkMode = value;
+                    themeProvider
+                        .setThemeMode(value ? ThemeMode.dark : ThemeMode.light);
                   });
                 },
               ),
@@ -68,9 +64,7 @@ class _SettingsPageState extends State<SettingsPage> {
               SettingsTile(
                 title: const Text('與我們聯絡'),
                 leading: const Icon(Icons.mail),
-                onPressed: (BuildContext context) {
-                  // 加入聯絡方式的邏輯
-                },
+                onPressed: (BuildContext context) {},
               ),
             ],
           ),
