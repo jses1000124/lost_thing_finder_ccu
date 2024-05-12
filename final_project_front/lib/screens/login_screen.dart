@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:async';
+import 'package:final_project/data/getuserdata.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'bottom_bar.dart';
@@ -61,63 +62,6 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  Future<void> _getUserData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? account = prefs.getString('account');
-    String? token = prefs.getString('token');
-
-    if (account == null || token == null) {
-      debugPrint("Account or Token is null. Please login again.");
-      return; // 提前返回，不执行 HTTP 请求
-    }
-
-    var url = Uri.parse('http://140.123.101.199:5000/getuserdata');
-
-    final Map<String, String> requestBody = {
-      'account': account,
-      'token': token,
-    };
-
-    try {
-      final response = await http.post(
-        url,
-        body: jsonEncode(requestBody),
-        headers: {'Content-Type': 'application/json'},
-      ).timeout(const Duration(seconds: 5));
-
-      if (response.statusCode == 200) {
-        var body = json.decode(response.body);
-        String? username = body['username'];
-        String? nickname = body['nickname'];
-        String? returnedAccount = body['email'];
-
-        if (username != null) {
-          await prefs.setString('username', username);
-        } else {
-          debugPrint("Username is null in the response");
-        }
-
-        if (nickname != null) {
-          await prefs.setString('nickname', nickname);
-        } else {
-          debugPrint("Nickname is null in the response");
-        }
-
-        if (returnedAccount != null) {
-          await prefs.setString('email', returnedAccount);
-        } else {
-          debugPrint("Account is null in the response");
-        }
-      } else {
-        debugPrint("Failed to get user data: HTTP status ${response.statusCode}");
-      }
-    } catch (e) {
-      debugPrint("Error occurred while fetching user data: $e");
-    }
-  }
-
-
-
   Future<void> _login() async {
     if (_emailOrAccountError != null || _passwordError != null) {
       _showAlertDialog('失敗', '請填寫帳號密碼');
@@ -141,12 +85,11 @@ class _LoginScreenState extends State<LoginScreen> {
       ).timeout(const Duration(seconds: 5)); // 設定5秒超時
 
       if (response.statusCode == 200) {
-
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('account', account);
         await prefs.setString('password', password);
         await prefs.setString('token', jsonDecode(response.body)['token']);
-        await _getUserData();
+        await GetUserData().getUserData();
         await prefs.setBool('autoLogin', _autoLogin).then((value) =>
             Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (context) => const BottomBar())));
