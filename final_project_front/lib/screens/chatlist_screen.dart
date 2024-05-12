@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_project/screens/chat_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ChatListScreen extends StatefulWidget {
   const ChatListScreen({super.key});
@@ -10,19 +11,34 @@ class ChatListScreen extends StatefulWidget {
 }
 
 class _ChatListScreenState extends State<ChatListScreen> {
+  Future<SharedPreferences> _getPrefs() async {
+    return await SharedPreferences.getInstance();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('聊天室'),
       ),
-      body: _buildChatList(),
+      body: FutureBuilder(
+        future: _buildChatList(),
+        builder: (ctx, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          return snapshot.data as Widget;
+        },
+      ),
     );
   }
 
-  final authaccount = 'aa94022728@gmail.com';
-
-  Widget _buildChatList() {
+  Future<Widget> _buildChatList() async {
+    final prefs = await _getPrefs();
+    final authaccount = prefs.getString('email')!;
+    
     return StreamBuilder(
       stream: FirebaseFirestore.instance
           .collection('user')
