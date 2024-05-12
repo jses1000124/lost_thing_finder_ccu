@@ -1,4 +1,3 @@
-import 'package:final_project/main.dart';
 import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:final_project/models/lost_thing.dart';
@@ -13,7 +12,7 @@ class LostThingDetailScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           lostThings.lostThingName,
-          style: const TextStyle(color: Colors.white, fontSize: 20),
+          style: const TextStyle(fontSize: 20),
         ),
       ),
       body: SingleChildScrollView(
@@ -45,7 +44,6 @@ class LostThingDetailScreen extends StatelessWidget {
                         ),
                       ),
                       CircleAvatar(
-                        backgroundColor: theme.backgroundColor,
                         backgroundImage: NetworkImage(lostThings
                             .headShotUrl), // Consider adding a user image property to the model
                         radius: 24,
@@ -57,7 +55,7 @@ class LostThingDetailScreen extends StatelessWidget {
               const SizedBox(height: 20),
               Text(
                 lostThings.content,
-                style: const TextStyle(color: Colors.white, fontSize: 16),
+                style: const TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 20),
               Center(

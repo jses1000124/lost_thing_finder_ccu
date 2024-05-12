@@ -63,7 +63,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
       return ListTile(
         title: Text(
           data['name'] ?? 'No name',
-          style: const TextStyle(color: Colors.white),
+          // style: const TextStyle(color: Colors.white),
         ),
         onTap: () {
           Navigator.of(context).push(

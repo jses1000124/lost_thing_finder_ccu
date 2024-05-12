@@ -44,7 +44,6 @@ class LostThingItem extends StatelessWidget {
                     Text(
                       lostThing.lostThingName,
                       style: const TextStyle(
-                        color: Colors.white,
                         fontSize: 20,
                       ),
                     ),
