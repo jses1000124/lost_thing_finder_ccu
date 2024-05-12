@@ -1,12 +1,12 @@
+import '../widgets/auto_login_handler.dart';
 import 'package:final_project/firebase_options.dart';
-import 'package:final_project/screens/login_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../models/theme_provider.dart';
+import '../models/user_preferences.dart';
 
 final ThemeData lightTheme = ThemeData(
   useMaterial3: true,
@@ -14,7 +14,10 @@ final ThemeData lightTheme = ThemeData(
     brightness: Brightness.light,
     seedColor: const Color.fromARGB(255, 103, 58, 183),
   ),
-  textTheme: GoogleFonts.latoTextTheme(),
+  textTheme: GoogleFonts.latoTextTheme().apply(
+    bodyColor: Colors.black,
+    displayColor: Colors.black,
+  ),
 );
 
 final ThemeData darkTheme = ThemeData(
@@ -39,9 +42,14 @@ void main() async {
 
   final themeProvider = ThemeProvider();
   await themeProvider.loadThemeMode();
+  final userPreferences = UserPreferences();
+  await userPreferences.loadPreferences();
 
-  runApp(ChangeNotifierProvider(
-    create: (_) => themeProvider,
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (_) => themeProvider),
+      ChangeNotifierProvider(create: (_) => userPreferences),
+    ],
     child: const MyApp(),
   ));
 }
@@ -72,28 +80,6 @@ class MyApp extends StatelessWidget {
         themeMode: themeProvider.themeMode,
         home: const AutoLoginHandler(),
       ),
-    );
-  }
-}
-
-class AutoLoginHandler extends StatelessWidget {
-  const AutoLoginHandler({super.key});
-
-  Future<bool> _checkAutoLogin() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getBool('autoLogin') ?? false;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<bool>(
-      future: _checkAutoLogin(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();
-        }
-        return const LoginScreen();
-      },
     );
   }
 }

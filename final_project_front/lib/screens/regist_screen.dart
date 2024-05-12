@@ -274,14 +274,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
               : const Icon(Icons.error,
                   color: Color.fromARGB(255, 255, 97, 149), size: 60),
           title: Text(title,
-              style: const TextStyle(color: Colors.white, fontSize: 16),
+              style: const TextStyle(fontSize: 16),
               textAlign: TextAlign.center),
           content: Text(message,
-              style: const TextStyle(color: Colors.white, fontSize: 16),
+              style: const TextStyle(fontSize: 16),
               textAlign: TextAlign.center),
           actions: [
             TextButton(
-              child: const Text('OK', style: TextStyle(color: Colors.white)),
+              child: const Text(
+                'OK',
+              ),
               onPressed: () {
                 if (isRegister) {
                   Navigator.of(context).pop();
@@ -426,8 +428,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('已有帳號?',
-                        style: TextStyle(color: Colors.white, fontSize: 18)),
+                    const Text('已有帳號?', style: TextStyle(fontSize: 18)),
                     TextButton(
                       onPressed: () {
                         Navigator.of(context).pushReplacement(MaterialPageRoute(

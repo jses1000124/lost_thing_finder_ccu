@@ -68,9 +68,31 @@ class _AddLostThingState extends State<AddLostThing> {
                       labelStyle: TextStyle(fontSize: 18),
                     ),
                     value: _postType,
-                    items: const [
-                      DropdownMenuItem(value: '遺失物', child: Text('遺失物')),
-                      DropdownMenuItem(value: '待尋物', child: Text('待尋物')),
+                    items: [
+                      DropdownMenuItem(
+                        value: '遺失物',
+                        child: Text(
+                          '遺失物',
+                          style: TextStyle(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
+                          ),
+                        ),
+                      ),
+                      DropdownMenuItem(
+                        value: '待尋物',
+                        child: Text(
+                          '待尋物',
+                          style: TextStyle(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
+                          ),
+                        ),
+                      ),
                     ],
                     hint: const Text('請選取'),
                     onChanged: (String? newValue) {
