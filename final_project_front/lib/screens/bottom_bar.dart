@@ -4,6 +4,8 @@ import '../screens/add_lost_thing.dart';
 import '../screens/finded_lost_thing_screen.dart';
 import '../screens/lost_thing_screen.dart';
 import '../drawer/main_drawer.dart';
+import '../widgets/map.dart';
+import '../screens/setting_screen.dart';
 
 class BottomBar extends StatefulWidget {
   const BottomBar({super.key});
@@ -25,6 +27,8 @@ class _BottomBarState extends State<BottomBar> {
     _widgetOptions = [
       const LostThingScreen(),
       const FindedThingScreen(),
+      const MapPage(),
+      const SettingsPage(),
     ];
   }
 
@@ -52,6 +56,8 @@ class _BottomBarState extends State<BottomBar> {
       _widgetOptions = [
         LostThingScreen(searchedThingName: searchVal),
         FindedThingScreen(searchedThingName: searchVal),
+        const MapPage(),
+        const SettingsPage(),
       ];
     });
   }
@@ -59,22 +65,24 @@ class _BottomBarState extends State<BottomBar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: SearchAppBar(
-          hintLabel: '$_title搜尋',
-          onSubmitted: _updateSearch,
-          clearSearch: _updateSearch,
-        ),
-        titleSpacing: 0,
-        elevation: 0,
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.chat),
-            onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => const ChatListScreen())),
-          )
-        ],
-      ),
+      appBar: _selectedIndex != 2 && _selectedIndex != 3
+          ? AppBar(
+              title: SearchAppBar(
+                hintLabel: '$_title搜尋',
+                onSubmitted: _updateSearch,
+                clearSearch: _updateSearch,
+              ),
+              titleSpacing: 0,
+              elevation: 0,
+              actions: <Widget>[
+                IconButton(
+                  icon: const Icon(Icons.chat),
+                  onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const ChatListScreen())),
+                )
+              ],
+            )
+          : null,
       drawer: const MainDrawer(),
       body: Center(child: _widgetOptions[_selectedIndex]),
       floatingActionButton: FloatingActionButton(
@@ -106,6 +114,14 @@ class _BottomBarState extends State<BottomBar> {
                 icon: Icon(Icons.search_outlined),
                 activeIcon: Icon(Icons.search_rounded),
                 label: "Finded Thing"),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.map_outlined),
+                activeIcon: Icon(Icons.map),
+                label: "Map"),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.settings_outlined),
+                activeIcon: Icon(Icons.settings),
+                label: "Settings"),
           ],
         ),
       ),

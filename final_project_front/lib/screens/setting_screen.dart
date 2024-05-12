@@ -20,8 +20,8 @@ class _SettingsPageState extends State<SettingsPage> {
   final TextEditingController _nicknameController = TextEditingController();
   @override
   void initState() {
-    _checkPreferences();
     super.initState();
+    _loadPreferences();
   }
 
   String? nickname;
@@ -29,14 +29,12 @@ class _SettingsPageState extends State<SettingsPage> {
   String? token;
   String? oldPassword;
 
-  Future<void> _checkPreferences() async {
+  Future<void> _loadPreferences() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      email = prefs.getString('email') ?? '';
-      nickname = prefs.getString('nickname') ?? '';
-      token = prefs.getString('token') ?? '';
-      oldPassword = prefs.getString('password') ?? '';
-    });
+    email = prefs.getString('email') ?? '';
+    nickname = prefs.getString('nickname') ?? '';
+    token = prefs.getString('token') ?? '';
+    oldPassword = prefs.getString('password') ?? '';
   }
 
   Future<void> logout() async {
@@ -51,78 +49,80 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Settings"),
-      ),
-      body: SettingsList(
-        sections: [
-          SettingsSection(
-            title: Card(
-              child: ListTile(
-                leading: const Icon(Icons.account_circle, size: 40),
-                title: Text(nickname!,
-                    style: const TextStyle(
-                        fontSize: 20, overflow: TextOverflow.ellipsis)),
+    return Consumer<UserPreferences>(builder: (context, userPrefs, child) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text("Settings"),
+        ),
+        body: SettingsList(
+          sections: [
+            SettingsSection(
+              title: Card(
+                child: ListTile(
+                  leading: const Icon(Icons.account_circle, size: 40),
+                  title: Text(userPrefs.nickname,
+                      style: const TextStyle(
+                          fontSize: 20, overflow: TextOverflow.ellipsis)),
+                ),
               ),
+              tiles: [
+                SettingsTile(
+                  title: const Text('更改暱稱'),
+                  leading: const Icon(Icons.person),
+                  onPressed: (BuildContext context) => _changeNickName(context),
+                ),
+                SettingsTile(
+                  title: const Text('更改頭像'),
+                  leading: const Icon(Icons.image),
+                  onPressed: (BuildContext context) => _changeAvatar(context),
+                ),
+              ],
             ),
-            tiles: [
-              SettingsTile(
-                title: const Text('更改暱稱'),
-                leading: const Icon(Icons.person),
-                onPressed: (BuildContext context) => _changeNickName(context),
-              ),
-              SettingsTile(
-                title: const Text('更改頭像'),
-                leading: const Icon(Icons.image),
-                onPressed: (BuildContext context) => _changeAvatar(context),
-              ),
-            ],
-          ),
-          SettingsSection(
-            title: const Text('偏好設定'),
-            tiles: [
-              SettingsTile.switchTile(
-                title: const Text('切換暗黑模式'),
-                leading: const Icon(Icons.dark_mode),
-                initialValue: themeProvider.themeMode == ThemeMode.dark,
-                onToggle: (bool value) {
-                  setState(() {
-                    themeProvider
-                        .setThemeMode(value ? ThemeMode.dark : ThemeMode.light);
-                  });
-                },
-              ),
-            ],
-          ),
-          SettingsSection(
-            title: const Text('回饋'),
-            tiles: [
-              SettingsTile(
-                title: const Text('與我們聯絡'),
-                leading: const Icon(Icons.mail),
-                onPressed: (BuildContext context) {},
-              ),
-            ],
-          ),
-          SettingsSection(
-            title: const Text('帳號安全˙'),
-            tiles: [
-              SettingsTile(
-                title: const Text('更改密碼'),
-                leading: const Icon(Icons.lock),
-                onPressed: (BuildContext context) {},
-              ),
-              SettingsTile(
-                title: const Text('登出'),
-                leading: const Icon(Icons.logout),
-                onPressed: (BuildContext context) => logout(),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
+            SettingsSection(
+              title: const Text('偏好設定'),
+              tiles: [
+                SettingsTile.switchTile(
+                  title: const Text('切換深色模式'),
+                  leading: const Icon(Icons.dark_mode),
+                  initialValue: themeProvider.themeMode == ThemeMode.dark,
+                  onToggle: (bool value) {
+                    setState(() {
+                      themeProvider.setThemeMode(
+                          value ? ThemeMode.dark : ThemeMode.light);
+                    });
+                  },
+                ),
+              ],
+            ),
+            SettingsSection(
+              title: const Text('回饋'),
+              tiles: [
+                SettingsTile(
+                  title: const Text('與我們聯絡'),
+                  leading: const Icon(Icons.mail),
+                  onPressed: (BuildContext context) {},
+                ),
+              ],
+            ),
+            SettingsSection(
+              title: const Text('帳號安全˙'),
+              tiles: [
+                SettingsTile(
+                  title: const Text('更改密碼'),
+                  leading: const Icon(Icons.lock),
+                  onPressed: (BuildContext context) {},
+                ),
+                SettingsTile(
+                  title: const Text('登出'),
+                  leading: const Icon(Icons.logout),
+                  onPressed: (BuildContext context) => logout(),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    });
   }
 
   void _changeAvatar(BuildContext context) {
@@ -260,4 +260,14 @@ class _SettingsPageState extends State<SettingsPage> {
       _showAlertDialog('錯誤', '發生未預期的錯誤：$e');
     }
   }
+  // (
+  //   future: _loadPreferences(),
+  //   builder: (context, snapshot) {
+  //     if (snapshot.connectionState == ConnectionState.done) {
+  //       return _buildSettingsList();
+  //     } else {
+  //       return const CircularProgressIndicator();
+  //     }
+  //   },
+  // );
 }
