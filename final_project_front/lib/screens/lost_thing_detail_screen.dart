@@ -23,32 +23,38 @@ class LostThingDetailScreen extends StatelessWidget {
             children: [
               Card(
                 elevation: 5,
-                child: Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              lostThings.location,
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                            const SizedBox(height: 5),
-                            Text(
-                              lostThings.postUser,
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                          ],
+                child: InkWell(
+                  onTap: () {
+                    // createNewChatRoom(lostThings.postUser);
+                    // NavigationBar().navigateToChatScreen(context);
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                lostThings.location,
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                lostThings.postUser,
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      CircleAvatar(
-                        backgroundImage: NetworkImage(lostThings
-                            .headShotUrl), // Consider adding a user image property to the model
-                        radius: 24,
-                      ),
-                    ],
+                        CircleAvatar(
+                          backgroundImage: NetworkImage(lostThings
+                              .headShotUrl), // Consider adding a user image property to the model
+                          radius: 24,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:async';
-import 'package:final_project/data/getuserdata.dart';
+import 'package:final_project/data/get_user_data.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'bottom_bar.dart';
