@@ -119,15 +119,15 @@ class _LoginScreenState extends State<LoginScreen> {
               color: Color.fromARGB(255, 255, 97, 149), size: 60),
           title: Text(
             title,
-            style: const TextStyle(color: Colors.white, fontSize: 16),
+            style: const TextStyle(fontSize: 16),
             textAlign: TextAlign.center,
           ),
           content: Text(message,
-              style: const TextStyle(color: Colors.white, fontSize: 16),
+              style: const TextStyle(fontSize: 16),
               textAlign: TextAlign.center),
           actions: <Widget>[
             TextButton(
-              child: const Text('OK', style: TextStyle(color: Colors.white)),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -163,7 +163,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 40,
-                    color: Colors.white,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -177,7 +176,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 20),
                 TextFormField(
-                  style: const TextStyle(color: Colors.white),
                   controller: _passwordController,
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.lock),
@@ -212,8 +210,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           });
                         },
                       ),
-                      const Text('自動登入',
-                          style: TextStyle(color: Colors.white, fontSize: 16)),
+                      const Text('自動登入', style: TextStyle(fontSize: 16)),
                       const Spacer(),
                       TextButton(
                         onPressed: () {
@@ -255,7 +252,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     const Text(
                       '還沒有帳號?',
-                      style: TextStyle(color: Colors.white, fontSize: 18),
+                      style: TextStyle(fontSize: 18),
                     ),
                     TextButton(
                       onPressed: () {

@@ -150,12 +150,11 @@ class _SearchAppBarState extends State<SearchAppBar> {
       ),
       child: TextField(
         controller: _controller,
-        style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
           hintText: widget.hintLabel,
           hintStyle: const TextStyle(color: Colors.grey),
           border: InputBorder.none,
-          icon: const Icon(Icons.search, size: 18, color: Colors.white),
+          icon: const Icon(Icons.search, size: 18),
           suffixIcon: _controller.text.isNotEmpty
               ? IconButton(
                   icon: const Icon(Icons.close),

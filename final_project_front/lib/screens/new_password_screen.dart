@@ -97,14 +97,14 @@ class _NewPasswordState extends State<NewPassword> {
               : const Icon(Icons.error,
                   color: Color.fromARGB(255, 255, 97, 149), size: 60),
           title: Text(title,
-              style: const TextStyle(color: Colors.white, fontSize: 16),
+              style: const TextStyle(fontSize: 16),
               textAlign: TextAlign.center),
           content: Text(message,
-              style: const TextStyle(color: Colors.white, fontSize: 16),
+              style: const TextStyle(fontSize: 16),
               textAlign: TextAlign.center),
           actions: [
             TextButton(
-              child: const Text('OK', style: TextStyle(color: Colors.white)),
+              child: const Text('OK'),
               onPressed: () {
                 if (isRegister) {
                   Navigator.of(context).pop();

@@ -14,7 +14,10 @@ final ThemeData lightTheme = ThemeData(
     brightness: Brightness.light,
     seedColor: const Color.fromARGB(255, 103, 58, 183),
   ),
-  textTheme: GoogleFonts.latoTextTheme(),
+  textTheme: GoogleFonts.latoTextTheme().apply(
+    bodyColor: Colors.black,
+    displayColor: Colors.black,
+  ),
 );
 
 final ThemeData darkTheme = ThemeData(
