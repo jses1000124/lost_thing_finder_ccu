@@ -7,6 +7,7 @@ import 'login_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'dart:async';
+import '../models/user_preferences.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -227,27 +228,32 @@ class _SettingsPageState extends State<SettingsPage> {
       'new_nickname': newNickName,
     };
     try {
-      final response = await http.post(
-        apiUrl,
-        body: jsonEncode(requestBody),
-        headers: {'Content-Type': 'application/json'},
-      ).timeout(const Duration(seconds: 5)); // 設定5秒超時
-
-      if (response.statusCode == 200) {
-        final SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('nickname', newNickName);
-        _checkPreferences();
-        _showAlertDialog('成功', '暱稱已更改', success: true, popTwice: true);
-      } else {
-        // 根據不同的錯誤代碼顯示不同的錯誤信息
-        if (response.statusCode == 401) {
-          _showAlertDialog('失敗', '無效的暱稱');
-        } else if (response.statusCode == 404) {
-          _showAlertDialog('失敗', '帳號未找到');
-        } else {
-          _showAlertDialog('錯誤', '發生未預期的錯誤');
-        }
-      }
+      await http
+          .post(
+            apiUrl,
+            body: jsonEncode(requestBody),
+            headers: {'Content-Type': 'application/json'},
+          )
+          .timeout(const Duration(seconds: 5))
+          .then((response) {
+            if (response.statusCode == 200) {
+              setState(() {
+                nickname = newNickName;
+              });
+              Provider.of<UserPreferences>(context, listen: false)
+                  .updateNickname(newNickName);
+              _showAlertDialog('成功', '暱稱已更改', success: true, popTwice: true);
+            } else {
+              // 根據不同的錯誤代碼顯示不同的錯誤信息
+              if (response.statusCode == 401) {
+                _showAlertDialog('失敗', '無效的暱稱');
+              } else if (response.statusCode == 404) {
+                _showAlertDialog('失敗', '帳號未找到');
+              } else {
+                _showAlertDialog('錯誤', '發生未預期的錯誤');
+              }
+            }
+          });
     } on TimeoutException catch (_) {
       _showAlertDialog('超時', '請求超時');
     } catch (e) {

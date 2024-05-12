@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/theme_provider.dart';
+import '../models/user_preferences.dart';
 
 final ThemeData lightTheme = ThemeData(
   useMaterial3: true,
@@ -42,9 +43,14 @@ void main() async {
 
   final themeProvider = ThemeProvider();
   await themeProvider.loadThemeMode();
+  final userPreferences = UserPreferences();
+  await userPreferences.loadPreferences();
 
-  runApp(ChangeNotifierProvider(
-    create: (_) => themeProvider,
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (_) => themeProvider),
+      ChangeNotifierProvider(create: (_) => userPreferences),
+    ],
     child: const MyApp(),
   ));
 }
@@ -64,7 +70,6 @@ class MyApp extends StatelessWidget {
         systemNavigationBarIconBrightness:
             Brightness.dark, // Dark navigation bar icons
       ),
-      
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: lightTheme,
