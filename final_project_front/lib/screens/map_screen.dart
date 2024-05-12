@@ -16,20 +16,19 @@ class _MapPageState extends State<MapPage> {
 
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      return Future.error('Location services are disabled.');
+      return const LatLng(23.563333, 120.474111);
     }
 
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied');
+        return const LatLng(23.563333, 120.474111);
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
+      return const LatLng(23.563333, 120.474111);
     }
 
     Position position = await Geolocator.getCurrentPosition();
@@ -48,18 +47,28 @@ class _MapPageState extends State<MapPage> {
           return Center(child: Text('Error: ${snapshot.error}'));
         }
 
-        // 確保在傳遞給 initialCenter 前，snapshot.data 是非 null 的
-        LatLng initialCenter = snapshot.data ?? const LatLng(23.48, 120.45);
-
         return FlutterMap(
           options: MapOptions(
-            initialCenter: initialCenter, // 使用當前位置作為地圖的初始中心點
-            initialZoom: 13.0, // Corrected from 'zoom' to 'initialZoom'
+            center: const LatLng(23.563333, 120.474111),
+            zoom: 15.0,
           ),
           children: [
             TileLayer(
               urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
               subdomains: const ['a', 'b', 'c'],
+            ),
+            MarkerLayer(
+              markers: [
+                Marker(
+                  width: 80.0,
+                  height: 80.0,
+                  point: snapshot.data ?? const LatLng(23.563333, 120.474111),
+                  child: Container(
+                    child:
+                        Icon(Icons.location_pin, color: Colors.red, size: 40.0),
+                  ),
+                ),
+              ],
             ),
           ],
         );
