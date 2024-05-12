@@ -35,29 +35,25 @@ class _NewMessageState extends State<NewMessage> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 20),
+      padding: const EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 30),
       child: Row(
         children: [
           Expanded(
-            child: Align(
-              alignment: Alignment.center,
-              child: SizedBox(
-                height: 40,
-                child: TextField(
-                  controller: _messagecontroller,
-                  enableSuggestions: true,
-                  autocorrect: true,
-                  textCapitalization: TextCapitalization.sentences,
-                  decoration: InputDecoration(
-                    hintText: '輸 入 訊 息 . . .',
-                    fillColor: const Color.fromARGB(255, 84, 84, 84),
-                    filled: true,
-                    border: OutlineInputBorder(
-                      borderRadius:
-                          BorderRadius.circular(20.0), // Set the border radius
-                      borderSide: BorderSide.none, // Remove the border
-                    ),
-                  ),
+            child: TextField(
+              controller: _messagecontroller,
+              enableSuggestions: true,
+              autocorrect: true,
+              textCapitalization: TextCapitalization.sentences,
+              decoration: InputDecoration(
+                hintText: '輸 入 訊 息 . . .',
+                fillColor: const Color.fromARGB(255, 84, 84, 84),
+                filled: true,
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                border: OutlineInputBorder(
+                  borderRadius:
+                      BorderRadius.circular(20.0), // Set the border radius
+                  borderSide: BorderSide.none, // Remove the border
                 ),
               ),
             ),

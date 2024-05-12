@@ -38,7 +38,6 @@ class _ChatListScreenState extends State<ChatListScreen> {
   Future<Widget> _buildChatList() async {
     final prefs = await _getPrefs();
     final authaccount = prefs.getString('email')!;
-    
     return StreamBuilder(
       stream: FirebaseFirestore.instance
           .collection('user')

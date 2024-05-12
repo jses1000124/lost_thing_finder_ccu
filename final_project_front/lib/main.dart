@@ -52,12 +52,23 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: lightTheme,
-      darkTheme: darkTheme,
-      themeMode: themeProvider.themeMode,
-      home: const AutoLoginHandler(),
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent, // Transparent status bar
+        statusBarIconBrightness: Brightness.dark, // Dark status bar icons
+        systemNavigationBarColor:
+            Colors.transparent, // Transparent navigation bar
+        systemNavigationBarIconBrightness:
+            Brightness.dark, // Dark navigation bar icons
+      ),
+      
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: lightTheme,
+        darkTheme: darkTheme,
+        themeMode: themeProvider.themeMode,
+        home: const AutoLoginHandler(),
+      ),
     );
   }
 }
