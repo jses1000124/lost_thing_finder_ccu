@@ -59,6 +59,4 @@ class GetUserData {
       debugPrint("Error occurred while fetching user data: $e");
     }
   }
-
-  void getuserdata() {}
 }
