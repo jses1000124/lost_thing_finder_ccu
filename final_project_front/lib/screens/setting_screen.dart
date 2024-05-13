@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'dart:async';
 import '../models/user_nicknames.dart';
+import '../data/get_nickname.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -35,8 +36,9 @@ class _SettingsPageState extends State<SettingsPage> {
   Future<void> _loadPreferences() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     email = prefs.getString('email') ?? '';
-    nickname = prefs.getString('nickname') ?? '';
     token = prefs.getString('token') ?? '';
+    nickname = await GetNickname().getNickname(email!);
+    setState(() {});
   }
 
   Future<void> logout() async {
@@ -379,5 +381,14 @@ class _SettingsPageState extends State<SettingsPage> {
     } catch (e) {
       _showAlertDialog('錯誤', '發生未預期的錯誤：$e');
     }
+  }
+
+  @override
+  void dispose() {
+    _nicknameController.dispose();
+    _oldPasswordController.dispose();
+    _newPasswordController.dispose();
+    _checkNewPasswordController.dispose();
+    super.dispose();
   }
 }

@@ -44,7 +44,7 @@ class _AutoLoginHandlerState extends State<AutoLoginHandler> {
 
         if (response.statusCode == 200 && mounted) {
           await prefs.setString('token', jsonDecode(response.body)['token']);
-          await GetUserData().getUserData().then((value) {
+          await GetUserData().getUserData(context).then((value) {
             Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (context) => const BottomBar()));
           });

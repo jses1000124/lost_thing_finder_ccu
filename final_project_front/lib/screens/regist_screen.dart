@@ -103,6 +103,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           .then(
             (response) {
               if (response.statusCode == 200) {
+                Navigator.of(context).pop(); // Close the loading dialog
                 setState(() {
                   _emailVerified = true; // Move setState outside the dialog
                 });
@@ -242,7 +243,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               _showAlertDialog('成功', '帳號已成功建立', isRegister: true);
             } else if (response.statusCode == 400) {
               _clearTextFields();
-              _showAlertDialog('失敗', '帳號已存在');
+              _showAlertDialog('失敗', '使用者名稱或信箱已被註冊');
             } else if (response.statusCode == 404) {
               _showAlertDialog('失敗', '密碼不符合複雜度要求');
             } else {
@@ -287,9 +288,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               onPressed: () {
                 if (isRegister) {
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => const LoginScreen()));
+                  Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(
+                          builder: (context) => const LoginScreen()),
+                      (route) => false);
                 } else if (popTwice) {
                   Navigator.of(context).pop();
                   Navigator.of(context).pop();
@@ -344,6 +346,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       child: InputToLoginSignUp(
                           controller: _accountController,
                           icon: const Icon(Icons.mail),
+                          readOnly: _emailVerified,
                           labelText: '信箱',
                           errorText: _emailError,
                           onChanged: _validateEmail),

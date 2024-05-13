@@ -84,30 +84,37 @@ class _LoginScreenState extends State<LoginScreen> {
     };
 
     try {
-      final response = await http.post(
-        apiUrl,
-        body: jsonEncode(requestBody),
-        headers: {'Content-Type': 'application/json'},
-      ).timeout(const Duration(seconds: 5)); // 設定5秒超時
-      if (response.statusCode == 200) {
-        final SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('account', account);
-        await prefs.setString('password', password);
-        await prefs.setString('token', jsonDecode(response.body)['token']);
-        await GetUserData().getUserData();
-        await prefs.setBool('autoLogin', _autoLogin).then((value) =>
-            Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => const BottomBar())));
-      } else {
-        // 根據不同的錯誤代碼顯示不同的錯誤信息
-        if (response.statusCode == 401) {
-          _showAlertDialog('失敗', '無效的密碼', popTwice: true);
-        } else if (response.statusCode == 404) {
-          _showAlertDialog('失敗', '帳號未找到', popTwice: true);
-        } else {
-          _showAlertDialog('錯誤', '發生未預期的錯誤', popTwice: true);
-        }
-      }
+      await http
+          .post(
+            apiUrl,
+            body: jsonEncode(requestBody),
+            headers: {'Content-Type': 'application/json'},
+          )
+          .timeout(const Duration(seconds: 5))
+          .then((response) async {
+            if (response.statusCode == 200) {
+              Navigator.of(context).pop();
+              final SharedPreferences prefs =
+                  await SharedPreferences.getInstance();
+              await prefs.setString('account', account);
+              await prefs.setString('password', password);
+              await prefs.setString(
+                  'token', jsonDecode(response.body)['token']);
+              await GetUserData().getUserData(context);
+              await prefs.setBool('autoLogin', _autoLogin).then((value) =>
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (context) => const BottomBar())));
+            } else {
+              // 根據不同的錯誤代碼顯示不同的錯誤信息
+              if (response.statusCode == 401) {
+                _showAlertDialog('失敗', '無效的密碼', popTwice: true);
+              } else if (response.statusCode == 404) {
+                _showAlertDialog('失敗', '帳號未找到', popTwice: true);
+              } else {
+                _showAlertDialog('錯誤', '發生未預期的錯誤', popTwice: true);
+              }
+            }
+          }); // 設定5秒超時
     } on TimeoutException catch (_) {
       _showAlertDialog('超時', '請求超時', popTwice: true);
     } catch (e) {
