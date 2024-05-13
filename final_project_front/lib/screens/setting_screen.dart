@@ -18,6 +18,10 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   int avatarIndex = 0;
   final TextEditingController _nicknameController = TextEditingController();
+  final TextEditingController _oldPasswordController = TextEditingController();
+  final TextEditingController _newPasswordController = TextEditingController();
+  final TextEditingController _checkNewPasswordController =
+      TextEditingController();
   @override
   void initState() {
     super.initState();
@@ -27,14 +31,12 @@ class _SettingsPageState extends State<SettingsPage> {
   String? nickname;
   String? email;
   String? token;
-  String? oldPassword;
 
   Future<void> _loadPreferences() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     email = prefs.getString('email') ?? '';
     nickname = prefs.getString('nickname') ?? '';
     token = prefs.getString('token') ?? '';
-    oldPassword = prefs.getString('password') ?? '';
   }
 
   Future<void> logout() async {
@@ -111,7 +113,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     SettingsTile(
                       title: const Text('更改密碼'),
                       leading: const Icon(Icons.lock),
-                      onPressed: (BuildContext context) {},
+                      onPressed: _changePassword,
                     ),
                     SettingsTile(
                       title: const Text('登出'),
@@ -154,6 +156,58 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  void _changePassword(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('更改密碼'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: [
+                TextField(
+                  decoration: InputDecoration(
+                    hintText: '請輸入舊密碼',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  controller: _oldPasswordController,
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  decoration: InputDecoration(
+                    hintText: '請輸入新密碼',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  controller: _newPasswordController,
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  decoration: InputDecoration(
+                    hintText: '確認輸入新密碼',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  controller: _checkNewPasswordController,
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    _sendChangedPassword();
+                  },
+                  child: const Text('確認'),
+                )
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   void _changeNickName(BuildContext context) {
     showDialog(
       context: context,
@@ -185,7 +239,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   void _showAlertDialog(String title, String message,
-      {bool success = false, bool popTwice = false}) {
+      {bool success = false, bool popTwice = false, bool toLogin = false}) {
     showDialog(
       context: context,
       builder: (context) {
@@ -206,9 +260,14 @@ class _SettingsPageState extends State<SettingsPage> {
                 'OK',
               ),
               onPressed: () {
-                Navigator.of(context).pop();
-                if (popTwice) {
+                if (toLogin) {
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (context) => const LoginScreen()));
+                } else {
                   Navigator.of(context).pop();
+                  if (popTwice) {
+                    Navigator.of(context).pop();
+                  }
                 }
               },
             ),
@@ -263,14 +322,62 @@ class _SettingsPageState extends State<SettingsPage> {
       _showAlertDialog('錯誤', '發生未預期的錯誤：$e');
     }
   }
-  // (
-  //   future: _loadPreferences(),
-  //   builder: (context, snapshot) {
-  //     if (snapshot.connectionState == ConnectionState.done) {
-  //       return _buildSettingsList();
-  //     } else {
-  //       return const CircularProgressIndicator();
-  //     }
-  //   },
-  // );
+
+  Future<void> _sendChangedPassword() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String oldPassword = prefs.getString('password') ?? '';
+    if (oldPassword != _oldPasswordController.text) {
+      _showAlertDialog('錯誤', '舊密碼錯誤');
+      return;
+    }
+    if (_oldPasswordController.text.isEmpty ||
+        _newPasswordController.text.isEmpty ||
+        _checkNewPasswordController.text.isEmpty) {
+      _showAlertDialog('錯誤', '密碼不可為空');
+      return;
+    }
+    if (_newPasswordController.text != _checkNewPasswordController.text) {
+      _showAlertDialog('錯誤', '新密碼不一致');
+      return;
+    }
+
+    final String inputOldPassword = _oldPasswordController.text;
+    final String newPassword = _newPasswordController.text;
+    final Uri apiUrl = Uri.parse('http://140.123.101.199:5000/change_password');
+    final Map<String, String> requestBody = {
+      'token': token!,
+      'identifier': email!,
+      'old_password': inputOldPassword,
+      'new_password': newPassword,
+    };
+    try {
+      await http
+          .post(
+            apiUrl,
+            body: jsonEncode(requestBody),
+            headers: {'Content-Type': 'application/json'},
+          )
+          .timeout(const Duration(seconds: 5))
+          .then((response) {
+            if (response.statusCode == 200) {
+              prefs.setString('password', newPassword);
+              prefs.setBool('autoLogin', false);
+              _showAlertDialog('成功', '密碼已更改', success: true, toLogin: true);
+            } else {
+              // 根據不同的錯誤代碼顯示不同的錯誤信息
+              if (response.statusCode == 401) {
+                _showAlertDialog('失敗', '無效的密碼');
+              } else if (response.statusCode == 404) {
+                _showAlertDialog('失敗', '帳號未找到');
+              } else {
+                _showAlertDialog('錯誤', '發生未預期的錯誤');
+              }
+            }
+          });
+    } on TimeoutException catch (_) {
+      _showAlertDialog('超時', '請求超時');
+    } catch (e) {
+      _showAlertDialog('錯誤', '發生未預期的錯誤：$e');
+    }
+  }
 }
