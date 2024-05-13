@@ -46,12 +46,34 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
+  void _showLoadingDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const Dialog(
+          child: Padding(
+            padding: EdgeInsets.all(20),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(width: 20),
+                Text("正在登入...", style: TextStyle(fontSize: 16)),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   Future<void> _login() async {
-    if (_emailOrAccountError != null || _passwordError != null) {
+    if (_accountController.text.isEmpty || _passwordController.text.isEmpty) {
       _showAlertDialog('失敗', '請填寫帳號密碼');
       return;
     }
-
+    _showLoadingDialog();
     final String account = _accountController.text;
     final String password = _passwordController.text;
 
@@ -67,7 +89,6 @@ class _LoginScreenState extends State<LoginScreen> {
         body: jsonEncode(requestBody),
         headers: {'Content-Type': 'application/json'},
       ).timeout(const Duration(seconds: 5)); // 設定5秒超時
-
       if (response.statusCode == 200) {
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('account', account);
@@ -80,21 +101,21 @@ class _LoginScreenState extends State<LoginScreen> {
       } else {
         // 根據不同的錯誤代碼顯示不同的錯誤信息
         if (response.statusCode == 401) {
-          _showAlertDialog('失敗', '無效的密碼');
+          _showAlertDialog('失敗', '無效的密碼', popTwice: true);
         } else if (response.statusCode == 404) {
-          _showAlertDialog('失敗', '帳號未找到');
+          _showAlertDialog('失敗', '帳號未找到', popTwice: true);
         } else {
-          _showAlertDialog('錯誤', '發生未預期的錯誤');
+          _showAlertDialog('錯誤', '發生未預期的錯誤', popTwice: true);
         }
       }
     } on TimeoutException catch (_) {
-      _showAlertDialog('超時', '請求超時');
+      _showAlertDialog('超時', '請求超時', popTwice: true);
     } catch (e) {
-      _showAlertDialog('錯誤', '發生未預期的錯誤：$e');
+      _showAlertDialog('錯誤', '發生未預期的錯誤：$e', popTwice: true);
     }
   }
 
-  void _showAlertDialog(String title, String message) {
+  void _showAlertDialog(String title, String message, {bool popTwice = false}) {
     showDialog(
       context: context,
       builder: (context) {
@@ -114,6 +135,9 @@ class _LoginScreenState extends State<LoginScreen> {
               child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
+                if (popTwice) {
+                  Navigator.of(context).pop();
+                }
               },
             ),
           ],

@@ -196,7 +196,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
               headers: {'Content-Type': 'application/json'})
           .timeout(const Duration(seconds: 5)) // 設定超時時間
           .then((response) {
-            Navigator.of(context).pop(); // 關閉加載對話框
             if (response.statusCode == 200) {
               _showVerificationCodeDialog();
             } else {
@@ -247,13 +246,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
             } else if (response.statusCode == 404) {
               _showAlertDialog('失敗', '密碼不符合複雜度要求');
             } else {
-              _showAlertDialog('錯誤', '請稍後再試');
+              _showAlertDialog('錯誤', '請稍後再試', popTwice: true);
             }
           });
     } on TimeoutException catch (_) {
-      _showAlertDialog('超時', '註冊請求超時');
+      _showAlertDialog('超時', '註冊請求超時', popTwice: true);
     } catch (e) {
-      _showAlertDialog('錯誤', '未知錯誤：$e');
+      _showAlertDialog('錯誤', '未知錯誤：$e', popTwice: true);
     }
   }
 
