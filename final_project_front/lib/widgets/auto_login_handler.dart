@@ -93,7 +93,14 @@ class _AutoLoginHandlerState extends State<AutoLoginHandler> {
             TextButton(
               child: const Text('OK'),
               onPressed: () {
-                Navigator.of(context).pop();
+                SharedPreferences.getInstance().then((prefs) {
+                  prefs.remove('token');
+                  prefs.remove('autoLogin');
+                  prefs.remove('account');
+                  prefs.remove('password');
+                });
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                    builder: (context) => const LoginScreen()));
               },
             ),
           ],
