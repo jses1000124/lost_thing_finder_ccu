@@ -244,6 +244,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
             } else if (response.statusCode == 400) {
               _clearTextFields();
               _showAlertDialog('失敗', '帳號已存在');
+            } else if (response.statusCode == 404) {
+              _showAlertDialog('失敗', '密碼不符合複雜度要求');
             } else {
               _showAlertDialog('錯誤', '請稍後再試');
             }
