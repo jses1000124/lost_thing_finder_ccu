@@ -6,6 +6,7 @@ class InputToLoginSignUp extends StatelessWidget {
   final String labelText;
   final String? errorText;
   final void Function(String)? onChanged;
+  final bool readOnly;
 
   const InputToLoginSignUp({
     super.key,
@@ -14,12 +15,14 @@ class InputToLoginSignUp extends StatelessWidget {
     required this.labelText,
     this.errorText,
     this.onChanged,
+    this.readOnly = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       controller: controller,
+      readOnly: readOnly,
       decoration: InputDecoration(
         prefixIcon: icon,
         labelText: labelText,
