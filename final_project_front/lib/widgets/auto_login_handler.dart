@@ -115,7 +115,7 @@ class _AutoLoginHandlerState extends State<AutoLoginHandler> {
             ),
           );
         } else {
-          return const SizedBox(); // Replace with your desired widget
+          return const SizedBox();
         }
       },
     );
