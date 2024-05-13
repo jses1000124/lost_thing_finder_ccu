@@ -4,7 +4,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ChatMessage extends StatelessWidget {
-  const ChatMessage({super.key});
+  final String chatID;
+  final String chatNickName;
+  const ChatMessage(
+      {super.key, required this.chatID, required this.chatNickName});
 
   Future<SharedPreferences> _getPrefs() async {
     return await SharedPreferences.getInstance();
@@ -12,16 +15,18 @@ class ChatMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
     String authaccount = '';
+    String myNickname = '';
     _getPrefs().then((prefs) {
-      authaccount = prefs.getString('nickname') ?? '';
-      debugPrint(authaccount);
+      authaccount = prefs.getString('email')!;
+      myNickname = prefs.getString('nickname')!;
     });
 
     return StreamBuilder(
       stream: FirebaseFirestore.instance
           .collection('chat')
+          .doc(chatID)
+          .collection('message')
           .orderBy('createdAt', descending: true)
           .snapshots(),
       builder: (ctx, chatSnapshot) {
@@ -52,11 +57,13 @@ class ChatMessage extends StatelessWidget {
             final nextChatMessage =
                 index + 1 < chatDocs.length ? chatDocs[index + 1].data() : null;
 
-            final currentUser = chatMessage['userId'];
+            final currentUser = chatMessage['userEmail'];
             final nextUser =
-                nextChatMessage != null ? nextChatMessage['userId'] : null;
+                nextChatMessage != null ? nextChatMessage['userEmail'] : null;
 
             final nextUserIsSame = currentUser == nextUser;
+            final currentUserNickname =
+                currentUser == authaccount ? myNickname : chatNickName;
 
             if (nextUserIsSame) {
               return MessageBubble.next(
@@ -67,7 +74,7 @@ class ChatMessage extends StatelessWidget {
               return MessageBubble.first(
                 userImage:
                     'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
-                username: currentUser,
+                username: currentUserNickname,
                 message: chatMessage['text'],
                 isMe: currentUser == authaccount,
               );

@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NewMessage extends StatefulWidget {
-  const NewMessage({super.key});
+  final String chatID;
+  const NewMessage({super.key, required this.chatID});
 
   @override
   State<NewMessage> createState() => _NewMessageState();
@@ -24,18 +25,25 @@ class _NewMessageState extends State<NewMessage> {
       return;
     }
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    FirebaseFirestore.instance.collection('chat').add({
+    FirebaseFirestore.instance
+        .collection('chat')
+        .doc(widget.chatID)
+        .collection('message')
+        .add({
       'text': enteredMessage,
       'createdAt': Timestamp.now(),
-      'userId': prefs.getString('nickname'),
+      'userEmail': prefs.getString('email'),
+      'chatID': widget.chatID,
     });
+    FirebaseFirestore.instance.collection('chat').doc(widget.chatID).update(
+        {'lastUpdated': Timestamp.now(), 'lastMessage': enteredMessage});
     _messagecontroller.clear();
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 30),
+      padding: const EdgeInsets.only(top: 10, left: 20, right: 10, bottom: 10),
       child: Row(
         children: [
           Expanded(
