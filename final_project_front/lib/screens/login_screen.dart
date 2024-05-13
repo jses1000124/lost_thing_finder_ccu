@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:final_project/data/get_user_data.dart';
 import 'package:flutter/material.dart';
-import '../models/user_nicknames.dart';
 import 'package:http/http.dart' as http;
 import 'bottom_bar.dart';
 import 'package:final_project/widgets/user_input_login_signup.dart';
@@ -75,7 +74,6 @@ class _LoginScreenState extends State<LoginScreen> {
         await prefs.setString('password', password);
         await prefs.setString('token', jsonDecode(response.body)['token']);
         await GetUserData().getUserData();
-        await UserPreferences().loadPreferences();
         await prefs.setBool('autoLogin', _autoLogin).then((value) =>
             Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (context) => const BottomBar())));

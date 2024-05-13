@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:final_project/data/get_user_data.dart';
 import 'package:final_project/screens/bottom_bar.dart';
-import '../models/user_nicknames.dart';
 import 'package:final_project/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -45,8 +44,7 @@ class _AutoLoginHandlerState extends State<AutoLoginHandler> {
 
         if (response.statusCode == 200 && mounted) {
           await prefs.setString('token', jsonDecode(response.body)['token']);
-          await GetUserData().getUserData();
-          await UserPreferences().loadPreferences().then((value) {
+          await GetUserData().getUserData().then((value) {
             Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (context) => const BottomBar()));
           });

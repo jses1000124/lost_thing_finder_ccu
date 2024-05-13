@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../models/user_nicknames.dart';
 
 class GetUserData {
   Future<void> getUserData() async {
@@ -43,6 +44,7 @@ class GetUserData {
 
         if (nickname != null) {
           await prefs.setString('nickname', nickname);
+          UserPreferences().setNickname(nickname);
         } else {
           debugPrint("Nickname is null in the response");
         }
