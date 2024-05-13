@@ -11,6 +11,7 @@ class LostThing {
     required this.content,
     required this.date,
     required this.postUser,
+    required this.postUserEmail,
     required this.imageUrl,
     required this.location,
     required this.headShotUrl,
@@ -20,6 +21,7 @@ class LostThing {
   final String postUser;
   final String imageUrl;
   final String lostThingName;
+  final String postUserEmail;
   final String content;
   final String location;
   final DateTime date;

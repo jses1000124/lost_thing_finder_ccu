@@ -89,6 +89,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
     final member = doc['member'] as List<dynamic>;
     member.removeWhere((element) => element == authaccount);
     final nickname = await GetNickname().getNickname(member[0]);
+    double size = MediaQuery.of(context).size.width;
 
     return ListTile(
       title: Row(
@@ -101,8 +102,24 @@ class _ChatListScreenState extends State<ChatListScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(nickname),
-              Text('最後訊息：${doc['lastMessage']}'),
+              SizedBox(
+                width: size * 0.7,
+                child: Text(
+                  nickname.length > 10
+                      ? '${nickname.substring(0, 10)}...'
+                      : nickname,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  maxLines: 1,
+                ),
+              ),
+              if (doc['lastMessage'] != '')
+                SizedBox(
+                  width: size * 0.7,
+                  child: Text(
+                    '最新訊息：${doc['lastMessage'].length > 10 ? '${doc['lastMessage'].substring(0, 10)}...' : doc['lastMessage']}',
+                    maxLines: 1,
+                  ),
+                ),
             ],
           ),
         ],
