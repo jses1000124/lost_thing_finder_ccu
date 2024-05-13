@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../models/theme_provider.dart';
-import '../models/user_preferences.dart';
+import 'models/user_nicknames.dart';
 
 final ThemeData lightTheme = ThemeData(
   useMaterial3: true,

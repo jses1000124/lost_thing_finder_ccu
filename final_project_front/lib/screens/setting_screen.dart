@@ -7,7 +7,7 @@ import 'login_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'dart:async';
-import '../models/user_preferences.dart';
+import '../models/user_nicknames.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});

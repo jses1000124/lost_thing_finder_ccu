@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/user_preferences.dart'; // Import your UserPreferences model
+import '../models/user_nicknames.dart'; // Import your UserPreferences model
 import '../screens/setting_screen.dart';
 
 class MainDrawer extends StatelessWidget {

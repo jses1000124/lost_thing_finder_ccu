@@ -13,6 +13,7 @@ class UserPreferences extends ChangeNotifier {
 
   Future<void> loadPreferences() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
+    print('Loading user preferences...');
     _nickname = prefs.getString('nickname') ?? '未設定';
     notifyListeners();
   }

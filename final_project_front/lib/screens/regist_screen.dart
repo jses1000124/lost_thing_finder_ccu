@@ -99,7 +99,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             }),
             headers: {'Content-Type': 'application/json'},
           )
-          .timeout(const Duration(seconds: 5))
+          .timeout(const Duration(seconds: 7))
           .then(
             (response) {
               if (response.statusCode == 200) {
@@ -200,13 +200,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
             if (response.statusCode == 200) {
               _showVerificationCodeDialog();
             } else {
-              _showAlertDialog('錯誤', '請稍後再試');
+              _showAlertDialog('錯誤', '請稍後再試', popTwice: true);
             }
           });
     } on TimeoutException catch (_) {
-      _showAlertDialog('超時', '驗證郵件請求超時');
+      _showAlertDialog('超時', '驗證郵件請求超時', popTwice: true);
     } catch (e) {
-      _showAlertDialog('錯誤', '未知錯誤：$e');
+      _showAlertDialog('錯誤', '未知錯誤：$e', popTwice: true);
     }
   }
 
@@ -264,7 +264,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   void _showAlertDialog(String title, String message,
-      {bool isRegister = false, bool popTwice = false}) {
+      {bool isRegister = false, bool popTwice = false, bool toScreen = false}) {
     showDialog(
       context: context,
       builder: (context) {
@@ -289,11 +289,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   Navigator.of(context).pop();
                   Navigator.of(context).pushReplacement(MaterialPageRoute(
                       builder: (context) => const LoginScreen()));
+                } else if (popTwice) {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                } else if (toScreen) {
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (context) => const RegisterScreen()));
                 } else {
                   Navigator.of(context).pop();
-                  if (popTwice) {
-                    Navigator.of(context).pop();
-                  }
                 }
               },
             ),
@@ -309,6 +312,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _accountController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    codeController.dispose();
     super.dispose();
   }
 
@@ -335,7 +339,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Row(
                   children: [
                     Expanded(
-                      flex: 6,
+                      flex: 14,
                       child: InputToLoginSignUp(
                           controller: _accountController,
                           icon: const Icon(Icons.mail),
@@ -345,7 +349,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     const SizedBox(width: 10),
                     Expanded(
-                      flex: 1,
+                      flex: 4,
                       child: TextButton(
                         onPressed: _emailVerified
                             ? null

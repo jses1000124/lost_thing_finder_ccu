@@ -5,6 +5,7 @@ import 'dart:convert';
 
 class GetUserData {
   Future<void> getUserData() async {
+    print("Getting user data...");
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? account = prefs.getString('account');
     String? token = prefs.getString('token');
