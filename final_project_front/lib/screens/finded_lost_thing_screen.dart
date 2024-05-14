@@ -30,8 +30,8 @@ class _FindedThingScreenState extends State<FindedThingScreen> {
           'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/MacBook_Pro_15_inch_%282017%29_Touch_Bar.jpg/1920px-MacBook_Pro_15_inch_%282017%29_Touch_Bar.jpg',
       date: DateTime.now(),
       location: '共同教室1樓',
-      postUserEmail: 'jses0922737039@gmail.com',
-      postUser: 'Chengen Li',
+      postUserEmail: 'han@csie.io',
+      postUser: 'Han',
       headShotUrl: 'https://i.pravatar.cc/150?u=a042581f4e29026704d',
     ),
   ];

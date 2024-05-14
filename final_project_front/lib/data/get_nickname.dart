@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -26,11 +27,12 @@ class GetNickname {
         String? nickname = body['nickname'];
         return nickname!;
       } else {
-        print('Failed to get nickname: HTTP status ${response.statusCode}');
+        debugPrint(
+            'Failed to get nickname: HTTP status ${response.statusCode}');
         return '使用者不存在或已被刪除';
       }
     } catch (e) {
-      print('Error occurred while fetching nickname: $e');
+      debugPrint('Error occurred while fetching nickname: $e');
       return 'NULL';
     }
   }

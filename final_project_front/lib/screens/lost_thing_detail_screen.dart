@@ -1,5 +1,6 @@
 import 'package:final_project/data/create_new_room.dart';
 import 'package:final_project/screens/chat_screen.dart';
+import 'package:final_project/widgets/show_alert_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -37,6 +38,11 @@ class LostThingDetailScreen extends StatelessWidget {
                 elevation: 5,
                 child: InkWell(
                   onTap: () async {
+                    if (authEmail == lostThings.postUserEmail) {
+                      ShowAlertDialog()
+                          .showAlertDialog('無法與自己聊天', '無法與自己的帳號進行聊天', context);
+                      return;
+                    }
                     await CreateNewChatRoom()
                         .createNewChatRoom(lostThings.postUserEmail, authEmail)
                         .then(
@@ -45,7 +51,7 @@ class LostThingDetailScreen extends StatelessWidget {
                           MaterialPageRoute(
                             builder: (ctx) => ChatScreen(
                               chatID: chatID,
-                              chatNickName: lostThings.postUser,
+                              chatUserEmail: lostThings.postUserEmail,
                             ),
                           ),
                         );

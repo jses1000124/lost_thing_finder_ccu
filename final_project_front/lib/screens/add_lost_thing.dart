@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart';
+
 import '../models/lost_thing.dart';
 import 'package:flutter/material.dart';
 import '../widgets/upload_image_widget.dart';
@@ -15,15 +17,33 @@ class _AddLostThingState extends State<AddLostThing> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _locationController = TextEditingController();
-  String _path = "";
+  String _imagepath = "";
   DateTime? _selectedDate;
   String? _postType;
 
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
+      // _formKey.currentState!.save();
       // Handle the submission, like sending data to a server or local database
+      uploadImage();
     }
+  }
+
+  Future<void> uploadImage() async {
+    Reference ref = FirebaseStorage.instance
+        .ref()
+        .child('images/${DateTime.now().millisecondsSinceEpoch}');
+
+    // 上傳文件
+    UploadTask uploadTask = ref.putFile(File(_imagepath));
+
+    // 可選：如果你需要獲取文件上傳進度
+    // uploadTask.snapshotEvents.listen((event) {
+    //   print('Task state: ${event.state}');
+    //   print('Progress: ${(event.bytesTransferred / event.totalBytes) * 100} %');
+    // });
+    String imageUrl = await (await uploadTask).ref.getDownloadURL();
+    debugPrint('File uploaded to $imageUrl');
   }
 
   void _presentDatePicker() async {
@@ -202,10 +222,10 @@ class _AddLostThingState extends State<AddLostThing> {
             UploadImageWidget(
               onImagePicked: (path) {
                 setState(() {
-                  _path = path;
+                  _imagepath = path;
                 });
               },
-              child: _path.isEmpty
+              child: _imagepath.isEmpty
                   ? Container(
                       height: 150,
                       width: double.infinity,
@@ -215,7 +235,7 @@ class _AddLostThingState extends State<AddLostThing> {
                       ),
                       child: const Icon(Icons.camera_alt, size: 50),
                     )
-                  : Image.file(File(_path), fit: BoxFit.cover),
+                  : Image.file(File(_imagepath), fit: BoxFit.cover),
             ),
             const SizedBox(height: 20),
             Row(

@@ -45,14 +45,14 @@
 		<true />
 		<key>UIApplicationSupportsIndirectInputEvents</key>
 		<true />
-		<key>NSPhotoLibraryUsageDescription</key>
-		<string>This app requires permission to access photo library</string>
-		<key>NSCameraUsageDescription</key>
-		<string>This app requires permission to access camera</string>
 		<key>NSLocationWhenInUseUsageDescription</key>
 		<string>We need access to your location to show you nearby places on the map.</string>
 		<key>NSLocationAlwaysUsageDescription</key>
 		<string>We need access to your location to provide navigation directions even when the app
 			is running in the background.</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>這個應用程式需要訪問您的相簿來保存和讀取圖片。</string>
+		<key>NSCameraUsageDescription</key>
+		<string>這個應用程式需要使用您的相機來拍照。</string>
 	</dict>
 </plist>
