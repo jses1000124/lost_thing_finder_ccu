@@ -1,10 +1,9 @@
-import 'package:final_project/data/create_new_room.dart';
-import 'package:final_project/screens/chat_screen.dart';
-import 'package:final_project/widgets/show_alert_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:transparent_image/transparent_image.dart';
 import 'package:final_project/models/lost_thing.dart';
+import 'package:final_project/screens/chat_screen.dart';
+import 'package:final_project/data/create_new_room.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 class LostThingDetailScreen extends StatefulWidget {
   final LostThing lostThings;
@@ -18,26 +17,23 @@ class _LostThing extends State<LostThingDetailScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
-
-  Future<SharedPreferences> _getPrefs() async {
-    return await SharedPreferences.getInstance();
-  }
+  late Future<String?> _authEmailFuture;
 
   @override
   void initState() {
     super.initState();
-
     _controller = AnimationController(
       duration: const Duration(seconds: 1),
       vsync: this,
     );
-
-    _animation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.elasticOut,
-    );
-
+    _animation = CurvedAnimation(parent: _controller, curve: Curves.elasticOut);
     _controller.forward();
+    _authEmailFuture = _getAuthEmail();
+  }
+
+  Future<String?> _getAuthEmail() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('email');
   }
 
   @override
@@ -48,20 +44,24 @@ class _LostThing extends State<LostThingDetailScreen>
 
   @override
   Widget build(BuildContext context) {
+    return FutureBuilder<String?>(
+      future: _authEmailFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done &&
+            snapshot.hasData) {
+          String authEmail = snapshot.data!;
+          return _buildUI(context, authEmail);
+        } else {
+          return CircularProgressIndicator();
+        }
+      },
+    );
+  }
+
+  Widget _buildUI(BuildContext context, String authEmail) {
     final LostThing lostThings = widget.lostThings;
-    String authEmail = '';
-
-    _getPrefs().then((prefs) {
-      authEmail = prefs.getString('email')!;
-    });
-
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          lostThings.lostThingName,
-          style: const TextStyle(fontSize: 20),
-        ),
-      ),
+      appBar: AppBar(title: Text(lostThings.lostThingName)),
       body: SingleChildScrollView(
         child: Container(
           padding: const EdgeInsets.all(20),
@@ -123,34 +123,27 @@ class _LostThing extends State<LostThingDetailScreen>
           ),
         ),
       ),
-      floatingActionButton: ScaleTransition(
-        scale: _animation,
-        child: FloatingActionButton(
-          onPressed: () async {
-            if (authEmail == lostThings.postUserEmail) {
-              ShowAlertDialog()
-                  .showAlertDialog('無法與自己聊天', '無法與自己的帳號進行聊天', context);
-              return;
-            }
-            await CreateNewChatRoom()
-                .createNewChatRoom(lostThings.postUserEmail, authEmail)
-                .then(
-              (chatID) {
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
-                    builder: (ctx) => ChatScreen(
-                      chatID: chatID,
-                      chatUserEmail: lostThings.postUserEmail,
-                    ),
-                  ),
-                );
-              },
-            );
-          },
-          backgroundColor: Theme.of(context).focusColor,
-          child: const Icon(Icons.message),
-        ),
-      ),
+      floatingActionButton: authEmail == lostThings.postUserEmail
+          ? null
+          : ScaleTransition(
+              scale: _animation,
+              child: FloatingActionButton(
+                onPressed: () => _handleMessageButtonPressed(
+                    context, authEmail, lostThings.postUserEmail),
+                backgroundColor: Theme.of(context).focusColor,
+                child: const Icon(Icons.message),
+              ),
+            ),
     );
+  }
+
+  void _handleMessageButtonPressed(
+      BuildContext context, String senderEmail, String recipientEmail) async {
+    String? chatID = await CreateNewChatRoom()
+        .createNewChatRoom(recipientEmail, senderEmail);
+    Navigator.of(context).pushReplacement(MaterialPageRoute(
+      builder: (ctx) =>
+          ChatScreen(chatID: chatID, chatUserEmail: recipientEmail),
+    ));
   }
 }

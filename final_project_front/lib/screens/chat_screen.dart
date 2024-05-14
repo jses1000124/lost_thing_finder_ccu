@@ -49,7 +49,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.chatUserEmail),
+        title: Text(chatNickName),
       ),
       body: Column(
         children: [
