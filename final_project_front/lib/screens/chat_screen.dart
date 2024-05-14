@@ -1,7 +1,6 @@
 import 'package:final_project/widgets/chat_message.dart';
 import 'package:final_project/widgets/new_message.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class ChatScreen extends StatefulWidget {
   final String chatID;
@@ -37,9 +36,12 @@ class _ChatScreenState extends State<ChatScreen> {
       body: Column(
         children: [
           Expanded(
-            child: ChatMessage(chatID: widget.chatID, chatNickName: widget.chatNickName),
+            child: ChatMessage(
+                chatID: widget.chatID, chatNickName: widget.chatNickName),
           ),
-          NewMessage(chatID: widget.chatID,),
+          NewMessage(
+            chatID: widget.chatID,
+          ),
         ],
       ),
     );

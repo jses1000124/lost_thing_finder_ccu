@@ -196,11 +196,23 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                   controller: _checkNewPasswordController,
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    _sendChangedPassword();
-                  },
-                  child: const Text('確認'),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        _sendChangedPassword();
+                      },
+                      child: const Text('確認'),
+                    ),
+                    const Spacer(),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('取消'),
+                    ),
+                  ],
                 )
               ],
             ),
@@ -220,17 +232,29 @@ class _SettingsPageState extends State<SettingsPage> {
             child: ListBody(
               children: [
                 TextField(
+                  maxLength: 10,
                   decoration: const InputDecoration(
                     hintText: '請輸入新暱稱',
                   ),
                   controller: _nicknameController,
                 ),
                 const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    _sendChangedNickName();
-                  },
-                  child: const Text('確認'),
+                Row(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        _sendChangedNickName();
+                      },
+                      child: const Text('確認'),
+                    ),
+                    const Spacer(),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('取消'),
+                    ),
+                  ],
                 )
               ],
             ),
