@@ -10,6 +10,8 @@ import 'dart:async';
 import '../models/user_nicknames.dart';
 import '../data/get_nickname.dart';
 import 'change_passwd_in_login_page.dart';
+import 'package:mailto/mailto.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -106,7 +108,17 @@ class _SettingsPageState extends State<SettingsPage> {
                     SettingsTile(
                       title: const Text('與我們聯絡'),
                       leading: const Icon(Icons.mail),
-                      onPressed: (BuildContext context) {},
+                      onPressed: (BuildContext context) async{
+                        final mailtoLink = Mailto(
+                          to: ['ccufinalproject@gmail.com'],
+                          subject: '',
+                          body: '',
+                        );
+                        // Convert the Mailto instance into a string.
+                        // Use either Dart's string interpolation
+                        // or the toString() method.
+                        await launch('$mailtoLink');
+                      },
                     ),
                   ],
                 ),
