@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:final_project/models/lost_thing.dart';
-import 'package:final_project/screens/chat_screen.dart';
-import 'package:final_project/data/create_new_room.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:final_project/models/lost_thing_and_Url.dart';
 
 class LostThingDetailScreen extends StatefulWidget {
   final LostThing lostThings;

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:async';
+import 'package:final_project/models/lost_thing_and_Url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'login_screen.dart';
@@ -97,7 +98,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   void _verifyCodeAndSetEmailVerified() async {
-    final Uri apiUrl = Uri.parse('http://140.123.101.199:5000/verification');
+    final Uri apiUrl = Uri.parse('$basedApiUrl/verification');
     try {
       await http
           .post(
@@ -196,8 +197,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> verifyEmail() async {
-    final Uri apiUrl =
-        Uri.parse('http://140.123.101.199:5000/send_verification_code');
+    final Uri apiUrl = Uri.parse('$basedApiUrl/send_verification_code');
     Map<String, String> requestBody = {
       'email': _accountController.text,
     };
@@ -235,7 +235,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final String password = _passwordController.text;
     final String code = codeController.text;
 
-    final Uri apiUrl = Uri.parse('http://140.123.101.199:5000/register');
+    final Uri apiUrl = Uri.parse('$basedApiUrl/register');
     final Map<String, String> requestBody = {
       'account': account,
       'password': password,

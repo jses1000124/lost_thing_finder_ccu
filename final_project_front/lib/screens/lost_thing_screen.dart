@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/lost_things_list.dart';
-import '../models/lost_thing.dart';
+import '../models/lost_thing_and_Url.dart';
 import 'package:provider/provider.dart';
 import '../models/post_provider.dart';
 

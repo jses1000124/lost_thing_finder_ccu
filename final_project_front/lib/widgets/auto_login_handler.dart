@@ -1,10 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:final_project/models/lost_thing_and_Url.dart';
+import 'package:final_project/models/post_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:final_project/data/get_user_data.dart';
 import 'package:final_project/screens/bottom_bar.dart';
 import 'package:final_project/screens/login_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AutoLoginHandler extends StatefulWidget {
@@ -23,13 +26,14 @@ class _AutoLoginHandlerState extends State<AutoLoginHandler> {
 
   Future<void> _checkAndLogin() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool autoLogin = prefs.getBool('autoLogin') ?? false;
+    final postProvider = Provider.of<PostProvider>(context, listen: false);
 
+    bool autoLogin = prefs.getBool('autoLogin') ?? false;
     if (autoLogin) {
       String account = prefs.getString('account') ?? '';
       String password = prefs.getString('password') ?? '';
 
-      final Uri apiUrl = Uri.parse('http://140.123.101.199:5000/login');
+      final Uri apiUrl = Uri.parse('$basedApiUrl/login');
       final Map<String, String> requestBody = {
         'account': account,
         'password': password,
@@ -44,26 +48,29 @@ class _AutoLoginHandlerState extends State<AutoLoginHandler> {
 
         if (response.statusCode == 200 && mounted) {
           await prefs.setString('token', jsonDecode(response.body)['token']);
-          await GetUserData().getUserData(context).then((value) {
-            Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => const BottomBar()));
-          });
+          await GetUserData().getUserData(context);
+          // 等待直到 PostProvider 的数据加载完毕
+          await Future.doWhile(() =>
+              Future.delayed(const Duration(milliseconds: 100),
+                  () => postProvider.isLoading)).then((value) => {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const BottomBar()),
+                  (Route<dynamic> route) => false,
+                )
+              });
         } else if (mounted) {
           _handleLoginError(response.statusCode);
-        }
-      } on TimeoutException catch (_) {
-        if (mounted) {
-          _showAlertDialog('Timeout', 'Request timed out');
         }
       } catch (e) {
         if (mounted) {
           _showAlertDialog('Error', 'An unexpected error occurred: $e');
         }
       }
-    } else if (mounted) {
+    } else {
       Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => const LoginScreen()),
-          (Route<dynamic> route) => false);
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+        (Route<dynamic> route) => false,
+      );
     }
   }
 

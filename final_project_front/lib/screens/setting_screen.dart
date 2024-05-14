@@ -1,3 +1,4 @@
+import 'package:final_project/models/lost_thing_and_Url.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:settings_ui/settings_ui.dart';
@@ -10,6 +11,8 @@ import 'dart:async';
 import '../models/user_nicknames.dart';
 import '../data/get_nickname.dart';
 import 'change_passwd_in_login_page.dart';
+import 'package:mailto/mailto.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -106,7 +109,17 @@ class _SettingsPageState extends State<SettingsPage> {
                     SettingsTile(
                       title: const Text('與我們聯絡'),
                       leading: const Icon(Icons.mail),
-                      onPressed: (BuildContext context) {},
+                      onPressed: (BuildContext context) async{
+                        final mailtoLink = Mailto(
+                          to: ['ccufinalproject@gmail.com'],
+                          subject: '',
+                          body: '',
+                        );
+                        // Convert the Mailto instance into a string.
+                        // Use either Dart's string interpolation
+                        // or the toString() method.
+                        await launch('$mailtoLink');
+                      },
                     ),
                   ],
                 ),
@@ -313,7 +326,7 @@ class _SettingsPageState extends State<SettingsPage> {
       return;
     }
     final String newNickName = _nicknameController.text;
-    final Uri apiUrl = Uri.parse('http://140.123.101.199:5000/update_nickname');
+    final Uri apiUrl = Uri.parse('$basedApiUrl/update_nickname');
     final Map<String, String> requestBody = {
       'token': token!,
       'identifier': email!,
@@ -373,7 +386,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
     final String inputOldPassword = _oldPasswordController.text;
     final String newPassword = _newPasswordController.text;
-    final Uri apiUrl = Uri.parse('http://140.123.101.199:5000/change_password');
+    final Uri apiUrl = Uri.parse('$basedApiUrl/change_password');
     final Map<String, String> requestBody = {
       'token': token!,
       'identifier': email!,

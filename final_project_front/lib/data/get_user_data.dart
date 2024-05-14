@@ -1,3 +1,4 @@
+import 'package:final_project/models/lost_thing_and_Url.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,7 +18,7 @@ class GetUserData {
       return;
     }
 
-    var url = Uri.parse('http://140.123.101.199:5000/getuserdata');
+    var url = Uri.parse('$basedApiUrl/getuserdata');
 
     final Map<String, String> requestBody = {
       'account': account,
