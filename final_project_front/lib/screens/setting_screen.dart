@@ -9,6 +9,7 @@ import 'dart:convert';
 import 'dart:async';
 import '../models/user_nicknames.dart';
 import '../data/get_nickname.dart';
+import '../widgets/change_passwd_in_login_page.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -113,10 +114,13 @@ class _SettingsPageState extends State<SettingsPage> {
                   title: const Text('帳號安全˙'),
                   tiles: [
                     SettingsTile(
-                      title: const Text('更改密碼'),
-                      leading: const Icon(Icons.lock),
-                      onPressed: _changePassword,
-                    ),
+                        title: const Text('更改密碼'),
+                        leading: const Icon(Icons.lock),
+                        onPressed: (BuildContext context) =>
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) =>
+                                  const ChangePasswordScreen(),
+                            ))),
                     SettingsTile(
                       title: const Text('登出'),
                       leading: const Icon(Icons.logout),
