@@ -51,6 +51,7 @@ class _LostThingScreenState extends State<LostThingScreen> {
       date: DateTime.now(),
       location: 'Taipei City',
       postUser: 'John Doe',
+      postUserEmail: 'aa94022728@gmail.com',
       headShotUrl: 'https://i.pravatar.cc/150?u=a042581f4e29026704d',
     ),
     LostThing(
@@ -61,6 +62,7 @@ class _LostThingScreenState extends State<LostThingScreen> {
       date: DateTime.now(),
       location: 'Taipei City',
       postUser: 'Jane Doe',
+      postUserEmail: 'jses0922737039@gmail.com',
       headShotUrl: 'https://i.pravatar.cc/150?u=a042581f4e29026704d',
     ),
   ]; // Your items

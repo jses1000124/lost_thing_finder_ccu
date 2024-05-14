@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class UserPreferences extends ChangeNotifier {
+class UserPreferences with ChangeNotifier {
   String _nickname = '未設定';
 
   String get nickname => _nickname;

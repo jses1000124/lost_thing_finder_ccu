@@ -3,13 +3,17 @@ import 'package:final_project/widgets/new_message.dart';
 import 'package:flutter/material.dart';
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({super.key});
+  final String chatID;
+  final String chatNickName;
+  const ChatScreen(
+      {super.key, required this.chatID, required this.chatNickName});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  // Notification function
   // void setupNotifications() async {
   //   final fcm = FirebaseMessaging.instance;
   //   await fcm.requestPermission();
@@ -27,14 +31,17 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('聊天室'),
+        title: Text(widget.chatNickName),
       ),
-      body: const Column(
+      body: Column(
         children: [
           Expanded(
-            child: ChatMessage(),
+            child: ChatMessage(
+                chatID: widget.chatID, chatNickName: widget.chatNickName),
           ),
-          NewMessage(),
+          NewMessage(
+            chatID: widget.chatID,
+          ),
         ],
       ),
     );

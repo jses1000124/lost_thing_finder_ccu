@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'dart:async';
 import '../models/user_nicknames.dart';
+import '../data/get_nickname.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -35,8 +36,9 @@ class _SettingsPageState extends State<SettingsPage> {
   Future<void> _loadPreferences() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     email = prefs.getString('email') ?? '';
-    nickname = prefs.getString('nickname') ?? '';
     token = prefs.getString('token') ?? '';
+    nickname = await GetNickname().getNickname(email!);
+    setState(() {});
   }
 
   Future<void> logout() async {
@@ -194,11 +196,23 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                   controller: _checkNewPasswordController,
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    _sendChangedPassword();
-                  },
-                  child: const Text('確認'),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        _sendChangedPassword();
+                      },
+                      child: const Text('確認'),
+                    ),
+                    const Spacer(),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('取消'),
+                    ),
+                  ],
                 )
               ],
             ),
@@ -218,17 +232,29 @@ class _SettingsPageState extends State<SettingsPage> {
             child: ListBody(
               children: [
                 TextField(
+                  maxLength: 10,
                   decoration: const InputDecoration(
                     hintText: '請輸入新暱稱',
                   ),
                   controller: _nicknameController,
                 ),
                 const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    _sendChangedNickName();
-                  },
-                  child: const Text('確認'),
+                Row(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        _sendChangedNickName();
+                      },
+                      child: const Text('確認'),
+                    ),
+                    const Spacer(),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('取消'),
+                    ),
+                  ],
                 )
               ],
             ),
@@ -379,5 +405,14 @@ class _SettingsPageState extends State<SettingsPage> {
     } catch (e) {
       _showAlertDialog('錯誤', '發生未預期的錯誤：$e');
     }
+  }
+
+  @override
+  void dispose() {
+    _nicknameController.dispose();
+    _oldPasswordController.dispose();
+    _newPasswordController.dispose();
+    _checkNewPasswordController.dispose();
+    super.dispose();
   }
 }

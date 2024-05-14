@@ -1,11 +1,13 @@
+
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../models/user_nicknames.dart';
 
 class GetUserData {
-  Future<void> getUserData() async {
+  Future<void> getUserData(BuildContext context) async {
     print("Getting user data...");
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? account = prefs.getString('account');
@@ -43,8 +45,10 @@ class GetUserData {
         }
 
         if (nickname != null) {
-          await prefs.setString('nickname', nickname);
-          UserPreferences().setNickname(nickname);
+          await prefs.setString('nickname', nickname).then((value) {
+            UserPreferences().loadPreferences();
+            Provider.of<UserPreferences>(context, listen: false).loadPreferences();
+          });
         } else {
           debugPrint("Nickname is null in the response");
         }

@@ -1,4 +1,7 @@
+import 'package:final_project/data/create_new_room.dart';
+import 'package:final_project/screens/chat_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:final_project/models/lost_thing.dart';
 
@@ -6,8 +9,17 @@ class LostThingDetailScreen extends StatelessWidget {
   const LostThingDetailScreen({super.key, required this.lostThings});
   final LostThing lostThings;
 
+  Future<SharedPreferences> _getPrefs() async {
+    return await SharedPreferences.getInstance();
+  }
+
   @override
   Widget build(BuildContext context) {
+    String authEmail = '';
+    _getPrefs().then((prefs) {
+      authEmail = prefs.getString('email')!;
+    });
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -24,9 +36,21 @@ class LostThingDetailScreen extends StatelessWidget {
               Card(
                 elevation: 5,
                 child: InkWell(
-                  onTap: () {
-                    // createNewChatRoom(lostThings.postUser);
-                    // NavigationBar().navigateToChatScreen(context);
+                  onTap: () async {
+                    await CreateNewChatRoom()
+                        .createNewChatRoom(lostThings.postUserEmail, authEmail)
+                        .then(
+                      (chatID) {
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                            builder: (ctx) => ChatScreen(
+                              chatID: chatID,
+                              chatNickName: lostThings.postUser,
+                            ),
+                          ),
+                        );
+                      },
+                    );
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(10),
