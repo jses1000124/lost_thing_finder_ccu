@@ -18,12 +18,14 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final double size = MediaQuery.of(context).size.width;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('聊天室'),
       ),
       body: FutureBuilder(
-        future: _buildChatList(),
+        future: _buildChatList(size),
         builder: (ctx, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
@@ -36,7 +38,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
     );
   }
 
-  Future<Widget> _buildChatList() async {
+  Future<Widget> _buildChatList(double size) async {
     final prefs = await _getPrefs();
     final authaccount = prefs.getString('email')!;
 
@@ -66,7 +68,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
         return ListView(
           children: snapshot.data!.docs
               .map<Widget>((doc) => FutureBuilder<Widget>(
-                    future: _buildChatItem(doc, authaccount),
+                    future: _buildChatItem(doc, authaccount, size),
                     builder: (ctx, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(
@@ -83,13 +85,12 @@ class _ChatListScreenState extends State<ChatListScreen> {
   }
 
   Future<Widget> _buildChatItem(
-      DocumentSnapshot doc, String authaccount) async {
+      DocumentSnapshot doc, String authaccount, double size) async {
     // Map<String, dynamic> data = doc.data()! as Map<String, dynamic>;
     final chatID = doc.id;
     final member = doc['member'] as List<dynamic>;
     member.removeWhere((element) => element == authaccount);
     final nickname = await GetNickname().getNickname(member[0]);
-    double size = MediaQuery.of(context).size.width;
 
     return ListTile(
       title: Row(
@@ -128,7 +129,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) =>
-                ChatScreen(chatID: chatID, chatNickName: nickname),
+                ChatScreen(chatID: chatID, chatUserEmail: member[0]),
           ),
         );
       },
