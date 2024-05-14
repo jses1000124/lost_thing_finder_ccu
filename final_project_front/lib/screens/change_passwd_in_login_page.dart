@@ -71,14 +71,15 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       appBar: AppBar(
         title: const Text('更改密碼'),
       ),
-      body: Padding(
+      body: Container(
+        alignment: Alignment.center,
         padding: const EdgeInsets.all(48.0),
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 buildPasswordField(
                   controller: _oldPasswordController,

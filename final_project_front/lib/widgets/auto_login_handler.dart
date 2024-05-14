@@ -61,8 +61,9 @@ class _AutoLoginHandlerState extends State<AutoLoginHandler> {
         }
       }
     } else if (mounted) {
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const LoginScreen()));
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+          (Route<dynamic> route) => false);
     }
   }
 

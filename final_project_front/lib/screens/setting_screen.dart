@@ -9,7 +9,7 @@ import 'dart:convert';
 import 'dart:async';
 import '../models/user_nicknames.dart';
 import '../data/get_nickname.dart';
-import '../widgets/change_passwd_in_login_page.dart';
+import 'change_passwd_in_login_page.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
