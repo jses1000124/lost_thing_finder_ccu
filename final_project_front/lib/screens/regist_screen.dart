@@ -28,6 +28,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String? _emailError;
   String? _passwordError;
   String? _confirmPasswordError;
+  String? _passwordComplexityError;
 
   void _validateUsername(String value) {
     setState(() {
@@ -55,8 +56,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
     setState(() {
       if (value.isEmpty) {
         _passwordError = '請輸入密碼';
+        _passwordComplexityError = null;
+      } else if (value.length < 8 ||
+          !RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$').hasMatch(value)) {
+        _passwordError = null;
+        _passwordComplexityError = '密碼必須有8個字，且須由英文加數字組合';
       } else {
         _passwordError = null;
+        _passwordComplexityError = null;
       }
     });
   }
@@ -77,6 +84,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (_accountController.text.isEmpty ||
         !EmailValidator.validate(_accountController.text)) {
       _showAlertDialog('錯誤', '尚未輸入信箱或格式不正確');
+      return;
+    } else if (!_formKey.currentState!.validate()) {
       return;
     } else {
       _showLoadingDialog(); // 顯示加載對話框
@@ -99,7 +108,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             }),
             headers: {'Content-Type': 'application/json'},
           )
-          .timeout(const Duration(seconds: 7))
+          .timeout(const Duration(seconds: 10))
           .then(
             (response) {
               if (response.statusCode == 200) {
@@ -108,6 +117,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   _emailVerified = true; // Move setState outside the dialog
                 });
                 Navigator.of(context).pop(); // Close the dialog
+                _signUp();
               } else {
                 _showAlertDialog('錯誤', '驗證碼錯誤');
                 codeController.clear();
@@ -146,6 +156,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
+                    Navigator.of(context).pop();
                     Navigator.of(context).pop();
                   },
                   child: const Text('取消'),
@@ -339,44 +350,45 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     errorText: _usernameError,
                     onChanged: _validateUsername),
                 const SizedBox(height: 20),
-                Row(
-                  children: [
-                    Expanded(
-                      flex: 14,
-                      child: InputToLoginSignUp(
-                          controller: _accountController,
-                          icon: const Icon(Icons.mail),
-                          readOnly: _emailVerified,
-                          labelText: '信箱',
-                          errorText: _emailError,
-                          onChanged: _validateEmail),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      flex: 4,
-                      child: TextButton(
-                        onPressed: _emailVerified
-                            ? null
-                            : () {
-                                if (!_emailVerified) {
-                                  _sendVerificationEmail();
-                                }
-                              },
-                        style: TextButton.styleFrom(
-                          backgroundColor: _emailVerified
-                              ? Colors.green
-                              : null, // Use green color when verified
-                        ),
-                        child: Text(
-                          _emailVerified ? '成功' : '驗證',
-                          style: TextStyle(
-                            color: _emailVerified ? Colors.black : null,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                // Row(
+                //   children: [
+                // Expanded(
+                // flex: 14,
+                // child:
+                InputToLoginSignUp(
+                    controller: _accountController,
+                    icon: const Icon(Icons.mail),
+                    readOnly: _emailVerified,
+                    labelText: '信箱',
+                    errorText: _emailError,
+                    onChanged: _validateEmail),
+                // ),
+                // const SizedBox(width: 10),
+                // Expanded(
+                //   flex: 4,
+                //   child: TextButton(
+                //     onPressed: _emailVerified
+                //         ? null
+                //         : () {
+                //             if (!_emailVerified) {
+                //               _sendVerificationEmail();
+                //             }
+                //           },
+                //     style: TextButton.styleFrom(
+                //       backgroundColor: _emailVerified
+                //           ? Colors.green
+                //           : null, // Use green color when verified
+                //     ),
+                //     child: Text(
+                //       _emailVerified ? '成功' : '驗證',
+                //       style: TextStyle(
+                //         color: _emailVerified ? Colors.black : null,
+                //       ),
+                //     ),
+                //   ),
+                // ),
+                //   ],
+                // ),
                 const SizedBox(height: 20),
                 TextFormField(
                   controller: _passwordController,
@@ -425,12 +437,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   obscureText: canSeePassword,
                   onChanged: _validateConfirmPassword,
                 ),
+                if (_passwordComplexityError != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Text(
+                      _passwordComplexityError!,
+                      style: const TextStyle(
+                          color: Color.fromARGB(255, 255, 136, 128),
+                          fontSize: 14),
+                    ),
+                  ),
                 const SizedBox(height: 20),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     fixedSize: const Size(150, 50),
                   ),
-                  onPressed: _signUp,
+                  onPressed: _sendVerificationEmail,
                   child: const Text('註冊', style: TextStyle(fontSize: 25)),
                 ),
                 Row(

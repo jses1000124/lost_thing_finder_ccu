@@ -9,6 +9,7 @@ import 'dart:convert';
 import 'dart:async';
 import '../models/user_nicknames.dart';
 import '../data/get_nickname.dart';
+import 'change_passwd_in_login_page.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -113,10 +114,13 @@ class _SettingsPageState extends State<SettingsPage> {
                   title: const Text('帳號安全˙'),
                   tiles: [
                     SettingsTile(
-                      title: const Text('更改密碼'),
-                      leading: const Icon(Icons.lock),
-                      onPressed: _changePassword,
-                    ),
+                        title: const Text('更改密碼'),
+                        leading: const Icon(Icons.lock),
+                        onPressed: (BuildContext context) =>
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) =>
+                                  const ChangePasswordScreen(),
+                            ))),
                     SettingsTile(
                       title: const Text('登出'),
                       leading: const Icon(Icons.logout),
@@ -196,11 +200,23 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                   controller: _checkNewPasswordController,
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    _sendChangedPassword();
-                  },
-                  child: const Text('確認'),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        _sendChangedPassword();
+                      },
+                      child: const Text('確認'),
+                    ),
+                    const Spacer(),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('取消'),
+                    ),
+                  ],
                 )
               ],
             ),
@@ -220,17 +236,29 @@ class _SettingsPageState extends State<SettingsPage> {
             child: ListBody(
               children: [
                 TextField(
+                  maxLength: 10,
                   decoration: const InputDecoration(
                     hintText: '請輸入新暱稱',
                   ),
                   controller: _nicknameController,
                 ),
                 const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    _sendChangedNickName();
-                  },
-                  child: const Text('確認'),
+                Row(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        _sendChangedNickName();
+                      },
+                      child: const Text('確認'),
+                    ),
+                    const Spacer(),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('取消'),
+                    ),
+                  ],
                 )
               ],
             ),

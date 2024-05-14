@@ -1,0 +1,280 @@
+import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import '../../screens/login_screen.dart';
+
+class ChangePasswordScreen extends StatefulWidget {
+  const ChangePasswordScreen({super.key});
+
+  @override
+  State<ChangePasswordScreen> createState() => _ChangePasswordScreenState();
+}
+
+class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
+  final TextEditingController _oldPasswordController = TextEditingController();
+  final TextEditingController _newPasswordController = TextEditingController();
+  final TextEditingController _confirmNewPasswordController =
+      TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _passwordVisible = false;
+  String? _passwordComplexityError; // Declare the error message variable
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPreferences();
+  }
+
+  String? email;
+  String? token;
+
+  Future<void> _loadPreferences() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    email = prefs.getString('email') ?? '';
+    token = prefs.getString('token') ?? '';
+  }
+
+  Widget buildPasswordField({
+    required TextEditingController controller,
+    required String label,
+    required String? Function(String?) validator,
+    required bool visible,
+    required VoidCallback toggleVisibility,
+  }) {
+    return TextFormField(
+      controller: controller,
+      obscureText: !visible,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: const Icon(Icons.lock_outline),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        suffixIcon: IconButton(
+          icon: Icon(visible ? Icons.visibility_off : Icons.visibility),
+          onPressed: toggleVisibility,
+        ),
+      ),
+      validator: validator,
+      onChanged: (value) {
+        setState(() {}); // Trigger UI update
+        _formKey.currentState!.validate(); // Trigger validation
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('更改密碼'),
+      ),
+      body: Container(
+        alignment: Alignment.center,
+        padding: const EdgeInsets.all(48.0),
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                buildPasswordField(
+                  controller: _oldPasswordController,
+                  label: '舊密碼',
+                  visible: _passwordVisible,
+                  toggleVisibility: () {
+                    setState(() {
+                      _passwordVisible = !_passwordVisible;
+                    });
+                  },
+                  validator: (value) => value!.isEmpty ? '舊密碼不能為空' : null,
+                ),
+                const SizedBox(height: 16),
+                buildPasswordField(
+                  controller: _newPasswordController,
+                  label: '新密碼',
+                  visible: _passwordVisible,
+                  toggleVisibility: () {
+                    setState(() {
+                      _passwordVisible = !_passwordVisible;
+                    });
+                  },
+                  validator: (value) {
+                    if (value!.isEmpty) return '新密碼不能為空';
+                    if (value.length < 8 ||
+                        !RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$')
+                            .hasMatch(value)) {
+                      _passwordComplexityError = '密碼必須有8個字符，並包含數字和字母';
+                      return null;
+                    }
+                    _passwordComplexityError = null;
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                buildPasswordField(
+                  controller: _confirmNewPasswordController,
+                  label: '確認新密碼',
+                  visible: _passwordVisible,
+                  toggleVisibility: () {
+                    setState(() {
+                      _passwordVisible = !_passwordVisible;
+                    });
+                  },
+                  validator: (value) {
+                    if (value!.isEmpty) return '確認新密碼不能為空';
+                    if (value != _newPasswordController.text) return '與新密碼不符';
+                    return null;
+                  },
+                ),
+                if (_passwordComplexityError !=
+                    null) // Display the error message if it exists
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Text(
+                      _passwordComplexityError!,
+                      style: const TextStyle(
+                          color: Color.fromARGB(255, 255, 141, 133),
+                          fontSize: 14),
+                    ),
+                  ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      _sendChangedPassword();
+                    }
+                  },
+                  child: const Text(
+                    '確認更改',
+                    style: TextStyle(fontSize: 22),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> clearSharedPreferences() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('email', '');
+    await prefs.setString('token', '');
+    await prefs.setString('password', '');
+    await prefs.setBool('autoLogin', false);
+  }
+
+  void _showAlertDialog(String title, String message,
+      {bool success = false, bool popTwice = false, bool toLogin = false}) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          icon: success
+              ? const Icon(Icons.check, color: Colors.green, size: 60)
+              : const Icon(Icons.error,
+                  color: Color.fromARGB(255, 255, 97, 149), size: 60),
+          title: Text(title,
+              style: const TextStyle(fontSize: 16),
+              textAlign: TextAlign.center),
+          content: Text(message,
+              style: const TextStyle(fontSize: 16),
+              textAlign: TextAlign.center),
+          actions: [
+            TextButton(
+              child: const Text(
+                'OK',
+              ),
+              onPressed: () {
+                if (toLogin) {
+                  clearSharedPreferences();
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (context) => const LoginScreen()));
+                } else {
+                  Navigator.of(context).pop();
+                  if (popTwice) {
+                    Navigator.of(context).pop();
+                  }
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _sendChangedPassword() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String oldPassword = prefs.getString('password') ?? '';
+    if (oldPassword != _oldPasswordController.text) {
+      _showAlertDialog('錯誤', '舊密碼錯誤');
+      return;
+    }
+    if (_oldPasswordController.text.isEmpty ||
+        _newPasswordController.text.isEmpty ||
+        _confirmNewPasswordController.text.isEmpty) {
+      _showAlertDialog('錯誤', '密碼不可為空');
+      return;
+    }
+    if (_newPasswordController.text != _confirmNewPasswordController.text) {
+      _showAlertDialog('錯誤', '新密碼不一致');
+      return;
+    }
+    if (!_formKey.currentState!.validate()) {
+      return; // Stops the function if validation fails
+    }
+
+    final String inputOldPassword = _oldPasswordController.text;
+    final String newPassword = _newPasswordController.text;
+    final Uri apiUrl = Uri.parse('http://140.123.101.199:5000/change_password');
+    final Map<String, String> requestBody = {
+      'token': token!,
+      'identifier': email!,
+      'old_password': inputOldPassword,
+      'new_password': newPassword,
+    };
+    try {
+      await http
+          .post(
+            apiUrl,
+            body: jsonEncode(requestBody),
+            headers: {'Content-Type': 'application/json'},
+          )
+          .timeout(const Duration(seconds: 5))
+          .then((response) {
+            if (response.statusCode == 200) {
+              prefs.setString('password', newPassword);
+              prefs.setBool('autoLogin', false);
+              _showAlertDialog('成功', '密碼已更改', success: true, toLogin: true);
+            } else {
+              // 根據不同的錯誤代碼顯示不同的錯誤信息
+              if (response.statusCode == 401) {
+                _showAlertDialog('失敗', '無效的密碼');
+              } else if (response.statusCode == 404) {
+                _showAlertDialog('失敗', '帳號未找到');
+              } else {
+                _showAlertDialog('錯誤', '發生未預期的錯誤');
+              }
+            }
+          });
+    } on TimeoutException catch (_) {
+      _showAlertDialog('超時', '請求超時');
+    } catch (e) {
+      _showAlertDialog('錯誤', '發生未預期的錯誤：$e');
+    }
+  }
+
+  @override
+  void dispose() {
+    _oldPasswordController.dispose();
+    _newPasswordController.dispose();
+    _confirmNewPasswordController.dispose();
+    super.dispose();
+  }
+}
