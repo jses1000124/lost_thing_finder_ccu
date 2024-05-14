@@ -28,6 +28,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String? _emailError;
   String? _passwordError;
   String? _confirmPasswordError;
+  String? _passwordComplexityError;
 
   void _validateUsername(String value) {
     setState(() {
@@ -55,8 +56,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
     setState(() {
       if (value.isEmpty) {
         _passwordError = '請輸入密碼';
+        _passwordComplexityError = null;
+      } else if (value.length < 8 ||
+          !RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$').hasMatch(value)) {
+        _passwordError = null;
+        _passwordComplexityError = '密碼必須有8個字，且須由英文加數字組合';
       } else {
         _passwordError = null;
+        _passwordComplexityError = null;
       }
     });
   }
@@ -430,6 +437,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   obscureText: canSeePassword,
                   onChanged: _validateConfirmPassword,
                 ),
+                if (_passwordComplexityError != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Text(
+                      _passwordComplexityError!,
+                      style: const TextStyle(
+                          color: Color.fromARGB(255, 255, 136, 128),
+                          fontSize: 14),
+                    ),
+                  ),
                 const SizedBox(height: 20),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
