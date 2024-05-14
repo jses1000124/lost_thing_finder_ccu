@@ -1,11 +1,12 @@
-import '../widgets/auto_login_handler.dart';
-import 'package:final_project/firebase_options.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'models/post_provider.dart';
+import 'widgets/auto_login_handler.dart';
+import 'firebase_options.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
-import '../models/theme_provider.dart';
+import 'models/theme_provider.dart';
 import 'models/user_nicknames.dart';
 
 final ThemeData lightTheme = ThemeData(
@@ -54,6 +55,7 @@ void main() async {
 
   runApp(MultiProvider(
     providers: [
+      ChangeNotifierProvider(create: (_) => PostProvider()),
       ChangeNotifierProvider(create: (_) => themeProvider),
       ChangeNotifierProvider(create: (_) => userPreferences),
     ],
@@ -70,15 +72,15 @@ class MyApp extends StatelessWidget {
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent, // Transparent status bar
-        statusBarIconBrightness: Brightness.dark, // Dark status bar icons
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
         systemNavigationBarColor: themeProvider.themeMode == ThemeMode.dark
             ? darkTheme.primaryColor
-            : Colors.white, // Navigation bar color based on theme mode
+            : Colors.white,
         systemNavigationBarIconBrightness:
             themeProvider.themeMode == ThemeMode.dark
                 ? Brightness.light
-                : Brightness.dark, // Navigation bar icons based on theme mode
+                : Brightness.dark,
       ),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

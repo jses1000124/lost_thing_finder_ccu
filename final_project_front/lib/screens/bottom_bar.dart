@@ -90,7 +90,7 @@ class _BottomBarState extends State<BottomBar> {
                   icon: const Icon(Icons.chat),
                   onPressed: () => Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => const ChatListScreen())),
-                )
+                )   
               ],
             ),
       body: Center(child: _widgetOptions[_selectedIndex]),

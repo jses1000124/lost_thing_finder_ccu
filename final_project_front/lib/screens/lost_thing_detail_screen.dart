@@ -89,16 +89,18 @@ class LostThingDetailScreen extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               Center(
-                child: ClipRRect(
-                  clipBehavior: Clip.hardEdge,
-                  // Added ClipRRect to ensure the image does not overflow
-                  borderRadius: BorderRadius.circular(8.0),
-                  child: FadeInImage(
-                    placeholder: MemoryImage(kTransparentImage),
-                    image: NetworkImage(lostThings.imageUrl),
-                    fit: BoxFit.cover,
-                  ),
-                ),
+                child: lostThings.imageUrl != ''
+                    ? ClipRRect(
+                        clipBehavior: Clip.hardEdge,
+                        // Added ClipRRect to ensure the image does not overflow
+                        borderRadius: BorderRadius.circular(8.0),
+                        child: FadeInImage(
+                          placeholder: MemoryImage(kTransparentImage),
+                          image: NetworkImage(lostThings.imageUrl),
+                          fit: BoxFit.cover,
+                        ),
+                      )
+                    : const SizedBox(),
               ),
             ],
           ),

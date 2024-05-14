@@ -32,14 +32,15 @@ class LostThingItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                color: const Color.fromARGB(0, 0, 0, 0),
-                child: FadeInImage(
-                  placeholder: MemoryImage(kTransparentImage),
-                  image: NetworkImage(lostThing.imageUrl),
-                  height: 80,
-                  width: 80,
-                ),
-              ),
+                  color: const Color.fromARGB(0, 0, 0, 0),
+                  child: lostThing.imageUrl != ''
+                      ? FadeInImage(
+                          placeholder: MemoryImage(kTransparentImage),
+                          image: NetworkImage(lostThing.imageUrl),
+                          height: 80,
+                          width: 80,
+                        )
+                      : const SizedBox()),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,

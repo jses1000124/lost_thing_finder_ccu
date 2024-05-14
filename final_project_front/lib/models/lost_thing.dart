@@ -15,9 +15,9 @@ class LostThing {
     required this.imageUrl,
     required this.location,
     required this.headShotUrl,
-  }) : id = uuid.v4();
+    this.mylosting,
+  });
 
-  final String id;
   final String postUser;
   final String imageUrl;
   final String lostThingName;
@@ -26,8 +26,23 @@ class LostThing {
   final String location;
   final DateTime date;
   final String headShotUrl;
+  final int? mylosting;
 
   String get formattedDate {
     return formatter.format(date);
+  }
+
+  factory LostThing.fromMap(Map<String, dynamic> map) {
+    return LostThing(
+      lostThingName: map['title'] as String? ?? '',
+      content: map['context'] as String? ?? '',
+      imageUrl: map['image'] as String? ?? '',
+      date: DateTime.parse(map['date']),
+      location: map['location'] as String? ?? '',
+      postUser: map['author'] as String? ?? '',
+      postUserEmail: map['author_email'] as String? ?? '',
+      headShotUrl: map['headShotUrl'] as String? ?? '',
+      mylosting: map['my_losting'] as int? ?? 0,
+    );
   }
 }
