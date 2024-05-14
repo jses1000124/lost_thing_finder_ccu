@@ -5,6 +5,7 @@ import '../models/lost_thing.dart';
 class PostProvider with ChangeNotifier {
   List<LostThing> posts = [];
   late io.Socket socket;
+  VoidCallback? onPostsLoaded;
 
   PostProvider() {
     connectAndListen();
@@ -43,6 +44,9 @@ class PostProvider with ChangeNotifier {
       try {
         posts = (data as List).map((item) => LostThing.fromMap(item)).toList();
         notifyListeners();
+        if (onPostsLoaded != null) {
+          onPostsLoaded!(); // Call the callback when posts data is loaded
+        }
       } catch (e) {
         print('Error parsing posts data: $e');
       }

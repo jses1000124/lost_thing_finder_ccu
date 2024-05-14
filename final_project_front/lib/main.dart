@@ -52,10 +52,11 @@ void main() async {
   await themeProvider.loadThemeMode();
   final userPreferences = UserPreferences();
   await userPreferences.loadPreferences();
+  final postProvider = PostProvider();
 
   runApp(MultiProvider(
     providers: [
-      ChangeNotifierProvider(create: (_) => PostProvider()),
+      ChangeNotifierProvider(create: (_) => postProvider),
       ChangeNotifierProvider(create: (_) => themeProvider),
       ChangeNotifierProvider(create: (_) => userPreferences),
     ],

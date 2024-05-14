@@ -28,7 +28,7 @@ class _FindedThingScreenState extends State<FindedThingScreen> {
       if (widget.searchedThingName.isEmpty) {
         filteredFindedThings = postProvider.posts.where((item) {
           return item.mylosting == 1;
-        }).toList(); // 显示所有
+        }).toList();
       } else {
         filteredFindedThings = postProvider.posts.where((item) {
           return item.mylosting == 1 &&
@@ -55,10 +55,7 @@ class _FindedThingScreenState extends State<FindedThingScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Expanded(
-            child: LostThingsList(
-                lostThings: filteredFindedThings.isEmpty
-                    ? postProvider.posts
-                    : filteredFindedThings),
+            child: LostThingsList(lostThings: filteredFindedThings),
           )
         ],
       );

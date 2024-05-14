@@ -1,9 +1,13 @@
+import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/lost_thing.dart';
 import 'package:flutter/material.dart';
 import '../widgets/upload_image_widget.dart';
+import 'package:http/http.dart' as http;
 
 class AddLostThing extends StatefulWidget {
   const AddLostThing({super.key});
@@ -44,6 +48,40 @@ class _AddLostThingState extends State<AddLostThing> {
     // });
     String imageUrl = await (await uploadTask).ref.getDownloadURL();
     debugPrint('File uploaded to $imageUrl');
+
+    final Uri apiUrl = Uri.parse('http://140.123.101.199:5000/post');
+    // Get 'email' from shared preferences
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String email = prefs.getString('email') ?? '';
+    final String token = prefs.getString('token') ?? '';
+
+    try {
+      await http
+          .post(
+            apiUrl,
+            body: jsonEncode({
+              'title': _titleController.text,
+              'context': _descriptionController.text,
+              'location': _locationController.text,
+              'date': _selectedDate!.toIso8601String(),
+              'image': imageUrl,
+              'my_losting': _postType == '遺失物' ? '0' : '1',
+              'author_email': email,
+              'token': token
+            }),
+            headers: {'Content-Type': 'application/json'},
+          )
+          .timeout(const Duration(seconds: 10))
+          .then(
+            (response) {
+              if (response.statusCode == 201) {
+                Navigator.of(context).pop();
+              } else {}
+            },
+          );
+      // 設定超時時間
+    } on TimeoutException catch (_) {
+    } catch (e) {}
   }
 
   void _presentDatePicker() async {
