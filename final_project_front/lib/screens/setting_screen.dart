@@ -1,3 +1,4 @@
+import 'package:final_project/models/lost_thing_and_Url.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:settings_ui/settings_ui.dart';
@@ -313,7 +314,7 @@ class _SettingsPageState extends State<SettingsPage> {
       return;
     }
     final String newNickName = _nicknameController.text;
-    final Uri apiUrl = Uri.parse('http://140.123.101.199:5000/update_nickname');
+    final Uri apiUrl = Uri.parse('$basedApiUrl/update_nickname');
     final Map<String, String> requestBody = {
       'token': token!,
       'identifier': email!,
@@ -373,7 +374,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
     final String inputOldPassword = _oldPasswordController.text;
     final String newPassword = _newPasswordController.text;
-    final Uri apiUrl = Uri.parse('http://140.123.101.199:5000/change_password');
+    final Uri apiUrl = Uri.parse('$basedApiUrl/change_password');
     final Map<String, String> requestBody = {
       'token': token!,
       'identifier': email!,

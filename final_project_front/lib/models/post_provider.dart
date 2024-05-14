@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
-import '../models/lost_thing.dart';
+import 'lost_thing_and_Url.dart';
 
 class PostProvider with ChangeNotifier {
   List<LostThing> posts = [];

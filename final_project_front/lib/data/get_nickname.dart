@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:final_project/models/lost_thing_and_Url.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -8,7 +9,7 @@ class GetNickname {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('token');
 
-    var url = Uri.parse('http://140.123.101.199:5000/getnickname_with_email');
+    Uri url = Uri.parse('$basedApiUrl/getnickname_with_email');
 
     final Map<String, String?> requestBody = {
       'token': token,

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:final_project/models/lost_thing_and_Url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -78,7 +79,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           key: _formKey,
           child: SingleChildScrollView(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 buildPasswordField(
@@ -232,7 +233,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
     final String inputOldPassword = _oldPasswordController.text;
     final String newPassword = _newPasswordController.text;
-    final Uri apiUrl = Uri.parse('http://140.123.101.199:5000/change_password');
+    final Uri apiUrl = Uri.parse('$basedApiUrl/change_password');
     final Map<String, String> requestBody = {
       'token': token!,
       'identifier': email!,

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:async';
 import 'package:final_project/data/get_user_data.dart';
+import 'package:final_project/models/lost_thing_and_Url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'bottom_bar.dart';
@@ -77,7 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final String account = _accountController.text;
     final String password = _passwordController.text;
 
-    final Uri apiUrl = Uri.parse('http://140.123.101.199:5000/login');
+    final Uri apiUrl = Uri.parse('$basedApiUrl/login');
     final Map<String, String> requestBody = {
       'account': account,
       'password': password,

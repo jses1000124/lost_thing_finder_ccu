@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:final_project/models/lost_thing_and_Url.dart';
 import 'package:final_project/models/post_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:final_project/data/get_user_data.dart';
@@ -32,7 +33,7 @@ class _AutoLoginHandlerState extends State<AutoLoginHandler> {
       String account = prefs.getString('account') ?? '';
       String password = prefs.getString('password') ?? '';
 
-      final Uri apiUrl = Uri.parse('http://140.123.101.199:5000/login');
+      final Uri apiUrl = Uri.parse('$basedApiUrl/login');
       final Map<String, String> requestBody = {
         'account': account,
         'password': password,

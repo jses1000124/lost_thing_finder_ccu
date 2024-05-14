@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
-import 'package:final_project/models/lost_thing.dart';
+import 'package:final_project/models/lost_thing_and_Url.dart';
 import 'package:final_project/screens/lost_thing_detail_screen.dart';
 
 class LostThingItem extends StatelessWidget {

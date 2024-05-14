@@ -4,7 +4,7 @@ import 'package:final_project/widgets/show_alert_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:transparent_image/transparent_image.dart';
-import 'package:final_project/models/lost_thing.dart';
+import 'package:final_project/models/lost_thing_and_Url.dart';
 
 class LostThingDetailScreen extends StatefulWidget {
   final LostThing lostThings;

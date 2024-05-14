@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../models/lost_thing.dart';
+import '../models/lost_thing_and_Url.dart';
 import 'package:flutter/material.dart';
 import '../widgets/upload_image_widget.dart';
 import 'package:http/http.dart' as http;
@@ -49,7 +49,7 @@ class _AddLostThingState extends State<AddLostThing> {
     String imageUrl = await (await uploadTask).ref.getDownloadURL();
     debugPrint('File uploaded to $imageUrl');
 
-    final Uri apiUrl = Uri.parse('http://140.123.101.199:5000/post');
+    final Uri apiUrl = Uri.parse('$basedApiUrl/post');
     // Get 'email' from shared preferences
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String email = prefs.getString('email') ?? '';

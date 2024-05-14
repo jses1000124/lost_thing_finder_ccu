@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:async';
+import 'package:final_project/models/lost_thing_and_Url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'login_screen.dart';
@@ -54,7 +55,7 @@ class _NewPasswordState extends State<NewPassword> {
     final String password = _passwordController.text;
 
     final Uri apiUrl =
-        Uri.parse('http://140.123.101.199:5000/change_password_with_email');
+        Uri.parse('$basedApiUrl/change_password_with_email');
     final Map<String, String> requestBody = {
       'new_password': password,
       'identifier': widget.email,

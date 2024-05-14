@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:async';
+import 'package:final_project/models/lost_thing_and_Url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:email_validator/email_validator.dart';
@@ -48,7 +49,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   }
 
   void _verifyCodeAndSetEmailVerified() async {
-    final Uri apiUrl = Uri.parse('http://140.123.101.199:5000/verification');
+    final Uri apiUrl = Uri.parse('$basedApiUrl/verification');
     String code = codeController.text;
     String email = _emailController.text;
     try {
@@ -154,8 +155,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   }
 
   Future<void> verifyEmail() async {
-    final Uri apiUrl =
-        Uri.parse('http://140.123.101.199:5000/send_verification_code');
+    final Uri apiUrl = Uri.parse('$basedApiUrl/send_verification_code');
     Map<String, String> requestBody = {
       'email': _emailController.text,
     };
