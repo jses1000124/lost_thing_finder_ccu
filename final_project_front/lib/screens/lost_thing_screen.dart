@@ -14,21 +14,14 @@ class LostThingScreen extends StatefulWidget {
 }
 
 class _LostThingScreenState extends State<LostThingScreen> {
-  List<LostThing> filteredLostThings = [];
-
   @override
-  void initState() {
-    super.initState();
-    _filterItems();
-  }
-
-  void _filterItems() {
-    final postProvider = Provider.of<PostProvider>(context, listen: false);
-    setState(() {
+  Widget build(BuildContext context) {
+    return Consumer<PostProvider>(builder: (context, postProvider, child) {
+      // Automatically rebuild this part of the UI whenever postProvider notifies listeners
+      List<LostThing> filteredLostThings = [];
       if (widget.searchedThingName.isEmpty) {
-        filteredLostThings = postProvider.posts.where((item) {
-          return item.mylosting == 0;
-        }).toList(); // Show all if no search
+        filteredLostThings =
+            postProvider.posts.where((item) => item.mylosting == 0).toList();
       } else {
         filteredLostThings = postProvider.posts.where((item) {
           return item.mylosting == 0 &&
@@ -37,20 +30,6 @@ class _LostThingScreenState extends State<LostThingScreen> {
                   .contains(widget.searchedThingName.toLowerCase());
         }).toList();
       }
-    });
-  }
-
-  @override
-  void didUpdateWidget(covariant LostThingScreen oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.searchedThingName != oldWidget.searchedThingName) {
-      _filterItems();
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<PostProvider>(builder: (context, postProvider, child) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

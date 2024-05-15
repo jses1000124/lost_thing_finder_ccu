@@ -26,10 +26,16 @@ class _AddLostThingState extends State<AddLostThing> {
   String? _postType;
 
   void _submitForm() {
+    if (_selectedDate == null) {
+      _showAlertDialog('日期尚未選擇', '請選擇一個日期才能提交');
+      return;
+    }
     if (_formKey.currentState!.validate()) {
-      // _formKey.currentState!.save();
-      // Handle the submission, like sending data to a server or local database
-      uploadImage();
+      if (_imagepath.isNotEmpty) {
+        uploadImage();
+      } else {
+        postDetails(null);
+      }
     }
   }
 
@@ -48,40 +54,79 @@ class _AddLostThingState extends State<AddLostThing> {
     // });
     String imageUrl = await (await uploadTask).ref.getDownloadURL();
     debugPrint('File uploaded to $imageUrl');
+    postDetails(imageUrl);
+  }
 
+  void postDetails(String? imageUrl) async {
     final Uri apiUrl = Uri.parse('$basedApiUrl/post');
-    // Get 'email' from shared preferences
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String email = prefs.getString('email') ?? '';
     final String token = prefs.getString('token') ?? '';
 
     try {
-      await http
-          .post(
-            apiUrl,
-            body: jsonEncode({
-              'title': _titleController.text,
-              'context': _descriptionController.text,
-              'location': _locationController.text,
-              'date': _selectedDate!.toIso8601String(),
-              'image': imageUrl,
-              'my_losting': _postType == '遺失物' ? '0' : '1',
-              'author_email': email,
-              'token': token
-            }),
-            headers: {'Content-Type': 'application/json'},
-          )
-          .timeout(const Duration(seconds: 10))
-          .then(
-            (response) {
-              if (response.statusCode == 201) {
-                Navigator.of(context).pop();
-              } else {}
-            },
-          );
-      // 設定超時時間
+      final response = await http.post(
+        apiUrl,
+        body: jsonEncode({
+          'title': _titleController.text,
+          'context': _descriptionController.text,
+          'location': _locationController.text,
+          'date': _selectedDate!.toIso8601String(),
+          'image': imageUrl,
+          'my_losting': _postType == '遺失物' ? '0' : '1',
+          'author_email': email,
+          'token': token,
+        }),
+        headers: {'Content-Type': 'application/json'},
+      ).timeout(const Duration(seconds: 10));
+
+      if (response.statusCode == 201) {
+        _showAlertDialog('成功', '上傳成功', isRegister: true, popTwice: true);
+      } else {
+        final responseData = jsonDecode(response.body);
+        String errorMessage = '上傳失敗: ${responseData['message']}';
+        _showAlertDialog('失敗', errorMessage);
+      }
     } on TimeoutException catch (_) {
-    } catch (e) {}
+      _showAlertDialog('錯誤', '連線超時');
+    } catch (e) {
+      _showAlertDialog('錯誤', '發生未知錯誤: $e');
+    }
+  }
+
+  void _showAlertDialog(String title, String message,
+      {bool isRegister = false, bool popTwice = false}) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          icon: isRegister
+              ? const Icon(Icons.check, color: Colors.green, size: 60)
+              : const Icon(Icons.error,
+                  color: Color.fromARGB(255, 255, 97, 149), size: 60),
+          title: Text(title,
+              style: const TextStyle(fontSize: 16),
+              textAlign: TextAlign.center),
+          content: Text(message,
+              style: const TextStyle(fontSize: 16),
+              textAlign: TextAlign.center),
+          actions: [
+            TextButton(
+              child: const Text(
+                'OK',
+              ),
+              onPressed: () {
+                if (popTwice) {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                } else {
+                  Navigator.of(context).pop();
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _presentDatePicker() async {
@@ -156,6 +201,8 @@ class _AddLostThingState extends State<AddLostThing> {
                     onChanged: (String? newValue) {
                       setState(() {
                         _postType = newValue;
+                        // Trigger form field validation to refresh and remove the error message
+                        _formKey.currentState?.validate();
                       });
                     },
                     validator: (value) {

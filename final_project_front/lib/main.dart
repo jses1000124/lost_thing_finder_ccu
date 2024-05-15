@@ -17,7 +17,7 @@ final ThemeData lightTheme = ThemeData(
     onBackground: Colors.white,
     background: Colors.grey[100],
   ),
-  textTheme: GoogleFonts.latoTextTheme().apply(
+  textTheme: GoogleFonts.ibmPlexSansJpTextTheme().apply(
     bodyColor: Colors.black,
     displayColor: Colors.black,
   ),
@@ -34,7 +34,7 @@ final ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
     seedColor: const Color(0xFF6200EE),
   ),
-  textTheme: GoogleFonts.latoTextTheme().apply(
+  textTheme: GoogleFonts.ibmPlexSansJpTextTheme().apply(
     bodyColor: Colors.white,
     displayColor: Colors.white,
   ),

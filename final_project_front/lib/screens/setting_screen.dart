@@ -1,7 +1,9 @@
 import 'package:final_project/models/lost_thing_and_Url.dart';
+import 'package:final_project/screens/my_posts.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:settings_ui/settings_ui.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import '../models/theme_provider.dart';
 import 'package:http/http.dart' as http;
 import 'login_screen.dart';
@@ -12,7 +14,7 @@ import '../models/user_nicknames.dart';
 import '../data/get_nickname.dart';
 import 'change_passwd_in_login_page.dart';
 import 'package:mailto/mailto.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -85,6 +87,13 @@ class _SettingsPageState extends State<SettingsPage> {
                       onPressed: (BuildContext context) =>
                           _changeAvatar(context),
                     ),
+                    SettingsTile(
+                        title: const Text('我的貼文'),
+                        leading: const Icon(FontAwesomeIcons.pen),
+                        onPressed: (BuildContext context) =>
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => const MyPostsScreen(),
+                            ))),
                   ],
                 ),
                 SettingsSection(
@@ -109,16 +118,13 @@ class _SettingsPageState extends State<SettingsPage> {
                     SettingsTile(
                       title: const Text('與我們聯絡'),
                       leading: const Icon(Icons.mail),
-                      onPressed: (BuildContext context) async{
+                      onPressed: (BuildContext context) async {
                         final mailtoLink = Mailto(
                           to: ['ccufinalproject@gmail.com'],
                           subject: '',
                           body: '',
                         );
-                        // Convert the Mailto instance into a string.
-                        // Use either Dart's string interpolation
-                        // or the toString() method.
-                        await launch('$mailtoLink');
+                        await launchUrlString('$mailtoLink');
                       },
                     ),
                   ],
@@ -168,70 +174,6 @@ class _SettingsPageState extends State<SettingsPage> {
                   child: Image.asset('assets/avatar_$index.png'),
                 );
               }),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  void _changePassword(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('更改密碼'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: [
-                TextField(
-                  decoration: InputDecoration(
-                    hintText: '請輸入舊密碼',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  controller: _oldPasswordController,
-                ),
-                const SizedBox(height: 20),
-                TextField(
-                  decoration: InputDecoration(
-                    hintText: '請輸入新密碼',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  controller: _newPasswordController,
-                ),
-                const SizedBox(height: 20),
-                TextField(
-                  decoration: InputDecoration(
-                    hintText: '確認輸入新密碼',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  controller: _checkNewPasswordController,
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        _sendChangedPassword();
-                      },
-                      child: const Text('確認'),
-                    ),
-                    const Spacer(),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text('取消'),
-                    ),
-                  ],
-                )
-              ],
             ),
           ),
         );
