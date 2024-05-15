@@ -125,6 +125,32 @@ class _ChatListScreenState extends State<ChatListScreen> {
           ),
         ],
       ),
+      onLongPress: () {
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('確定要刪除此聊天室嗎？'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                },
+                child: const Text('取消'),
+              ),
+              TextButton(
+                onPressed: () {
+                  FirebaseFirestore.instance
+                      .collection('chat')
+                      .doc(chatID)
+                      .delete();
+                  Navigator.of(ctx).pop();
+                },
+                child: const Text('確定'),
+              ),
+            ],
+          ),
+        );
+      },
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(

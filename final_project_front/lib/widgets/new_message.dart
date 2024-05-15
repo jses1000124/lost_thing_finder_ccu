@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NewMessage extends StatefulWidget {
@@ -40,12 +41,46 @@ class _NewMessageState extends State<NewMessage> {
     _messagecontroller.clear();
   }
 
+  Future<String> _showCameraLibrary() async {
+    ImagePicker picker = ImagePicker();
+    XFile? image = await picker.pickImage(source: ImageSource.camera);
+    if (image == null) return Future.value('');
+
+    return image.path;
+  }
+
+  Future<String> _showPhotoLibrary() async {
+    ImagePicker picker = ImagePicker();
+    XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    if (image == null) return Future.value('');
+
+    return image.path;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 10, left: 20, right: 10, bottom: 10),
+      padding: const EdgeInsets.only(top: 10, left: 5, right: 5, bottom: 10),
       child: Row(
         children: [
+          ButtonBar(
+            buttonPadding: EdgeInsets.zero,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.camera_alt),
+                onPressed: () {
+                  _showCameraLibrary();
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.photo),
+                onPressed: () {
+                  _showPhotoLibrary();
+                },
+              ),
+            ],
+          ),
+          const SizedBox(width: 5), // Add this lin
           Expanded(
             child: TextField(
               controller: _messagecontroller,
@@ -57,7 +92,7 @@ class _NewMessageState extends State<NewMessage> {
                 fillColor: const Color.fromARGB(255, 84, 84, 84),
                 filled: true,
                 contentPadding:
-                    const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                    const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                 border: OutlineInputBorder(
                   borderRadius:
                       BorderRadius.circular(20.0), // Set the border radius
