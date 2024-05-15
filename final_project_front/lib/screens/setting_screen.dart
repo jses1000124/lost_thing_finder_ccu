@@ -161,23 +161,52 @@ class _SettingsPageState extends State<SettingsPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('選擇頭像'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: List.generate(5, (index) {
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      avatarIndex = index;
-                      Navigator.of(context).pop();
-                    });
-                  },
-                  child: Image.asset('assets/avatar_$index.png'),
-                );
-              }),
+          content: SizedBox(
+            width: double.maxFinite,
+            height: 300, // Set a fixed height to control the dialog size
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children:
+                      List.generate(3, (index) => _buildAvatar(context, index)),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: List.generate(
+                      2, (index) => _buildAvatar(context, index + 3)),
+                ),
+              ],
             ),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildAvatar(BuildContext context, int index) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          avatarIndex = index;
+          Navigator.of(context).pop();
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        height: 80,
+        width: 80,
+        clipBehavior: Clip.hardEdge,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          image: DecorationImage(
+            image: AssetImage('assets/images/avatar_$index.png'),
+            fit: BoxFit.cover,
+          ),
+        ),
+      ),
     );
   }
 
