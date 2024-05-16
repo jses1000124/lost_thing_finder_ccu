@@ -32,8 +32,12 @@ class _AddLostThingState extends State<AddLostThing> {
     }
     if (_formKey.currentState!.validate()) {
       if (_imagepath.isNotEmpty) {
+        _showLoadingDialog();
+
         uploadImage();
       } else {
+        _showLoadingDialog();
+
         postDetails(null);
       }
     }
@@ -62,7 +66,6 @@ class _AddLostThingState extends State<AddLostThing> {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String email = prefs.getString('email') ?? '';
     final String token = prefs.getString('token') ?? '';
-    _showLoadingDialog();
 
     try {
       final response = await http.post(
