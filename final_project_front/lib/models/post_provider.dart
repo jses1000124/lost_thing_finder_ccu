@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'lost_thing_and_Url.dart';
+import 'package:http/http.dart' as http;
 
 class PostProvider with ChangeNotifier {
   List<LostThing> posts = [];
@@ -44,7 +47,30 @@ class PostProvider with ChangeNotifier {
       notifyListeners();
     });
   }
+  Future<int> deletePost(Object? postId,Object? token) async {
+    final Uri apiUrl = Uri.parse('$basedApiUrl/delete_post');
+    final Map<String, Object?> requestBody = {
+      'token': token,
+      'id': postId,
+    };
 
+    try {
+      final response = await http.post(apiUrl,
+          body: jsonEncode(requestBody),
+          headers: {'Content-Type': 'application/json'});
+
+      if (response.statusCode == 200) {
+        posts.removeWhere((post) => post.id == postId);
+        notifyListeners();
+        return 200;
+      } else {
+        return response.statusCode;
+      }
+    } catch (e) {
+      print('Error deleting post: $e');
+      return 8787;
+    }
+  }
 
 
   @override

@@ -12,7 +12,6 @@ class MyPostsScreen extends StatefulWidget {
 }
 
 class _MyPostsScreenState extends State<MyPostsScreen> {
-  List<LostThing> filteredLostThings = [];
   String? email;
 
   @override
@@ -23,30 +22,27 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
 
   Future<void> _loadPreferences() async {
     final prefs = await SharedPreferences.getInstance();
-    email = prefs.getString('email');
-    if (email != null) {
-      _filterItems();
-    } else {
-      // Handle the case when email is not set in preferences
-      setState(() {
-        filteredLostThings = [];
-      });
-    }
-  }
-
-  void _filterItems() {
-    final postProvider = Provider.of<PostProvider>(context, listen: false);
     setState(() {
-      filteredLostThings = postProvider.posts.where((item) {
-        return item.postUserEmail
-            .contains(email!); // email is now guaranteed to be non-null here
-      }).toList();
+      email = prefs.getString('email');
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<PostProvider>(builder: (context, postProvider, child) {
+      if (email == null) {
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('我的貼文'),
+          ),
+          body: const Center(child: CircularProgressIndicator()),
+        );
+      }
+
+      List<LostThing> filteredLostThings = postProvider.posts.where((item) {
+        return item.postUserEmail.contains(email!);
+      }).toList();
+
       return Scaffold(
         appBar: AppBar(
           title: const Text('我的貼文'),

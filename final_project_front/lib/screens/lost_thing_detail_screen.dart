@@ -1,8 +1,8 @@
 import 'dart:async';
-import 'dart:convert';
 
+import 'package:final_project/models/post_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:final_project/models/lost_thing_and_Url.dart';
@@ -74,31 +74,22 @@ class _LostThing extends State<LostThingDetailScreen>
   }
 
   Future<void> _deletePosts() async {
-    final Uri apiUrl = Uri.parse('$basedApiUrl/delete_post');
-    final Map<String, Object?> requestBody = {
-      'token': _token,
-      'id': widget.lostThings.id,
-    };
+    final postProvider = Provider.of<PostProvider>(context, listen: false);
 
     try {
       _showLoadingDialog();
-      await http
-          .post(apiUrl,
-              body: jsonEncode(requestBody),
-              headers: {'Content-Type': 'application/json'})
-          .timeout(const Duration(seconds: 5)) // 設定超時時間
-          .then((response) {
-            if (response.statusCode == 200) {
-              _showAlertDialog('成功', '貼文以刪除', isRegister: true, popThird: true);
-            } else if (response.statusCode == 400) {
-              _showAlertDialog('失敗', '貼文不存在', popTwice: true);
-            } else {
-              _showAlertDialog('錯誤', '請稍後再試', popTwice: true);
-            }
-          });
-    } on TimeoutException catch (_) {
-      _showAlertDialog('超時', '註冊請求超時', popTwice: true);
+      int code = await postProvider.deletePost(widget.lostThings.id, _token!);
+      Navigator.of(context).pop(); // Close the loading dialog
+
+      if (code == 200) {
+        _showAlertDialog('成功', '貼文已刪除', isRegister: true, popTwice: true);
+      } else if (code == 404) {
+        _showAlertDialog('錯誤', '貼文不存在', popTwice: true);
+      } else if (code == 403) {
+        _showAlertDialog('錯誤', '你不是發文者', popTwice: true);
+      }
     } catch (e) {
+      Navigator.of(context).pop(); // Close the loading dialog
       _showAlertDialog('錯誤', '未知錯誤：$e', popTwice: true);
     }
   }
@@ -203,10 +194,8 @@ class _LostThing extends State<LostThingDetailScreen>
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      lostThings.postUser,
-                      style: theme.textTheme.titleMedium,
-                    ),
+                    Text(lostThings.postUser,
+                        style: theme.textTheme.titleMedium),
                     Text(
                       lostThings.formattedDate,
                       style: theme.textTheme.titleSmall!.copyWith(
