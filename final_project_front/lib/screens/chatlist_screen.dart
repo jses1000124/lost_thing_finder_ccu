@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_project/data/get_nickname.dart';
 import 'package:final_project/screens/chat_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ChatListScreen extends StatefulWidget {
@@ -41,6 +42,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
   Future<Widget> _buildChatList(double size) async {
     final prefs = await _getPrefs();
     final authaccount = prefs.getString('email')!;
+    OneSignal.login(authaccount);
 
     return StreamBuilder(
       stream: FirebaseFirestore.instance
@@ -90,7 +92,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
     final chatID = doc.id;
     final member = doc['member'] as List<dynamic>;
     member.removeWhere((element) => element == authaccount);
-    final nickname = await GetNickname().getNickname(member[0]);
+    final nickname = await getNickname(member[0]);
 
     return ListTile(
       title: Row(

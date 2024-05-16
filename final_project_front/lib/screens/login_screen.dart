@@ -4,6 +4,7 @@ import 'package:final_project/data/get_user_data.dart';
 import 'package:final_project/models/lost_thing_and_Url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'bottom_bar.dart';
 import 'package:final_project/widgets/user_input_login_signup.dart';
 import 'regist_screen.dart';
@@ -95,6 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
           .then((response) async {
             if (response.statusCode == 200) {
               Navigator.of(context).pop();
+              OneSignal.login(account);
               final SharedPreferences prefs =
                   await SharedPreferences.getInstance();
               await prefs.setString('account', account);

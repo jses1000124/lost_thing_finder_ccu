@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:final_project/data/post_notification.dart';
 import 'package:final_project/data/upload_image.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,10 +25,12 @@ class _NewMessageState extends State<NewMessage> {
 
   void _submitMessage() async {
     final enteredMessage = _messagecontroller.text;
-    if (enteredMessage.trim().isEmpty && imageURL.isEmpty) {
-      return;
-    }
+
+    if (enteredMessage.trim().isEmpty && imageURL.isEmpty) return;
+
     final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final userEmail = prefs.getString('email')!;
+
     FirebaseFirestore.instance
         .collection('chat')
         .doc(widget.chatID)
@@ -36,13 +38,16 @@ class _NewMessageState extends State<NewMessage> {
         .add({
       'text': enteredMessage,
       'createdAt': Timestamp.now(),
-      'userEmail': prefs.getString('email'),
+      'userEmail': userEmail,
       'chatID': widget.chatID,
       'imageURL': imageURL,
     });
+
     FirebaseFirestore.instance.collection('chat').doc(widget.chatID).update(
         {'lastUpdated': Timestamp.now(), 'lastMessage': enteredMessage});
     _messagecontroller.clear();
+
+    sendNotification(userEmail, enteredMessage);
   }
 
   void _showCameraImage() async {

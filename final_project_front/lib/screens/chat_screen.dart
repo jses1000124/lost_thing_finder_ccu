@@ -45,7 +45,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<Widget> chatScreen(BuildContext context) async {
-    String chatNickName = await GetNickname().getNickname(widget.chatUserEmail);
+    String chatNickName = await getNickname(widget.chatUserEmail);
 
     return Scaffold(
       appBar: AppBar(

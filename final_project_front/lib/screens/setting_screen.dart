@@ -43,7 +43,7 @@ class _SettingsPageState extends State<SettingsPage> {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     email = prefs.getString('email') ?? '';
     token = prefs.getString('token') ?? '';
-    nickname = await GetNickname().getNickname(email!);
+    nickname = await getNickname(email!);
     setState(() {});
   }
 
