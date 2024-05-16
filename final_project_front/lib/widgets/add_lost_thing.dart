@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/lost_thing_and_Url.dart';
 import 'package:flutter/material.dart';
-import '../widgets/upload_image_widget.dart';
+import 'upload_image_widget.dart';
 import 'package:http/http.dart' as http;
 
 class AddLostThing extends StatefulWidget {
@@ -62,6 +62,7 @@ class _AddLostThingState extends State<AddLostThing> {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String email = prefs.getString('email') ?? '';
     final String token = prefs.getString('token') ?? '';
+    _showLoadingDialog();
 
     try {
       final response = await http.post(
@@ -80,15 +81,19 @@ class _AddLostThingState extends State<AddLostThing> {
       ).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 201) {
+        Navigator.of(context).pop();
         _showAlertDialog('成功', '上傳成功', isRegister: true, popTwice: true);
       } else {
+        Navigator.of(context).pop();
         final responseData = jsonDecode(response.body);
         String errorMessage = '上傳失敗: ${responseData['message']}';
         _showAlertDialog('失敗', errorMessage);
       }
     } on TimeoutException catch (_) {
+      Navigator.of(context).pop();
       _showAlertDialog('錯誤', '連線超時');
     } catch (e) {
+      Navigator.of(context).pop();
       _showAlertDialog('錯誤', '發生未知錯誤: $e');
     }
   }
@@ -143,6 +148,28 @@ class _AddLostThingState extends State<AddLostThing> {
     });
   }
 
+  void _showLoadingDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // 用戶不能通過點擊外部來關閉對話框
+      builder: (BuildContext context) {
+        return const Dialog(
+          child: Padding(
+            padding: EdgeInsets.all(20),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(width: 20), // 提供一些水平空間
+                Text("正在處理...", style: TextStyle(fontSize: 16)), // 顯示加載信息
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   void dispose() {
     _titleController.dispose();
@@ -154,7 +181,7 @@ class _AddLostThingState extends State<AddLostThing> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(16, 32, 16, 128),
+      padding: const EdgeInsets.fromLTRB(16, 32, 16, 32),
       child: Form(
         key: _formKey,
         child: Column(
