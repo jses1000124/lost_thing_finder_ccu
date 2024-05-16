@@ -16,8 +16,9 @@ class LostThing {
     required this.postUserEmail,
     required this.imageUrl,
     required this.location,
-    required this.headShotUrl,
+    this.headShotIndex,
     this.mylosting,
+    this.id,
   });
 
   final String postUser;
@@ -27,8 +28,9 @@ class LostThing {
   final String content;
   final String location;
   final DateTime date;
-  final String headShotUrl;
+  final int? headShotIndex;
   final int? mylosting;
+  final Object? id;
 
   String get formattedDate {
     return formatter.format(date);
@@ -41,10 +43,11 @@ class LostThing {
       imageUrl: map['image'] as String? ?? '',
       date: DateTime.parse(map['date']),
       location: map['location'] as String? ?? '',
-      postUser: map['author'] as String? ?? '',
+      postUser: map['author_nickname'] as String? ?? '',
       postUserEmail: map['author_email'] as String? ?? '',
-      headShotUrl: map['headShotUrl'] as String? ?? '',
+      headShotIndex: map['userimg'] as int? ?? 0,
       mylosting: map['my_losting'] as int? ?? 0,
+      id: map['id'] as Object? ?? 0,
     );
   }
 }
