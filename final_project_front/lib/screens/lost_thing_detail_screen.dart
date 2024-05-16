@@ -153,7 +153,7 @@ class _LostThing extends State<LostThingDetailScreen>
           String authEmail = snapshot.data!;
           return _buildUI(context, authEmail);
         } else {
-          return const Center(child: CircularProgressIndicator());
+          return const CircularProgressIndicator();
         }
       },
     );
