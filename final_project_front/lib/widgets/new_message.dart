@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:final_project/data/upload_image.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,6 +15,7 @@ class NewMessage extends StatefulWidget {
 
 class _NewMessageState extends State<NewMessage> {
   final _messagecontroller = TextEditingController();
+  String imageURL = '';
 
   @override
   void dispose() {
@@ -22,7 +25,7 @@ class _NewMessageState extends State<NewMessage> {
 
   void _submitMessage() async {
     final enteredMessage = _messagecontroller.text;
-    if (enteredMessage.trim().isEmpty) {
+    if (enteredMessage.trim().isEmpty && imageURL.isEmpty) {
       return;
     }
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -35,26 +38,31 @@ class _NewMessageState extends State<NewMessage> {
       'createdAt': Timestamp.now(),
       'userEmail': prefs.getString('email'),
       'chatID': widget.chatID,
+      'imageURL': imageURL,
     });
     FirebaseFirestore.instance.collection('chat').doc(widget.chatID).update(
         {'lastUpdated': Timestamp.now(), 'lastMessage': enteredMessage});
     _messagecontroller.clear();
   }
 
-  Future<String> _showCameraLibrary() async {
+  void _showCameraImage() async {
     ImagePicker picker = ImagePicker();
     XFile? image = await picker.pickImage(source: ImageSource.camera);
-    if (image == null) return Future.value('');
+    if (image == null) return;
 
-    return image.path;
+    imageURL = await UploadImage().uploadImage(image.path, 'chatImage');
+
+    _submitMessage();
   }
 
-  Future<String> _showPhotoLibrary() async {
+  void _showPhotoLibrary() async {
     ImagePicker picker = ImagePicker();
     XFile? image = await picker.pickImage(source: ImageSource.gallery);
-    if (image == null) return Future.value('');
+    if (image == null) return;
 
-    return image.path;
+    imageURL = await UploadImage().uploadImage(image.path, 'chatImage');
+
+    _submitMessage();
   }
 
   @override
@@ -69,7 +77,7 @@ class _NewMessageState extends State<NewMessage> {
               IconButton(
                 icon: const Icon(Icons.camera_alt),
                 onPressed: () {
-                  _showCameraLibrary();
+                  _showCameraImage();
                 },
               ),
               IconButton(
