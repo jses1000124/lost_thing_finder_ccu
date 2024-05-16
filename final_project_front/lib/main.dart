@@ -1,3 +1,4 @@
+import 'package:final_project/models/userimg_id_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'models/post_provider.dart';
@@ -53,12 +54,15 @@ void main() async {
   final userPreferences = UserPreferences();
   await userPreferences.loadPreferences();
   final postProvider = PostProvider();
+  final userImgIdProvider = UserImgIdProvider();
+  await userImgIdProvider.loadUserImgId();
 
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (_) => postProvider),
       ChangeNotifierProvider(create: (_) => themeProvider),
       ChangeNotifierProvider(create: (_) => userPreferences),
+      ChangeNotifierProvider(create: (_) => userImgIdProvider),
     ],
     child: const MyApp(),
   ));

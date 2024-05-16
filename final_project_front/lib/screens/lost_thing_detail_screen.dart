@@ -81,7 +81,6 @@ class _LostThing extends State<LostThingDetailScreen>
                 Navigator.of(context).pop(false);
               },
             ),
-            const Spacer(),
             TextButton(
               child: const Text('確定'),
               onPressed: () {

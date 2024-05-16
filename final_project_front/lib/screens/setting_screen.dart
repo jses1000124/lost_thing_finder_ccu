@@ -1,4 +1,5 @@
 import 'package:final_project/models/lost_thing_and_Url.dart';
+import 'package:final_project/models/userimg_id_provider.dart';
 import 'package:final_project/screens/my_posts.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -23,7 +24,6 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  int avatarIndex = 0;
   final TextEditingController _nicknameController = TextEditingController();
   final TextEditingController _oldPasswordController = TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
@@ -59,12 +59,18 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    final userImgIdProvider =
+        Provider.of<UserImgIdProvider>(context, listen: false);
     return Consumer<UserPreferences>(builder: (context, userPrefs, child) {
       return Column(
         children: [
           Card(
             child: ListTile(
-              leading: const Icon(Icons.account_circle, size: 40),
+              leading: CircleAvatar(
+                radius: 30,
+                backgroundImage: AssetImage(
+                    'assets/images/avatar_${userImgIdProvider.userImgId}.png'),
+              ),
               title: Text(userPrefs.nickname,
                   style: const TextStyle(
                       fontSize: 20, overflow: TextOverflow.ellipsis)),
@@ -186,13 +192,79 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  void _showLoadingDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // 用戶不能通過點擊外部來關閉對話框
+      builder: (BuildContext context) {
+        return const Dialog(
+          child: Padding(
+            padding: EdgeInsets.all(20),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(width: 20), // 提供一些水平空間
+                Text("正在處理...", style: TextStyle(fontSize: 16)), // 顯示加載信息
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _sendChangedUserImgId(int index) async {
+    final Uri apiUrl = Uri.parse('$basedApiUrl/update_headshot');
+    final Map<String, String> requestBody = {
+      'token': token!,
+      'userimg': index.toString(),
+    };
+    final userImgIdProvider =
+        Provider.of<UserImgIdProvider>(context, listen: false);
+    _showLoadingDialog();
+    try {
+      await http
+          .post(
+            apiUrl,
+            body: jsonEncode(requestBody),
+            headers: {'Content-Type': 'application/json'},
+          )
+          .timeout(const Duration(seconds: 5))
+          .then((response) {
+            if (response.statusCode == 200) {
+              Navigator.of(context).pop(); // 關閉加載對話框
+              setState(() {
+                userImgIdProvider.updateUserImgId(index.toString());
+              });
+              _showAlertDialog('成功', '頭像已更改', success: true, popTwice: true);
+            } else {
+              // 根據不同的錯誤代碼顯示不同的錯誤信息
+              if (response.statusCode == 401) {
+                Navigator.of(context).pop(); // 關閉加載對話框
+                _showAlertDialog('失敗', '無效的頭像');
+              } else if (response.statusCode == 404) {
+                Navigator.of(context).pop(); // 關閉加載對話框
+                _showAlertDialog('失敗', '帳號未找到');
+              } else {
+                Navigator.of(context).pop(); // 關閉加載對話框
+                _showAlertDialog('錯誤', '發生未預期的錯誤');
+              }
+            }
+          });
+    } on TimeoutException catch (_) {
+      Navigator.of(context).pop(); // 關閉加載對話框
+      _showAlertDialog('超時', '請求超時');
+    } catch (e) {
+      Navigator.of(context).pop(); // 關閉加載對話框
+      _showAlertDialog('錯誤', '發生未預期的錯誤：$e');
+    }
+  }
+
   Widget _buildAvatar(BuildContext context, int index) {
     return GestureDetector(
       onTap: () {
-        setState(() {
-          avatarIndex = index;
-          Navigator.of(context).pop();
-        });
+        _sendChangedUserImgId(index);
       },
       child: Container(
         padding: const EdgeInsets.all(10),
@@ -303,6 +375,7 @@ class _SettingsPageState extends State<SettingsPage> {
       'identifier': email!,
       'new_nickname': newNickName,
     };
+    _showLoadingDialog();
     try {
       await http
           .post(
@@ -316,81 +389,29 @@ class _SettingsPageState extends State<SettingsPage> {
               setState(() {
                 nickname = newNickName;
               });
+              Navigator.of(context).pop(); // 關閉加載對話框
               Provider.of<UserPreferences>(context, listen: false)
                   .updateNickname(newNickName);
               _showAlertDialog('成功', '暱稱已更改', success: true, popTwice: true);
             } else {
               // 根據不同的錯誤代碼顯示不同的錯誤信息
               if (response.statusCode == 401) {
+                Navigator.of(context).pop(); // 關閉加載對話框
                 _showAlertDialog('失敗', '無效的暱稱');
               } else if (response.statusCode == 404) {
+                Navigator.of(context).pop(); // 關閉加載對話框
                 _showAlertDialog('失敗', '帳號未找到');
               } else {
+                Navigator.of(context).pop(); // 關閉加載對話框
                 _showAlertDialog('錯誤', '發生未預期的錯誤');
               }
             }
           });
     } on TimeoutException catch (_) {
+      Navigator.of(context).pop(); // 關閉加載對話框
       _showAlertDialog('超時', '請求超時');
     } catch (e) {
-      _showAlertDialog('錯誤', '發生未預期的錯誤：$e');
-    }
-  }
-
-  Future<void> _sendChangedPassword() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    String oldPassword = prefs.getString('password') ?? '';
-    if (oldPassword != _oldPasswordController.text) {
-      _showAlertDialog('錯誤', '舊密碼錯誤');
-      return;
-    }
-    if (_oldPasswordController.text.isEmpty ||
-        _newPasswordController.text.isEmpty ||
-        _checkNewPasswordController.text.isEmpty) {
-      _showAlertDialog('錯誤', '密碼不可為空');
-      return;
-    }
-    if (_newPasswordController.text != _checkNewPasswordController.text) {
-      _showAlertDialog('錯誤', '新密碼不一致');
-      return;
-    }
-
-    final String inputOldPassword = _oldPasswordController.text;
-    final String newPassword = _newPasswordController.text;
-    final Uri apiUrl = Uri.parse('$basedApiUrl/change_password');
-    final Map<String, String> requestBody = {
-      'token': token!,
-      'identifier': email!,
-      'old_password': inputOldPassword,
-      'new_password': newPassword,
-    };
-    try {
-      await http
-          .post(
-            apiUrl,
-            body: jsonEncode(requestBody),
-            headers: {'Content-Type': 'application/json'},
-          )
-          .timeout(const Duration(seconds: 5))
-          .then((response) {
-            if (response.statusCode == 200) {
-              prefs.setString('password', newPassword);
-              prefs.setBool('autoLogin', false);
-              _showAlertDialog('成功', '密碼已更改', success: true, toLogin: true);
-            } else {
-              // 根據不同的錯誤代碼顯示不同的錯誤信息
-              if (response.statusCode == 401) {
-                _showAlertDialog('失敗', '無效的密碼');
-              } else if (response.statusCode == 404) {
-                _showAlertDialog('失敗', '帳號未找到');
-              } else {
-                _showAlertDialog('錯誤', '發生未預期的錯誤');
-              }
-            }
-          });
-    } on TimeoutException catch (_) {
-      _showAlertDialog('超時', '請求超時');
-    } catch (e) {
+      Navigator.of(context).pop(); // 關閉加載對話框
       _showAlertDialog('錯誤', '發生未預期的錯誤：$e');
     }
   }
