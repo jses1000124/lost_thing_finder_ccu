@@ -38,7 +38,7 @@ class GetUserData {
         String? username = body['username'];
         String? nickname = body['nickname'];
         String? returnedAccount = body['email'];
-        String? userimgid = body['userimg'];
+        int? userimgid = body['userimg'];
 
         if (username != null) {
           await prefs.setString('username', username);
@@ -62,7 +62,7 @@ class GetUserData {
           debugPrint("Account is null in the response");
         }
         if (userimgid != null) {
-          await prefs.setString('avatarid', userimgid).then((value) {
+          await prefs.setString('avatarid', userimgid.toString()).then((value) {
             Provider.of<UserImgIdProvider>(context, listen: false)
                 .loadUserImgId();
           });
