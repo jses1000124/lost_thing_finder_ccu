@@ -65,10 +65,13 @@ class ChatMessage extends StatelessWidget {
             final currentUserNickname =
                 currentUser == authaccount ? myNickname : chatNickName;
 
+            final imageURL = chatMessage['imageURL'] ?? '';
+
             if (nextUserIsSame) {
               return MessageBubble.next(
                 message: chatMessage['text'],
                 isMe: currentUser == authaccount,
+                imageURL: imageURL,
               );
             } else {
               return MessageBubble.first(
@@ -77,6 +80,7 @@ class ChatMessage extends StatelessWidget {
                 username: currentUserNickname,
                 message: chatMessage['text'],
                 isMe: currentUser == authaccount,
+                imageURL: imageURL,
               );
             }
           },
