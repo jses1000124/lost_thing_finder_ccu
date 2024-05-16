@@ -1,12 +1,12 @@
-import '../screens/chatlist_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:easy_search_bar/easy_search_bar.dart';
 import '../screens/add_lost_thing.dart';
+import '../screens/chatlist_screen.dart';
 import '../screens/finded_lost_thing_screen.dart';
 import '../screens/lost_thing_screen.dart';
 import 'map_screen.dart';
 import '../screens/setting_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '../widgets/search_app_bar.dart';
 
 class BottomBar extends StatefulWidget {
   const BottomBar({super.key});
@@ -35,9 +35,10 @@ class _BottomBarState extends State<BottomBar> {
 
   void _openAddLostThing() {
     showModalBottomSheet(
-        context: context,
-        builder: (ctx) => const AddLostThing(),
-        isScrollControlled: true);
+      context: context,
+      builder: (ctx) => const AddLostThing(),
+      isScrollControlled: true,
+    );
   }
 
   void _onItemTapped(int index) {
@@ -67,21 +68,26 @@ class _BottomBarState extends State<BottomBar> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _selectedIndex != 2 && _selectedIndex != 3
-          ? AppBar(
-              title: SearchAppBar(
-                hintLabel: '$_title搜尋',
-                onSubmitted: _updateSearch,
-                clearSearch: _updateSearch,
+          ? PreferredSize(
+              preferredSize: const Size.fromHeight(kToolbarHeight),
+              child: EasySearchBar(
+                searchHintText: '$_title搜尋',
+                showClearSearchIcon: true,
+                putActionsOnRight: true,
+                title: Text(_title),
+                onSearch: _updateSearch,
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.chat),
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const ChatListScreen(),
+                      ),
+                    ),
+                  ),
+                ],
+                suggestions: const [],
               ),
-              titleSpacing: 0,
-              elevation: 0,
-              actions: <Widget>[
-                IconButton(
-                  icon: const Icon(Icons.chat),
-                  onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const ChatListScreen())),
-                )
-              ],
             )
           : AppBar(
               title: _selectedIndex == 2 ? const Text('地圖') : const Text('設定'),
@@ -90,7 +96,7 @@ class _BottomBarState extends State<BottomBar> {
                   icon: const Icon(Icons.chat),
                   onPressed: () => Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => const ChatListScreen())),
-                )   
+                )
               ],
             ),
       body: Center(child: _widgetOptions[_selectedIndex]),

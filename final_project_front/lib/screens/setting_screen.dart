@@ -62,99 +62,100 @@ class _SettingsPageState extends State<SettingsPage> {
     final userImgIdProvider =
         Provider.of<UserImgIdProvider>(context, listen: false);
     return Consumer<UserPreferences>(builder: (context, userPrefs, child) {
-      return Column(
-        children: [
-          Card(
-            child: ListTile(
-              leading: CircleAvatar(
-                radius: 30,
-                backgroundImage: AssetImage(
-                    'assets/images/avatar_${userImgIdProvider.userImgId}.png'),
+      return SettingsList(
+        sections: [
+          SettingsSection(
+            tiles: [
+              SettingsTile(
+                title: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .secondaryContainer
+                        .withOpacity(0.5),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      radius: 30,
+                      backgroundImage: AssetImage(
+                          'assets/images/avatar_${userImgIdProvider.userImgId}.png'),
+                    ),
+                    title: Text(userPrefs.nickname,
+                        style: const TextStyle(
+                            fontSize: 20, overflow: TextOverflow.ellipsis)),
+                  ),
+                ),
               ),
-              title: Text(userPrefs.nickname,
-                  style: const TextStyle(
-                      fontSize: 20, overflow: TextOverflow.ellipsis)),
-            ),
+              SettingsTile(
+                title: const Text('更改暱稱'),
+                leading: const Icon(Icons.person),
+                onPressed: (BuildContext context) => _changeNickName(context),
+              ),
+              SettingsTile(
+                title: const Text('更改頭像'),
+                leading: const Icon(Icons.image),
+                onPressed: (BuildContext context) => _changeAvatar(context),
+              ),
+              SettingsTile(
+                  title: const Text('我的貼文'),
+                  leading: const Icon(FontAwesomeIcons.pen),
+                  onPressed: (BuildContext context) =>
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => const MyPostsScreen(),
+                      ))),
+            ],
           ),
-          Expanded(
-            child: SettingsList(
-              sections: [
-                SettingsSection(
-                  tiles: [
-                    SettingsTile(
-                      title: const Text('更改暱稱'),
-                      leading: const Icon(Icons.person),
-                      onPressed: (BuildContext context) =>
-                          _changeNickName(context),
-                    ),
-                    SettingsTile(
-                      title: const Text('更改頭像'),
-                      leading: const Icon(Icons.image),
-                      onPressed: (BuildContext context) =>
-                          _changeAvatar(context),
-                    ),
-                    SettingsTile(
-                        title: const Text('我的貼文'),
-                        leading: const Icon(FontAwesomeIcons.pen),
-                        onPressed: (BuildContext context) =>
-                            Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => const MyPostsScreen(),
-                            ))),
-                  ],
-                ),
-                SettingsSection(
-                  title: const Text('偏好設定'),
-                  tiles: [
-                    SettingsTile.switchTile(
-                      title: const Text('切換深色模式'),
-                      leading: const Icon(Icons.dark_mode),
-                      initialValue: themeProvider.themeMode == ThemeMode.dark,
-                      onToggle: (bool value) {
-                        setState(() {
-                          themeProvider.setThemeMode(
-                              value ? ThemeMode.dark : ThemeMode.light);
-                        });
-                      },
-                    ),
-                  ],
-                ),
-                SettingsSection(
-                  title: const Text('回饋'),
-                  tiles: [
-                    SettingsTile(
-                      title: const Text('與我們聯絡'),
-                      leading: const Icon(Icons.mail),
-                      onPressed: (BuildContext context) async {
-                        final mailtoLink = Mailto(
-                          to: ['ccufinalproject@gmail.com'],
-                          subject: '',
-                          body: '',
-                        );
-                        await launchUrlString('$mailtoLink');
-                      },
-                    ),
-                  ],
-                ),
-                SettingsSection(
-                  title: const Text('帳號安全˙'),
-                  tiles: [
-                    SettingsTile(
-                        title: const Text('更改密碼'),
-                        leading: const Icon(Icons.lock),
-                        onPressed: (BuildContext context) =>
-                            Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) =>
-                                  const ChangePasswordScreen(),
-                            ))),
-                    SettingsTile(
-                      title: const Text('登出'),
-                      leading: const Icon(Icons.logout),
-                      onPressed: (BuildContext context) => logout(),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+          SettingsSection(
+            title: const Text('偏好設定'),
+            tiles: [
+              SettingsTile.switchTile(
+                title: const Text('切換深色模式'),
+                leading: const Icon(Icons.dark_mode),
+                initialValue: themeProvider.themeMode == ThemeMode.dark,
+                onToggle: (bool value) {
+                  setState(() {
+                    themeProvider
+                        .setThemeMode(value ? ThemeMode.dark : ThemeMode.light);
+                  });
+                },
+              ),
+            ],
+          ),
+          SettingsSection(
+            title: const Text('回饋'),
+            tiles: [
+              SettingsTile(
+                title: const Text('與我們聯絡'),
+                leading: const Icon(Icons.mail),
+                onPressed: (BuildContext context) async {
+                  final mailtoLink = Mailto(
+                    to: ['ccufinalproject@gmail.com'],
+                    subject: '',
+                    body: '',
+                  );
+                  await launchUrlString('$mailtoLink');
+                },
+              ),
+            ],
+          ),
+          SettingsSection(
+            title: const Text('帳號安全˙'),
+            tiles: [
+              SettingsTile(
+                  title: const Text('更改密碼'),
+                  leading: const Icon(Icons.lock),
+                  onPressed: (BuildContext context) =>
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => const ChangePasswordScreen(),
+                      ))),
+              SettingsTile(
+                title: const Text('登出'),
+                leading: const Icon(Icons.logout),
+                onPressed: (BuildContext context) => logout(),
+              ),
+            ],
           ),
         ],
       );
@@ -237,7 +238,8 @@ class _SettingsPageState extends State<SettingsPage> {
               setState(() {
                 userImgIdProvider.updateUserImgId(index.toString());
               });
-              _showAlertDialog('成功', '頭像已更改', success: true, popTwice: true);
+              _showAlertDialog('成功', '頭像已更改\n(有時需要重新啟動App)',
+                  success: true, popTwice: true);
             } else {
               // 根據不同的錯誤代碼顯示不同的錯誤信息
               if (response.statusCode == 401) {

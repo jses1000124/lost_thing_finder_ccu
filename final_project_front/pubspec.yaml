@@ -61,6 +61,7 @@ dependencies:
   mailto:
   url_launcher:
   onesignal_flutter: ^5.1.6
+  easy_search_bar: ^2.5.0
 
 dev_dependencies:
   flutter_test:

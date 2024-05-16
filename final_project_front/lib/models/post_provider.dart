@@ -47,7 +47,12 @@ class PostProvider with ChangeNotifier {
       notifyListeners();
     });
   }
-  Future<int> deletePost(Object? postId,Object? token) async {
+
+  Future<void> fetchPosts() async {
+    socket.emit('get_posts', 'Client requested posts!');
+  }
+
+  Future<int> deletePost(Object? postId, Object? token) async {
     final Uri apiUrl = Uri.parse('$basedApiUrl/delete_post');
     final Map<String, Object?> requestBody = {
       'token': token,
@@ -71,7 +76,41 @@ class PostProvider with ChangeNotifier {
       return 8787;
     }
   }
+  //   Future<int> updatePost(Object? postId, String token, String name, String location, String content) async {
+  //   final Uri apiUrl = Uri.parse('$basedApiUrl/update_post');
+  //   final Map<String, Object?> requestBody = {
+  //     'token': token,
+  //     'id': postId,
+  //     'name': name,
+  //     'location': location,
+  //     'content': content,
+  //   };
 
+  //   try {
+  //     final response = await http.post(apiUrl,
+  //         body: jsonEncode(requestBody),
+  //         headers: {'Content-Type': 'application/json'});
+
+  //     if (response.statusCode == 200) {
+  //       // Find the post and update its details
+  //       final index = posts.indexWhere((post) => post.id == postId);
+  //       if (index != -1) {
+  //         posts[index] = posts[index].copyWith(
+  //           lostThingName: name,
+  //           location: location,
+  //           content: content,
+  //         );
+  //         notifyListeners();
+  //       }
+  //       return 200;
+  //     } else {
+  //       return response.statusCode;
+  //     }
+  //   } catch (e) {
+  //     print('Error updating post: $e');
+  //     return 8787;
+  //   }
+  // }
 
   @override
   void dispose() {

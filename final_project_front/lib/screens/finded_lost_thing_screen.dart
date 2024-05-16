@@ -14,6 +14,10 @@ class FindedThingScreen extends StatefulWidget {
 }
 
 class _FindedThingScreenState extends State<FindedThingScreen> {
+  Future<void> _refreshPosts(BuildContext context) async {
+    await Provider.of<PostProvider>(context, listen: false).fetchPosts();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<PostProvider>(
@@ -33,13 +37,16 @@ class _FindedThingScreenState extends State<FindedThingScreen> {
           }).toList();
         }
 
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Expanded(
-              child: LostThingsList(lostThings: filteredFoundThings),
-            )
-          ],
+        return RefreshIndicator(
+          onRefresh: () => _refreshPosts(context),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                child: LostThingsList(lostThings: filteredFoundThings),
+              )
+            ],
+          ),
         );
       },
     );

@@ -125,7 +125,7 @@ class _LostThing extends State<LostThingDetailScreen>
   }
 
   void _showAlertDialog(String title, String message,
-      {bool isRegister = false, bool popThird = false, bool popTwice = false}) {
+      {bool isRegister = false, bool popTwice = false}) {
     showDialog(
       context: context,
       builder: (context) {
@@ -146,11 +146,7 @@ class _LostThing extends State<LostThingDetailScreen>
                 'OK',
               ),
               onPressed: () {
-                if (popThird) {
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pop();
-                } else if (popTwice) {
+                if (popTwice) {
                   Navigator.of(context).pop();
                   Navigator.of(context).pop();
                 } else {
