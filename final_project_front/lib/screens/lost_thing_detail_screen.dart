@@ -67,6 +67,37 @@ class _LostThing extends State<LostThingDetailScreen>
     );
   }
 
+  Future<void> _confirmDeletePosts() async {
+    bool? confirm = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('確認刪除'),
+          content: const Text('確定要刪除嗎？'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('取消'),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+            ),
+            const Spacer(),
+            TextButton(
+              child: const Text('確定'),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirm == true) {
+      _deletePosts();
+    }
+  }
+
   @override
   void dispose() {
     _controller.dispose();
@@ -166,7 +197,7 @@ class _LostThing extends State<LostThingDetailScreen>
             IconButton(
               icon: const Icon(FontAwesomeIcons.trashCan,
                   color: Color.fromARGB(255, 255, 145, 137)),
-              onPressed: _deletePosts,
+              onPressed: _confirmDeletePosts,
             ),
         ],
       ),
