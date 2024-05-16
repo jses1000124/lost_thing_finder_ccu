@@ -234,12 +234,11 @@ class _SettingsPageState extends State<SettingsPage> {
             headers: {'Content-Type': 'application/json'},
           )
           .timeout(const Duration(seconds: 5))
-          .then((response) {
+          .then((response) async {
             if (response.statusCode == 200) {
               Navigator.of(context).pop(); // 關閉加載對話框
-              setState(() {
-                userImgIdProvider.updateUserImgId(index.toString());
-              });
+              await userImgIdProvider.updateUserImgId(index.toString());
+              setState(() {});
               _showAlertDialog('成功', '頭像已更改\n(有時需要重新啟動App)',
                   success: true, popTwice: true);
             } else {
