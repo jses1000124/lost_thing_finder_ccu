@@ -45,6 +45,11 @@ class PostProvider with ChangeNotifier {
     });
   }
 
+  void removePost(LostThing post) {
+    posts.remove(post);
+    notifyListeners();
+  }
+
   @override
   void dispose() {
     socket.disconnect();
