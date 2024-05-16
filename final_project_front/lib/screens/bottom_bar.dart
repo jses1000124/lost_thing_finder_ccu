@@ -33,14 +33,6 @@ class _BottomBarState extends State<BottomBar> {
     ];
   }
 
-  void _openAddLostThing() {
-    showModalBottomSheet(
-      context: context,
-      builder: (ctx) => const AddLostThing(),
-      isScrollControlled: true,
-    );
-  }
-
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -103,7 +95,10 @@ class _BottomBarState extends State<BottomBar> {
       floatingActionButton: _selectedIndex == 0 || _selectedIndex == 1
           ? FloatingActionButton(
               mini: true,
-              onPressed: _openAddLostThing,
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const AddLostThing()));
+              },
               backgroundColor: Theme.of(context).colorScheme.background,
               child: const Icon(Icons.add),
             )
