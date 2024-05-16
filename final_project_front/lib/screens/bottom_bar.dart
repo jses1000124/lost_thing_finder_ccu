@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:easy_search_bar/easy_search_bar.dart';
-import '../widgets/add_lost_thing.dart';
+import 'add_lost_thing.dart';
 import '../screens/chatlist_screen.dart';
 import '../screens/finded_lost_thing_screen.dart';
 import '../screens/lost_thing_screen.dart';

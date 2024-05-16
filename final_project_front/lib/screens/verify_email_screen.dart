@@ -164,18 +164,21 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
           .post(apiUrl,
               body: jsonEncode(requestBody),
               headers: {'Content-Type': 'application/json'})
-          .timeout(const Duration(seconds: 5)) // 設定超時時間
+          .timeout(const Duration(seconds: 10)) // 設定超時時間
           .then((response) {
             Navigator.of(context).pop(); // 關閉加載對話框
             if (response.statusCode == 200) {
               _showVerificationCodeDialog();
             } else {
+              Navigator.of(context).pop(); // 關閉加載對話框
               _showAlertDialog('錯誤', '請稍後再試');
             }
           });
     } on TimeoutException catch (_) {
+      Navigator.of(context).pop(); // 關閉加載對話框
       _showAlertDialog('超時', '驗證郵件請求超時');
     } catch (e) {
+      Navigator.of(context).pop(); // 關閉加載對話框
       _showAlertDialog('錯誤', '未知錯誤：$e');
     }
   }

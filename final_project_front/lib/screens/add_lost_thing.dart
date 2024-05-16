@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/lost_thing_and_Url.dart';
 import 'package:flutter/material.dart';
-import 'upload_image_widget.dart';
+import '../widgets/upload_image_widget.dart';
 import 'package:http/http.dart' as http;
 
 class AddLostThing extends StatefulWidget {
@@ -358,14 +358,6 @@ class _AddLostThingState extends State<AddLostThing> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ElevatedButton(
-                      onPressed: _submitForm,
-                      child: const Text(
-                        '上傳',
-                        style: TextStyle(fontSize: 18),
-                      ),
-                    ),
-                    const SizedBox(width: 40),
                     TextButton(
                       onPressed: Navigator.of(context).pop,
                       child: const Text(
@@ -373,6 +365,14 @@ class _AddLostThingState extends State<AddLostThing> {
                         style: TextStyle(
                           fontSize: 18,
                         ),
+                      ),
+                    ),
+                    const SizedBox(width: 40),
+                    ElevatedButton(
+                      onPressed: _submitForm,
+                      child: const Text(
+                        '上傳',
+                        style: TextStyle(fontSize: 18),
                       ),
                     ),
                   ],

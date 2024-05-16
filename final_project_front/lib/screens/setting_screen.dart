@@ -307,16 +307,16 @@ class _SettingsPageState extends State<SettingsPage> {
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        _sendChangedNickName();
+                        Navigator.of(context).pop();
                       },
-                      child: const Text('確認'),
+                      child: const Text('取消'),
                     ),
                     const Spacer(),
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        _sendChangedNickName();
                       },
-                      child: const Text('取消'),
+                      child: const Text('確認'),
                     ),
                   ],
                 )
