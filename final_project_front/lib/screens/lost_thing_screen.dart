@@ -16,7 +16,10 @@ class LostThingScreen extends StatefulWidget {
 }
 
 class _LostThingScreenState extends State<LostThingScreen> {
-  
+  Future<void> _refreshPosts(BuildContext context) async {
+    await Provider.of<PostProvider>(context, listen: false).fetchPosts();
+  }
+
   @override
   Widget build(BuildContext context) {
     
@@ -30,19 +33,22 @@ class _LostThingScreenState extends State<LostThingScreen> {
             postProvider.posts.where((item) => item.mylosting == 0).toList();
       } else {
         filteredLostThings = postProvider.posts.where((item) {
+          final searchLower = widget.searchedThingName.toLowerCase();
           return item.mylosting == 0 &&
-              item.lostThingName
-                  .toLowerCase()
-                  .contains(widget.searchedThingName.toLowerCase());
+              (item.lostThingName.toLowerCase().contains(searchLower) ||
+                  item.location.toLowerCase().contains(searchLower));
         }).toList();
       }
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Expanded(
-            child: LostThingsList(lostThings: filteredLostThings),
-          )
-        ],
+      return RefreshIndicator(
+        onRefresh: () => _refreshPosts(context),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Expanded(
+              child: LostThingsList(lostThings: filteredLostThings),
+            )
+          ],
+        ),
       );
     });
   }
