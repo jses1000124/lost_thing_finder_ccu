@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'models/theme_provider.dart';
 import 'models/user_nicknames.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 final ThemeData lightTheme = ThemeData(
   useMaterial3: true,
@@ -48,6 +49,13 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+  //Remove this method to stop OneSignal Debugging
+  OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
+
+  OneSignal.initialize("22ccb45f-f773-4a26-a4ea-aab2d267207a");
+
+// The promptForPushNotificationsWithUserResponse function will show the iOS or Android push notification prompt. We recommend removing the following code and instead using an In-App Message to prompt for notification permission
+  OneSignal.Notifications.requestPermission(true);
 
   final themeProvider = ThemeProvider();
   await themeProvider.loadThemeMode();

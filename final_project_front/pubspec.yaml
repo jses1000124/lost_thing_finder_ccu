@@ -60,6 +60,7 @@ dependencies:
   firebase_storage: ^11.7.5
   mailto:
   url_launcher:
+  onesignal_flutter: ^5.1.6
 
 dev_dependencies:
   flutter_test:
