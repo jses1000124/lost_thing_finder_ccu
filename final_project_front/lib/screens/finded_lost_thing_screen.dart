@@ -30,10 +30,10 @@ class _FindedThingScreenState extends State<FindedThingScreen> {
               postProvider.posts.where((item) => item.mylosting == 1).toList();
         } else {
           filteredFoundThings = postProvider.posts.where((item) {
+            final searchLower = widget.searchedThingName.toLowerCase();
             return item.mylosting == 1 &&
-                item.lostThingName
-                    .toLowerCase()
-                    .contains(widget.searchedThingName.toLowerCase());
+                (item.lostThingName.toLowerCase().contains(searchLower) ||
+                    item.location.toLowerCase().contains(searchLower));
           }).toList();
         }
 

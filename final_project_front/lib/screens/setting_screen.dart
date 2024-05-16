@@ -84,7 +84,9 @@ class _SettingsPageState extends State<SettingsPage> {
                     ),
                     title: Text(userPrefs.nickname,
                         style: const TextStyle(
-                            fontSize: 20, overflow: TextOverflow.ellipsis)),
+                            fontSize: 20,
+                            overflow: TextOverflow.ellipsis,
+                            fontWeight: FontWeight.bold)),
                   ),
                 ),
               ),

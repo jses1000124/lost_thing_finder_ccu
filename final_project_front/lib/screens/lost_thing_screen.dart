@@ -28,10 +28,10 @@ class _LostThingScreenState extends State<LostThingScreen> {
             postProvider.posts.where((item) => item.mylosting == 0).toList();
       } else {
         filteredLostThings = postProvider.posts.where((item) {
+          final searchLower = widget.searchedThingName.toLowerCase();
           return item.mylosting == 0 &&
-              item.lostThingName
-                  .toLowerCase()
-                  .contains(widget.searchedThingName.toLowerCase());
+              (item.lostThingName.toLowerCase().contains(searchLower) ||
+                  item.location.toLowerCase().contains(searchLower));
         }).toList();
       }
       return RefreshIndicator(
