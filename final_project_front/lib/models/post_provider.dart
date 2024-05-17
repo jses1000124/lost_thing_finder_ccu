@@ -76,6 +76,7 @@ class PostProvider with ChangeNotifier {
       return 8787;
     }
   }
+
   Future<int> updatePost(LostThing updatedPost, String token) async {
     final Uri apiUrl = Uri.parse('$basedApiUrl/update_post');
     final Map<String, Object?> requestBody = {
@@ -84,6 +85,7 @@ class PostProvider with ChangeNotifier {
       'name': updatedPost.lostThingName,
       'location': updatedPost.location,
       'content': updatedPost.content,
+      'my_losting': updatedPost.mylosting,
     };
 
     try {
@@ -107,7 +109,6 @@ class PostProvider with ChangeNotifier {
       return 8787;
     }
   }
-
 
   @override
   void dispose() {

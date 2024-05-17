@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import '../../screens/login_screen.dart';
+import 'package:final_project/widgets/show_alert_dialog.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -79,7 +79,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           key: _formKey,
           child: SingleChildScrollView(
             child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 buildPasswordField(
@@ -170,61 +170,21 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     await prefs.setBool('autoLogin', false);
   }
 
-  void _showAlertDialog(String title, String message,
-      {bool success = false, bool popTwice = false, bool toLogin = false}) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          icon: success
-              ? const Icon(Icons.check, color: Colors.green, size: 60)
-              : const Icon(Icons.error,
-                  color: Color.fromARGB(255, 255, 97, 149), size: 60),
-          title: Text(title,
-              style: const TextStyle(fontSize: 16),
-              textAlign: TextAlign.center),
-          content: Text(message,
-              style: const TextStyle(fontSize: 16),
-              textAlign: TextAlign.center),
-          actions: [
-            TextButton(
-              child: const Text(
-                'OK',
-              ),
-              onPressed: () {
-                if (toLogin) {
-                  clearSharedPreferences();
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => const LoginScreen()));
-                } else {
-                  Navigator.of(context).pop();
-                  if (popTwice) {
-                    Navigator.of(context).pop();
-                  }
-                }
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   Future<void> _sendChangedPassword() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     String oldPassword = prefs.getString('password') ?? '';
     if (oldPassword != _oldPasswordController.text) {
-      _showAlertDialog('錯誤', '舊密碼錯誤');
+      showAlertDialog('錯誤', '舊密碼錯誤', context);
       return;
     }
     if (_oldPasswordController.text.isEmpty ||
         _newPasswordController.text.isEmpty ||
         _confirmNewPasswordController.text.isEmpty) {
-      _showAlertDialog('錯誤', '密碼不可為空');
+      showAlertDialog('錯誤', '密碼不可為空', context);
       return;
     }
     if (_newPasswordController.text != _confirmNewPasswordController.text) {
-      _showAlertDialog('錯誤', '新密碼不一致');
+      showAlertDialog('錯誤', '新密碼不一致', context);
       return;
     }
     if (!_formKey.currentState!.validate()) {
@@ -252,22 +212,23 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             if (response.statusCode == 200) {
               prefs.setString('password', newPassword);
               prefs.setBool('autoLogin', false);
-              _showAlertDialog('成功', '密碼已更改', success: true, toLogin: true);
+              showAlertDialog('成功', '密碼已更改', context,
+                  success: true, toLogin: true);
             } else {
               // 根據不同的錯誤代碼顯示不同的錯誤信息
               if (response.statusCode == 401) {
-                _showAlertDialog('失敗', '無效的密碼');
+                showAlertDialog('失敗', '無效的密碼', context);
               } else if (response.statusCode == 404) {
-                _showAlertDialog('失敗', '帳號未找到');
+                showAlertDialog('失敗', '帳號未找到', context);
               } else {
-                _showAlertDialog('錯誤', '發生未預期的錯誤');
+                showAlertDialog('錯誤', '發生未預期的錯誤', context);
               }
             }
           });
     } on TimeoutException catch (_) {
-      _showAlertDialog('超時', '請求超時');
+      showAlertDialog('超時', '請求超時', context);
     } catch (e) {
-      _showAlertDialog('錯誤', '發生未預期的錯誤：$e');
+      showAlertDialog('錯誤', '發生未預期的錯誤：$e', context);
     }
   }
 

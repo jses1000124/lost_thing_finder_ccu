@@ -10,7 +10,7 @@ import 'package:final_project/widgets/user_input_login_signup.dart';
 import 'regist_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'verify_email_screen.dart';
-
+import 'package:final_project/widgets/show_alert_dialog.dart';
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -72,7 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _login() async {
     if (_accountController.text.isEmpty || _passwordController.text.isEmpty) {
-      _showAlertDialog('失敗', '請填寫帳號密碼');
+      showAlertDialog('失敗', '請填寫帳號密碼',context);
       return;
     }
     _showLoadingDialog();
@@ -110,51 +110,21 @@ class _LoginScreenState extends State<LoginScreen> {
             } else {
               // 根據不同的錯誤代碼顯示不同的錯誤信息
               if (response.statusCode == 401) {
-                _showAlertDialog('失敗', '無效的密碼', popTwice: true);
+                showAlertDialog('失敗', '無效的密碼',context, popTwice: true);
               } else if (response.statusCode == 404) {
-                _showAlertDialog('失敗', '帳號未找到', popTwice: true);
+                showAlertDialog('失敗', '帳號未找到',context, popTwice: true);
               } else {
-                _showAlertDialog('錯誤', '發生未預期的錯誤', popTwice: true);
+                showAlertDialog('錯誤', '發生未預期的錯誤',context, popTwice: true);
               }
             }
           }); // 設定5秒超時
     } on TimeoutException catch (_) {
-      _showAlertDialog('超時', '請求超時', popTwice: true);
+      showAlertDialog('超時', '請求超時',context, popTwice: true);
     } catch (e) {
-      _showAlertDialog('錯誤', '發生未預期的錯誤：$e', popTwice: true);
+      showAlertDialog('錯誤', '發生未預期的錯誤：$e',context, popTwice: true);
     }
   }
 
-  void _showAlertDialog(String title, String message, {bool popTwice = false}) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          icon: const Icon(Icons.error,
-              color: Color.fromARGB(255, 255, 97, 149), size: 60),
-          title: Text(
-            title,
-            style: const TextStyle(fontSize: 16),
-            textAlign: TextAlign.center,
-          ),
-          content: Text(message,
-              style: const TextStyle(fontSize: 16),
-              textAlign: TextAlign.center),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-                if (popTwice) {
-                  Navigator.of(context).pop();
-                }
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
 
   @override
   void dispose() {

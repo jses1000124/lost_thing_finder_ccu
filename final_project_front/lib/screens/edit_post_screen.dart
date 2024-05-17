@@ -1,10 +1,10 @@
-import 'package:final_project/widgets/upload_image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:final_project/models/lost_thing_and_Url.dart';
 import 'package:final_project/models/post_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import '../widgets/show_alert_dialog.dart';
 
 class EditPostPage extends StatefulWidget {
   final LostThing lostThing;
@@ -72,7 +72,6 @@ class _EditPostPageState extends State<EditPostPage> {
         location: _locationController.text,
         date: _selectedDate,
         mylosting: _selectedPostType,
-        imageUrl: _selectedImagePath,
       );
 
       _showLoadingDialog();
@@ -81,9 +80,9 @@ class _EditPostPageState extends State<EditPostPage> {
       Navigator.of(context).pop(); // Close the loading dialog
 
       if (statusCode == 200) {
-        _showAlertDialog('成功', '貼文已更新', success: true, popTwice: true);
+        showAlertDialog('成功', '貼文已更新',context, success: true, popTwice: true);
       } else {
-        _showAlertDialog('錯誤', '更新貼文失敗，請稍後再試');
+        showAlertDialog('錯誤', '更新貼文失敗，請稍後再試',context);
       }
     }
   }
@@ -106,42 +105,6 @@ class _EditPostPageState extends State<EditPostPage> {
               ],
             ),
           ),
-        );
-      },
-    );
-  }
-
-  void _showAlertDialog(String title, String message,
-      {bool success = false, bool popTwice = false}) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          icon: success
-              ? const Icon(Icons.check, color: Colors.green, size: 60)
-              : const Icon(Icons.error,
-                  color: Color.fromARGB(255, 255, 97, 149), size: 60),
-          title: Text(title,
-              style: const TextStyle(fontSize: 16),
-              textAlign: TextAlign.center),
-          content: Text(message,
-              style: const TextStyle(fontSize: 16),
-              textAlign: TextAlign.center),
-          actions: [
-            TextButton(
-              child: const Text(
-                'OK',
-              ),
-              onPressed: () {
-                if (popTwice) {
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pop();
-                } else {
-                  Navigator.of(context).pop();
-                }
-              },
-            ),
-          ],
         );
       },
     );
@@ -313,24 +276,9 @@ class _EditPostPageState extends State<EditPostPage> {
                 ),
                 const SizedBox(height: 20),
                 Center(
-                  child: UploadImageWidget(
-                    onImagePicked: (path) {
-                      setState(() {
-                        _selectedImagePath = path;
-                      });
-                    },
-                    child: _selectedImagePath == ''
-                        ? Container(
-                            height: 150,
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: const Icon(Icons.camera_alt, size: 50),
-                          )
-                        : Image.network(_selectedImagePath!, fit: BoxFit.cover),
-                  ),
+                  child: _selectedImagePath == ''
+                      ? const SizedBox()
+                      : Image.network(_selectedImagePath!, fit: BoxFit.cover),
                 ),
                 const SizedBox(height: 20),
                 Row(

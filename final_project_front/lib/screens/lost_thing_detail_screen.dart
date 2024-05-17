@@ -9,6 +9,7 @@ import 'package:final_project/models/lost_thing_and_Url.dart';
 import 'package:final_project/data/create_new_room.dart';
 import 'package:final_project/screens/chat_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import '../widgets/show_alert_dialog.dart';
 
 class LostThingDetailScreen extends StatefulWidget {
   final LostThing lostThings;
@@ -112,53 +113,18 @@ class _LostThing extends State<LostThingDetailScreen>
       Navigator.of(context).pop(); // Close the loading dialog
 
       if (code == 200) {
-        _showAlertDialog('成功', '貼文已刪除', isRegister: true, popTwice: true);
+        showAlertDialog('成功', '貼文已刪除',context, isRegister: true, popTwice: true);
       } else if (code == 404) {
-        _showAlertDialog('錯誤', '貼文不存在', popTwice: true);
+        showAlertDialog('錯誤', '貼文不存在',context, popTwice: true);
       } else if (code == 403) {
-        _showAlertDialog('錯誤', '你不是發文者', popTwice: true);
+        showAlertDialog('錯誤', '你不是發文者',context, popTwice: true);
       }
     } catch (e) {
       Navigator.of(context).pop(); // Close the loading dialog
-      _showAlertDialog('錯誤', '未知錯誤：$e', popTwice: true);
+      showAlertDialog('錯誤', '未知錯誤：$e',context, popTwice: true);
     }
   }
 
-  void _showAlertDialog(String title, String message,
-      {bool isRegister = false, bool popTwice = false}) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          icon: isRegister
-              ? const Icon(Icons.check, color: Colors.green, size: 60)
-              : const Icon(Icons.error,
-                  color: Color.fromARGB(255, 255, 97, 149), size: 60),
-          title: Text(title,
-              style: const TextStyle(fontSize: 16),
-              textAlign: TextAlign.center),
-          content: Text(message,
-              style: const TextStyle(fontSize: 16),
-              textAlign: TextAlign.center),
-          actions: [
-            TextButton(
-              child: const Text(
-                'OK',
-              ),
-              onPressed: () {
-                if (popTwice) {
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pop();
-                } else {
-                  Navigator.of(context).pop();
-                }
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {

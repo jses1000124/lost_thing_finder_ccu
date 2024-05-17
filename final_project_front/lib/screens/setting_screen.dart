@@ -16,6 +16,7 @@ import '../data/get_nickname.dart';
 import 'change_passwd_in_login_page.dart';
 import 'package:mailto/mailto.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import '../widgets/show_alert_dialog.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -239,28 +240,28 @@ class _SettingsPageState extends State<SettingsPage> {
               Navigator.of(context).pop(); // 關閉加載對話框
               await userImgIdProvider.updateUserImgId(index.toString());
               setState(() {});
-              _showAlertDialog('成功', '頭像已更改\n(有時需要重新啟動App)',
+              showAlertDialog('成功', '頭像已更改\n(有時需要重新啟動App)',context,
                   success: true, popTwice: true);
             } else {
               // 根據不同的錯誤代碼顯示不同的錯誤信息
               if (response.statusCode == 401) {
                 Navigator.of(context).pop(); // 關閉加載對話框
-                _showAlertDialog('失敗', '無效的頭像');
+                showAlertDialog('失敗', '無效的頭像',context);
               } else if (response.statusCode == 404) {
                 Navigator.of(context).pop(); // 關閉加載對話框
-                _showAlertDialog('失敗', '帳號未找到');
+                showAlertDialog('失敗', '帳號未找到',context);
               } else {
                 Navigator.of(context).pop(); // 關閉加載對話框
-                _showAlertDialog('錯誤', '發生未預期的錯誤');
+                showAlertDialog('錯誤', '發生未預期的錯誤',context);
               }
             }
           });
     } on TimeoutException catch (_) {
       Navigator.of(context).pop(); // 關閉加載對話框
-      _showAlertDialog('超時', '請求超時');
+      showAlertDialog('超時', '請求超時',context);
     } catch (e) {
       Navigator.of(context).pop(); // 關閉加載對話框
-      _showAlertDialog('錯誤', '發生未預期的錯誤：$e');
+      showAlertDialog('錯誤', '發生未預期的錯誤：$e',context);
     }
   }
 
@@ -327,48 +328,11 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  void _showAlertDialog(String title, String message,
-      {bool success = false, bool popTwice = false, bool toLogin = false}) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          icon: success
-              ? const Icon(Icons.check, color: Colors.green, size: 60)
-              : const Icon(Icons.error,
-                  color: Color.fromARGB(255, 255, 97, 149), size: 60),
-          title: Text(title,
-              style: const TextStyle(fontSize: 16),
-              textAlign: TextAlign.center),
-          content: Text(message,
-              style: const TextStyle(fontSize: 16),
-              textAlign: TextAlign.center),
-          actions: [
-            TextButton(
-              child: const Text(
-                'OK',
-              ),
-              onPressed: () {
-                if (toLogin) {
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => const LoginScreen()));
-                } else {
-                  Navigator.of(context).pop();
-                  if (popTwice) {
-                    Navigator.of(context).pop();
-                  }
-                }
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+
 
   Future<void> _sendChangedNickName() async {
     if (_nicknameController.text.isEmpty) {
-      _showAlertDialog('錯誤', '暱稱不可為空');
+      showAlertDialog('錯誤', '暱稱不可為空',context);
       return;
     }
     final String newNickName = _nicknameController.text;
@@ -396,27 +360,27 @@ class _SettingsPageState extends State<SettingsPage> {
               });
               Navigator.of(context).pop(); // 關閉加載對話框
 
-              _showAlertDialog('成功', '暱稱已更改', success: true, popTwice: true);
+              showAlertDialog('成功', '暱稱已更改',context, success: true, popTwice: true);
             } else {
               // 根據不同的錯誤代碼顯示不同的錯誤信息
               if (response.statusCode == 401) {
                 Navigator.of(context).pop(); // 關閉加載對話框
-                _showAlertDialog('失敗', '無效的暱稱');
+                showAlertDialog('失敗', '無效的暱稱',context);
               } else if (response.statusCode == 404) {
                 Navigator.of(context).pop(); // 關閉加載對話框
-                _showAlertDialog('失敗', '帳號未找到');
+                showAlertDialog('失敗', '帳號未找到',context);
               } else {
                 Navigator.of(context).pop(); // 關閉加載對話框
-                _showAlertDialog('錯誤', '發生未預期的錯誤');
+                showAlertDialog('錯誤', '發生未預期的錯誤',context);
               }
             }
           });
     } on TimeoutException catch (_) {
       Navigator.of(context).pop(); // 關閉加載對話框
-      _showAlertDialog('超時', '請求超時');
+      showAlertDialog('超時', '請求超時',context);
     } catch (e) {
       Navigator.of(context).pop(); // 關閉加載對話框
-      _showAlertDialog('錯誤', '發生未預期的錯誤：$e');
+      showAlertDialog('錯誤', '發生未預期的錯誤：$e',context);
     }
   }
 

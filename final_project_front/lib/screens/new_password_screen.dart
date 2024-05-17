@@ -4,6 +4,7 @@ import 'package:final_project/models/lost_thing_and_Url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'login_screen.dart';
+import '../widgets/show_alert_dialog.dart';
 
 class NewPassword extends StatefulWidget {
   const NewPassword({super.key, required this.email, required this.code});
@@ -48,7 +49,7 @@ class _NewPasswordState extends State<NewPassword> {
 
   Future<void> _newPassword() async {
     if (_passwordError != null || _confirmPasswordError != null) {
-      _showAlertDialog('失敗', '請填寫密碼');
+      showAlertDialog('失敗', '請填寫密碼',context);
       return;
     }
 
@@ -69,60 +70,22 @@ class _NewPasswordState extends State<NewPassword> {
       ).timeout(const Duration(seconds: 5)); // 設定5秒超時
 
       if (response.statusCode == 200) {
-        _showAlertDialog('成功', '密碼設定成功', isRegister: true);
+        showAlertDialog('成功', '密碼設定成功',context, isRegister: true);
       } else {
         // 根據不同的錯誤代碼顯示不同的錯誤信息
         if (response.statusCode == 401) {
-          _showAlertDialog('失敗', '無效的密碼');
+          showAlertDialog('失敗', '無效的密碼',context);
         } else if (response.statusCode == 404) {
-          _showAlertDialog('失敗', '帳號未找到');
+          showAlertDialog('失敗', '帳號未找到',context);
         } else {
-          _showAlertDialog('錯誤', '發生未預期的錯誤');
+          showAlertDialog('錯誤', '發生未預期的錯誤',context);
         }
       }
     } on TimeoutException catch (_) {
-      _showAlertDialog('超時', '請求超時');
+      showAlertDialog('超時', '請求超時',context);
     } catch (e) {
-      _showAlertDialog('錯誤', '發生未預期的錯誤：$e');
+      showAlertDialog('錯誤', '發生未預期的錯誤：$e',context);
     }
-  }
-
-  void _showAlertDialog(String title, String message,
-      {bool isRegister = false, bool popTwice = false}) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          icon: isRegister
-              ? const Icon(Icons.check, color: Colors.green, size: 60)
-              : const Icon(Icons.error,
-                  color: Color.fromARGB(255, 255, 97, 149), size: 60),
-          title: Text(title,
-              style: const TextStyle(fontSize: 16),
-              textAlign: TextAlign.center),
-          content: Text(message,
-              style: const TextStyle(fontSize: 16),
-              textAlign: TextAlign.center),
-          actions: [
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () {
-                if (isRegister) {
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => const LoginScreen()));
-                } else {
-                  Navigator.of(context).pop();
-                  if (popTwice) {
-                    Navigator.of(context).pop();
-                  }
-                }
-              },
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
