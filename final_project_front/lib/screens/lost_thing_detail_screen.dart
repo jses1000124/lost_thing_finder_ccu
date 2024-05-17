@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'edit_post_screen.dart';
 import 'package:final_project/models/post_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -186,7 +186,11 @@ class _LostThing extends State<LostThingDetailScreen>
           if (authEmail == lostThings.postUserEmail)
             IconButton(
               icon: const Icon(Icons.edit),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  builder: (ctx) => EditPostPage(lostThing: lostThings),
+                ));
+              },
             ),
           if (authEmail == lostThings.postUserEmail)
             IconButton(
@@ -276,8 +280,7 @@ class _LostThing extends State<LostThingDetailScreen>
 
   void _handleMessageButtonPressed(
       BuildContext context, String authEmail, String postUserEmail) async {
-    String? chatID =
-        await createNewChatRoom(postUserEmail, authEmail);
+    String? chatID = await createNewChatRoom(postUserEmail, authEmail);
     Navigator.of(context).pushReplacement(MaterialPageRoute(
       builder: (ctx) =>
           ChatScreen(chatID: chatID, chatUserEmail: postUserEmail),

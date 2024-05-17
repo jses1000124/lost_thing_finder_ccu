@@ -387,14 +387,15 @@ class _SettingsPageState extends State<SettingsPage> {
             headers: {'Content-Type': 'application/json'},
           )
           .timeout(const Duration(seconds: 5))
-          .then((response) {
+          .then((response) async {
             if (response.statusCode == 200) {
+              await Provider.of<UserPreferences>(context, listen: false)
+                  .updateNickname(newNickName);
               setState(() {
                 nickname = newNickName;
               });
               Navigator.of(context).pop(); // 關閉加載對話框
-              Provider.of<UserPreferences>(context, listen: false)
-                  .updateNickname(newNickName);
+
               _showAlertDialog('成功', '暱稱已更改', success: true, popTwice: true);
             } else {
               // 根據不同的錯誤代碼顯示不同的錯誤信息

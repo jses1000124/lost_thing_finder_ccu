@@ -76,41 +76,38 @@ class PostProvider with ChangeNotifier {
       return 8787;
     }
   }
-  //   Future<int> updatePost(Object? postId, String token, String name, String location, String content) async {
-  //   final Uri apiUrl = Uri.parse('$basedApiUrl/update_post');
-  //   final Map<String, Object?> requestBody = {
-  //     'token': token,
-  //     'id': postId,
-  //     'name': name,
-  //     'location': location,
-  //     'content': content,
-  //   };
+  Future<int> updatePost(LostThing updatedPost, String token) async {
+    final Uri apiUrl = Uri.parse('$basedApiUrl/update_post');
+    final Map<String, Object?> requestBody = {
+      'token': token,
+      'id': updatedPost.id,
+      'name': updatedPost.lostThingName,
+      'location': updatedPost.location,
+      'content': updatedPost.content,
+    };
 
-  //   try {
-  //     final response = await http.post(apiUrl,
-  //         body: jsonEncode(requestBody),
-  //         headers: {'Content-Type': 'application/json'});
+    try {
+      final response = await http.post(apiUrl,
+          body: jsonEncode(requestBody),
+          headers: {'Content-Type': 'application/json'});
 
-  //     if (response.statusCode == 200) {
-  //       // Find the post and update its details
-  //       final index = posts.indexWhere((post) => post.id == postId);
-  //       if (index != -1) {
-  //         posts[index] = posts[index].copyWith(
-  //           lostThingName: name,
-  //           location: location,
-  //           content: content,
-  //         );
-  //         notifyListeners();
-  //       }
-  //       return 200;
-  //     } else {
-  //       return response.statusCode;
-  //     }
-  //   } catch (e) {
-  //     print('Error updating post: $e');
-  //     return 8787;
-  //   }
-  // }
+      if (response.statusCode == 200) {
+        // Find the post and update its details
+        final index = posts.indexWhere((post) => post.id == updatedPost.id);
+        if (index != -1) {
+          posts[index] = updatedPost;
+          notifyListeners();
+        }
+        return 200;
+      } else {
+        return response.statusCode;
+      }
+    } catch (e) {
+      print('Error updating post: $e');
+      return 8787;
+    }
+  }
+
 
   @override
   void dispose() {

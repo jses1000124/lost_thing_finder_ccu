@@ -50,4 +50,29 @@ class LostThing {
       id: map['id'] as Object? ?? 0,
     );
   }
+  LostThing copyWith({
+    String? lostThingName,
+    String? content,
+    DateTime? date,
+    String? postUser,
+    String? postUserEmail,
+    String? imageUrl,
+    String? location,
+    int? headShotIndex,
+    int? mylosting,
+    Object? id,
+  }) {
+    return LostThing(
+      lostThingName: lostThingName ?? this.lostThingName,
+      content: content ?? this.content,
+      date: date ?? this.date,
+      postUser: postUser ?? this.postUser,
+      postUserEmail: postUserEmail ?? this.postUserEmail,
+      imageUrl: imageUrl ?? this.imageUrl,
+      location: location ?? this.location,
+      headShotIndex: headShotIndex ?? this.headShotIndex,
+      mylosting: mylosting ?? this.mylosting,
+      id: id ?? this.id,
+    );
+  }
 }
