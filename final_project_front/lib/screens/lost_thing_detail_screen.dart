@@ -218,7 +218,7 @@ class _LostThingState extends State<LostThingDetailScreen>
               scale: _animation,
               child: FloatingActionButton(
                 onPressed: () => _handleMessageButtonPressed(context, authEmail,
-                    lostThings.postUserEmail, lostThings.postUser),
+                    lostThings.postUserEmail),
                 child: const Icon(Icons.message),
               ),
             )
