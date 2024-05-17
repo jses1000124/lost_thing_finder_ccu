@@ -56,9 +56,18 @@ class _MapPageState extends State<MapPage> {
             height: 80.0,
             point: snapshot.data!,
             child: Container(
-              child: Tooltip(
-                message: "當前位置",
-                child: Icon(Icons.location_pin, color: Colors.red, size: 40.0),
+              width: 20.0,
+              height: 20.0,
+              decoration: BoxDecoration(
+                color: Colors.blue,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.white.withOpacity(0.8),
+                    spreadRadius: 3,
+                    blurRadius: 10,
+                  ),
+                ],
               ),
             ),
           ));
@@ -66,7 +75,7 @@ class _MapPageState extends State<MapPage> {
 
         return FlutterMap(
           options: MapOptions(
-            center: const LatLng(23.563333, 120.474111), // 中心點
+            center: const LatLng(23.563333, 120.474111),
             zoom: 15.0,
           ),
           children: [
