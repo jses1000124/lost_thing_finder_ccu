@@ -75,20 +75,6 @@ class _MapPageState extends State<MapPage> {
               subdomains: const ['a', 'b', 'c'],
             ),
             MarkerLayer(markers: markers),
-            MarkerLayer(
-              markers: [
-                Marker(
-                  width: 80.0,
-                  height: 80.0,
-                  point: snapshot.data ?? const LatLng(23.563333, 120.474111),
-                  child: const Tooltip(
-                    message: "當前位置",
-                    child:
-                        Icon(Icons.location_pin, color: Colors.red, size: 40.0),
-                  ),
-                )
-              ],
-            ),
           ],
         );
       },

@@ -27,6 +27,7 @@ class _AutoLoginHandlerState extends State<AutoLoginHandler> {
 
   Future<void> _checkAndLogin() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
+    if(!mounted) return; // Ensure the widget is still mounted
     final postProvider = Provider.of<PostProvider>(context, listen: false);
 
     bool autoLogin = prefs.getBool('autoLogin') ?? false;
@@ -49,6 +50,7 @@ class _AutoLoginHandlerState extends State<AutoLoginHandler> {
 
         if (response.statusCode == 200 && mounted) {
           await prefs.setString('token', jsonDecode(response.body)['token']);
+          if(!mounted) return; // Ensure the widget is still mounted
           await GetUserData().getUserData(context);
           // 等待直到 PostProvider 的数据加载完毕
           await Future.doWhile(() =>

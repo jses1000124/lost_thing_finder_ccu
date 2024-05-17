@@ -1,11 +1,8 @@
-import 'package:uuid/uuid.dart';
 import 'package:intl/intl.dart';
 
 const String basedApiUrl = 'http://140.123.101.199:5000';
 
 final formatter = DateFormat('yyyy/MM/dd');
-
-const uuid = Uuid();
 
 class LostThing {
   LostThing({

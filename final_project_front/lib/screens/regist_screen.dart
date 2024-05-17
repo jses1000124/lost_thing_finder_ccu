@@ -129,8 +129,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
           );
       // 設定超時時間
     } on TimeoutException catch (_) {
+      if(!mounted) return; // Ensure the widget is still mounted
       showAlertDialog('超時', '驗證碼請求超時', context, popTwice: true);
     } catch (e) {
+      if(!mounted) return; // Ensure the widget is still mounted
       showAlertDialog('錯誤', '未知錯誤：$e', context, popTwice: true);
     }
   }
@@ -197,8 +199,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
             }
           });
     } on TimeoutException catch (_) {
+      if(!mounted) return; // Ensure the widget is still mounted
       showAlertDialog('超時', '驗證郵件請求超時', context, popTwice: true);
     } catch (e) {
+      if(!mounted) return; // Ensure the widget is still mounted
       showAlertDialog('錯誤', '未知錯誤：$e', context, popTwice: true);
     }
   }
@@ -244,8 +248,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
             }
           });
     } on TimeoutException catch (_) {
+      if(!mounted) return; // Ensure the widget is still mounted
       showAlertDialog('超時', '註冊請求超時', context, popTwice: true);
     } catch (e) {
+      if(!mounted) return; // Ensure the widget is still mounted
       showAlertDialog('錯誤', '未知錯誤：$e', context, popTwice: true);
     }
   }

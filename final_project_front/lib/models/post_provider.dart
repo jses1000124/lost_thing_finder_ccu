@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:async'; // Add this import for timeout handling
 
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
@@ -62,7 +63,7 @@ class PostProvider with ChangeNotifier {
     try {
       final response = await http.post(apiUrl,
           body: jsonEncode(requestBody),
-          headers: {'Content-Type': 'application/json'});
+          headers: {'Content-Type': 'application/json'}).timeout(const Duration(seconds: 10)); // Set timeout duration
 
       if (response.statusCode == 200) {
         posts.removeWhere((post) => post.id == postId);
@@ -71,6 +72,9 @@ class PostProvider with ChangeNotifier {
       } else {
         return response.statusCode;
       }
+    } on TimeoutException catch (_) {
+      print('Error: Request timed out');
+      return 408; // HTTP status code for request timeout
     } catch (e) {
       print('Error deleting post: $e');
       return 8787;
@@ -92,7 +96,7 @@ class PostProvider with ChangeNotifier {
     try {
       final response = await http.post(apiUrl,
           body: jsonEncode(requestBody),
-          headers: {'Content-Type': 'application/json'});
+          headers: {'Content-Type': 'application/json'}).timeout(const Duration(seconds: 10)); // Set timeout duration
 
       if (response.statusCode == 200) {
         // Find the post and update its details
@@ -105,6 +109,9 @@ class PostProvider with ChangeNotifier {
       } else {
         return response.statusCode;
       }
+    } on TimeoutException catch (_) {
+      print('Error: Request timed out');
+      return 408; // HTTP status code for request timeout
     } catch (e) {
       print('Error updating post: $e');
       return 8787;

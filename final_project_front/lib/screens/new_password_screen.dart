@@ -48,42 +48,49 @@ class _NewPasswordState extends State<NewPassword> {
 
   Future<void> _newPassword() async {
     if (_passwordError != null || _confirmPasswordError != null) {
-      showAlertDialog('失敗', '請填寫密碼',context);
+      if (mounted) {
+        showAlertDialog('失敗', '請填寫密碼', context);
+      }
       return;
     }
 
     final String password = _passwordController.text;
 
-    final Uri apiUrl =
-        Uri.parse('$basedApiUrl/change_password_with_email');
+    final Uri apiUrl = Uri.parse('$basedApiUrl/change_password_with_email');
     final Map<String, String> requestBody = {
       'new_password': password,
       'identifier': widget.email,
       'code': widget.code,
     };
+
     try {
       final response = await http.post(
         apiUrl,
         body: jsonEncode(requestBody),
         headers: {'Content-Type': 'application/json'},
-      ).timeout(const Duration(seconds: 5)); // 設定5秒超時
+      ).timeout(const Duration(seconds: 5));
+
+      if (!mounted) return;
 
       if (response.statusCode == 200) {
-        showAlertDialog('成功', '密碼設定成功',context, success: true);
+        showAlertDialog('成功', '密碼設定成功', context, success: true);
       } else {
-        // 根據不同的錯誤代碼顯示不同的錯誤信息
         if (response.statusCode == 401) {
-          showAlertDialog('失敗', '無效的密碼',context);
+          showAlertDialog('失敗', '無效的密碼', context);
         } else if (response.statusCode == 404) {
-          showAlertDialog('失敗', '帳號未找到',context);
+          showAlertDialog('失敗', '帳號未找到', context);
         } else {
-          showAlertDialog('錯誤', '發生未預期的錯誤',context);
+          showAlertDialog('錯誤', '發生未預期的錯誤', context);
         }
       }
     } on TimeoutException catch (_) {
-      showAlertDialog('超時', '請求超時',context);
+      if (mounted) {
+        showAlertDialog('超時', '請求超時', context);
+      }
     } catch (e) {
-      showAlertDialog('錯誤', '發生未預期的錯誤：$e',context);
+      if (mounted) {
+        showAlertDialog('錯誤', '發生未預期的錯誤：$e', context);
+      }
     }
   }
 

@@ -173,22 +173,29 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   Future<void> _sendChangedPassword() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     String oldPassword = prefs.getString('password') ?? '';
+
     if (oldPassword != _oldPasswordController.text) {
+      if (!mounted) return;
       showAlertDialog('錯誤', '舊密碼錯誤', context);
       return;
     }
+
     if (_oldPasswordController.text.isEmpty ||
         _newPasswordController.text.isEmpty ||
         _confirmNewPasswordController.text.isEmpty) {
+      if (!mounted) return;
       showAlertDialog('錯誤', '密碼不可為空', context);
       return;
     }
+
     if (_newPasswordController.text != _confirmNewPasswordController.text) {
+      if (!mounted) return;
       showAlertDialog('錯誤', '新密碼不一致', context);
       return;
     }
+
     if (!_formKey.currentState!.validate()) {
-      return; // Stops the function if validation fails
+      return;
     }
 
     final String inputOldPassword = _oldPasswordController.text;
@@ -200,34 +207,34 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       'old_password': inputOldPassword,
       'new_password': newPassword,
     };
+
     try {
-      await http
-          .post(
-            apiUrl,
-            body: jsonEncode(requestBody),
-            headers: {'Content-Type': 'application/json'},
-          )
-          .timeout(const Duration(seconds: 5))
-          .then((response) {
-            if (response.statusCode == 200) {
-              prefs.setString('password', newPassword);
-              prefs.setBool('autoLogin', false);
-              showAlertDialog('成功', '密碼已更改', context,
-                  success: true, toLogin: true);
-            } else {
-              // 根據不同的錯誤代碼顯示不同的錯誤信息
-              if (response.statusCode == 401) {
-                showAlertDialog('失敗', '無效的密碼', context);
-              } else if (response.statusCode == 404) {
-                showAlertDialog('失敗', '帳號未找到', context);
-              } else {
-                showAlertDialog('錯誤', '發生未預期的錯誤', context);
-              }
-            }
-          });
+      final response = await http.post(
+        apiUrl,
+        body: jsonEncode(requestBody),
+        headers: {'Content-Type': 'application/json'},
+      ).timeout(const Duration(seconds: 5));
+
+      if (!mounted) return;
+
+      if (response.statusCode == 200) {
+        prefs.setString('password', newPassword);
+        prefs.setBool('autoLogin', false);
+        showAlertDialog('成功', '密碼已更改', context, success: true, toLogin: true);
+      } else {
+        if (response.statusCode == 401) {
+          showAlertDialog('失敗', '無效的密碼', context);
+        } else if (response.statusCode == 404) {
+          showAlertDialog('失敗', '帳號未找到', context);
+        } else {
+          showAlertDialog('錯誤', '發生未預期的錯誤', context);
+        }
+      }
     } on TimeoutException catch (_) {
+      if (!mounted) return;
       showAlertDialog('超時', '請求超時', context);
     } catch (e) {
+      if (!mounted) return;
       showAlertDialog('錯誤', '發生未預期的錯誤：$e', context);
     }
   }

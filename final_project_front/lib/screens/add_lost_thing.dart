@@ -84,10 +84,11 @@ class _AddLostThingState extends State<AddLostThing> {
         headers: {'Content-Type': 'application/json'},
       ).timeout(const Duration(seconds: 10));
 
+      if (!mounted) return;
+
       if (response.statusCode == 201) {
         Navigator.of(context).pop();
-        showAlertDialog('成功', '上傳成功', context,
-            success: true, popTwice: true);
+        showAlertDialog('成功', '上傳成功', context, success: true, popTwice: true);
       } else {
         Navigator.of(context).pop();
         final responseData = jsonDecode(response.body);
@@ -95,9 +96,11 @@ class _AddLostThingState extends State<AddLostThing> {
         showAlertDialog('失敗', errorMessage, context);
       }
     } on TimeoutException catch (_) {
+      if (!mounted) return;
       Navigator.of(context).pop();
       showAlertDialog('錯誤', '連線超時', context);
     } catch (e) {
+      if (!mounted) return;
       Navigator.of(context).pop();
       showAlertDialog('錯誤', '發生未知錯誤: $e', context);
     }

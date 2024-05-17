@@ -88,8 +88,10 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
           );
       // 設定超時時間
     } on TimeoutException catch (_) {
+      if(!mounted) return; // Ensure the widget is still mounted
       showAlertDialog('超時', '驗證碼請求超時', context);
     } catch (e) {
+      if(!mounted) return; // Ensure the widget is still mounted
       showAlertDialog('錯誤', '未知錯誤：$e', context);
     }
   }
@@ -157,9 +159,11 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
             }
           });
     } on TimeoutException catch (_) {
+      if(!mounted) return; // Ensure the widget is still mounted
       Navigator.of(context).pop(); // 關閉加載對話框
       showAlertDialog('超時', '驗證郵件請求超時', context);
     } catch (e) {
+      if(!mounted) return; // Ensure the widget is still mounted
       Navigator.of(context).pop(); // 關閉加載對話框
       showAlertDialog('錯誤', '未知錯誤：$e', context);
     }
