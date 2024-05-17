@@ -12,7 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'dart:async';
 import '../models/user_nicknames.dart';
-import '../data/get_nickname.dart';
+import '../data/get_nickname_and_userimage.dart';
 import 'change_passwd_in_login_page.dart';
 import 'package:mailto/mailto.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -44,7 +44,7 @@ class _SettingsPageState extends State<SettingsPage> {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     email = prefs.getString('email') ?? '';
     token = prefs.getString('token') ?? '';
-    nickname = await getNickname(email!);
+    nickname = prefs.getString('nickname') ?? '';
     setState(() {});
   }
 

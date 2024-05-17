@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:final_project/data/get_nickname_and_userimage.dart';
+
 import 'edit_post_screen.dart';
 import 'package:final_project/models/post_provider.dart';
 import 'package:flutter/material.dart';
