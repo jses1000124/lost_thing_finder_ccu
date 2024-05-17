@@ -159,7 +159,7 @@ class _LostThingState extends State<LostThingDetailScreen>
           children: [
             Text(
               lostThings.lostThingName,
-              style: theme.textTheme.headline4,
+              style: theme.textTheme.headlineMedium,
             ),
             const SizedBox(height: 20),
             Row(
@@ -173,10 +173,11 @@ class _LostThingState extends State<LostThingDetailScreen>
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(lostThings.postUser, style: theme.textTheme.subtitle1),
+                    Text(lostThings.postUser,
+                        style: theme.textTheme.titleMedium),
                     Text(
                       lostThings.formattedDate,
-                      style: theme.textTheme.subtitle2!.copyWith(
+                      style: theme.textTheme.titleSmall!.copyWith(
                         color: theme.colorScheme.secondary,
                       ),
                     )
@@ -186,7 +187,7 @@ class _LostThingState extends State<LostThingDetailScreen>
                 Icon(Icons.location_on, color: theme.colorScheme.secondary),
                 Text(
                   lostThings.location,
-                  style: theme.textTheme.subtitle1,
+                  style: theme.textTheme.titleMedium,
                 ),
               ],
             ),
@@ -195,7 +196,7 @@ class _LostThingState extends State<LostThingDetailScreen>
             const SizedBox(height: 20),
             Text(
               lostThings.content,
-              style: theme.textTheme.bodyText1,
+              style: theme.textTheme.bodyLarge,
             ),
             const SizedBox(height: 20),
             Center(
@@ -217,8 +218,8 @@ class _LostThingState extends State<LostThingDetailScreen>
           ? ScaleTransition(
               scale: _animation,
               child: FloatingActionButton(
-                onPressed: () => _handleMessageButtonPressed(context, authEmail,
-                    lostThings.postUserEmail),
+                onPressed: () => _handleMessageButtonPressed(
+                    context, authEmail, lostThings.postUserEmail),
                 child: const Icon(Icons.message),
               ),
             )
@@ -229,17 +230,17 @@ class _LostThingState extends State<LostThingDetailScreen>
   void _handleMessageButtonPressed(
       BuildContext context, String authEmail, String postUserEmail) async {
     String? chatID = await createNewChatRoom(postUserEmail, authEmail);
+    if (!mounted) return; // Check if mounted before using context
     List<dynamic> data = (await getNickname([postUserEmail]))[postUserEmail]!;
     String nickname = data[0];
     String chatUserImage = data[1];
-
+    if (!mounted) return; // Check if mounted before using context
     Navigator.of(context).pushReplacement(MaterialPageRoute(
       builder: (ctx) => ChatScreen(
           chatID: chatID,
           chatUserEmail: postUserEmail,
           chatUserNickname: nickname,
-          chatUserImage: chatUserImage
-          ),
+          chatUserImage: chatUserImage),
     ));
   }
 }
