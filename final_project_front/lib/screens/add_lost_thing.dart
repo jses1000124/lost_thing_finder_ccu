@@ -87,7 +87,7 @@ class _AddLostThingState extends State<AddLostThing> {
       if (response.statusCode == 201) {
         Navigator.of(context).pop();
         showAlertDialog('成功', '上傳成功', context,
-            isRegister: true, popTwice: true);
+            success: true, popTwice: true);
       } else {
         Navigator.of(context).pop();
         final responseData = jsonDecode(response.body);

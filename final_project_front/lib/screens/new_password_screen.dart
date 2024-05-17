@@ -69,7 +69,7 @@ class _NewPasswordState extends State<NewPassword> {
       ).timeout(const Duration(seconds: 5)); // 設定5秒超時
 
       if (response.statusCode == 200) {
-        showAlertDialog('成功', '密碼設定成功',context, isRegister: true);
+        showAlertDialog('成功', '密碼設定成功',context, success: true);
       } else {
         // 根據不同的錯誤代碼顯示不同的錯誤信息
         if (response.statusCode == 401) {

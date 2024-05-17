@@ -236,9 +236,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
               showAlertDialog('成功', '帳號已成功建立', context, isRegister: true);
             } else if (response.statusCode == 400) {
               _clearTextFields();
-              showAlertDialog('失敗', '使用者名稱或信箱已被註冊', context);
+              showAlertDialog('失敗', '使用者名稱或信箱已被註冊', context, popTwice: true);
             } else if (response.statusCode == 404) {
-              showAlertDialog('失敗', '密碼不符合複雜度要求', context);
+              showAlertDialog('失敗', '密碼不符合複雜度要求', context, popTwice: true);
             } else {
               showAlertDialog('錯誤', '請稍後再試', context, popTwice: true);
             }

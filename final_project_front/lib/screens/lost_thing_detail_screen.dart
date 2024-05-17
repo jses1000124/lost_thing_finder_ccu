@@ -92,8 +92,7 @@ class _LostThing extends State<LostThingDetailScreen>
       Navigator.of(context).pop(); // Close the loading dialog
 
       if (code == 200) {
-        showAlertDialog('成功', '貼文已刪除', context,
-            isRegister: true, popTwice: true);
+        showAlertDialog('成功', '貼文已刪除', context, success: true, popTwice: true);
       } else if (code == 404) {
         showAlertDialog('錯誤', '貼文不存在', context, popTwice: true);
       } else if (code == 403) {
