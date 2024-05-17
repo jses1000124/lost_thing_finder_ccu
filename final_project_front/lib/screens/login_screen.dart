@@ -11,6 +11,7 @@ import 'regist_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'verify_email_screen.dart';
 import 'package:final_project/widgets/show_alert_dialog.dart';
+import '../widgets/show_loading_dialog.dart';
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -48,34 +49,13 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  void _showLoadingDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const Dialog(
-          child: Padding(
-            padding: EdgeInsets.all(20),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(width: 20),
-                Text("正在登入...", style: TextStyle(fontSize: 16)),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
 
   Future<void> _login() async {
     if (_accountController.text.isEmpty || _passwordController.text.isEmpty) {
       showAlertDialog('失敗', '請填寫帳號密碼',context);
       return;
     }
-    _showLoadingDialog();
+    showLoadingDialog(context);
     final String account = _accountController.text;
     final String password = _passwordController.text;
 

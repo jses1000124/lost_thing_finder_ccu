@@ -17,7 +17,7 @@ import 'change_passwd_in_login_page.dart';
 import 'package:mailto/mailto.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../widgets/show_alert_dialog.dart';
-
+import '../widgets/show_loading_dialog.dart';
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
   @override
@@ -196,28 +196,6 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  void _showLoadingDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false, // 用戶不能通過點擊外部來關閉對話框
-      builder: (BuildContext context) {
-        return const Dialog(
-          child: Padding(
-            padding: EdgeInsets.all(20),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(width: 20), // 提供一些水平空間
-                Text("正在處理...", style: TextStyle(fontSize: 16)), // 顯示加載信息
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   Future<void> _sendChangedUserImgId(int index) async {
     final Uri apiUrl = Uri.parse('$basedApiUrl/update_headshot');
     final Map<String, String> requestBody = {
@@ -226,7 +204,7 @@ class _SettingsPageState extends State<SettingsPage> {
     };
     final userImgIdProvider =
         Provider.of<UserImgIdProvider>(context, listen: false);
-    _showLoadingDialog();
+    showLoadingDialog(context);
     try {
       await http
           .post(
@@ -342,7 +320,7 @@ class _SettingsPageState extends State<SettingsPage> {
       'identifier': email!,
       'new_nickname': newNickName,
     };
-    _showLoadingDialog();
+    showLoadingDialog(context);
     try {
       await http
           .post(

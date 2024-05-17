@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import '../widgets/show_loading_dialog.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:final_project/widgets/show_alert_dialog.dart';
@@ -27,16 +28,16 @@ class _AddLostThingState extends State<AddLostThing> {
 
   void _submitForm() {
     if (_selectedDate == null) {
-      showAlertDialog('日期尚未選擇', '請選擇一個日期才能提交',context);
+      showAlertDialog('日期尚未選擇', '請選擇一個日期才能提交', context);
       return;
     }
     if (_formKey.currentState!.validate()) {
       if (_imagepath.isNotEmpty) {
-        _showLoadingDialog();
+        showLoadingDialog(context);
 
         uploadImage();
       } else {
-        _showLoadingDialog();
+        showLoadingDialog(context);
 
         postDetails(null);
       }
@@ -85,22 +86,22 @@ class _AddLostThingState extends State<AddLostThing> {
 
       if (response.statusCode == 201) {
         Navigator.of(context).pop();
-        showAlertDialog('成功', '上傳成功',context, isRegister: true, popTwice: true);
+        showAlertDialog('成功', '上傳成功', context,
+            isRegister: true, popTwice: true);
       } else {
         Navigator.of(context).pop();
         final responseData = jsonDecode(response.body);
         String errorMessage = '上傳失敗: ${responseData['message']}';
-        showAlertDialog('失敗', errorMessage,context);
+        showAlertDialog('失敗', errorMessage, context);
       }
     } on TimeoutException catch (_) {
       Navigator.of(context).pop();
-      showAlertDialog('錯誤', '連線超時',context);
+      showAlertDialog('錯誤', '連線超時', context);
     } catch (e) {
       Navigator.of(context).pop();
-      showAlertDialog('錯誤', '發生未知錯誤: $e',context);
+      showAlertDialog('錯誤', '發生未知錯誤: $e', context);
     }
   }
-
 
   void _presentDatePicker() async {
     final now = DateTime.now();
@@ -114,28 +115,6 @@ class _AddLostThingState extends State<AddLostThing> {
     setState(() {
       _selectedDate = pickedDate;
     });
-  }
-
-  void _showLoadingDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false, // 用戶不能通過點擊外部來關閉對話框
-      builder: (BuildContext context) {
-        return const Dialog(
-          child: Padding(
-            padding: EdgeInsets.all(20),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(width: 20), // 提供一些水平空間
-                Text("正在處理...", style: TextStyle(fontSize: 16)), // 顯示加載信息
-              ],
-            ),
-          ),
-        );
-      },
-    );
   }
 
   @override

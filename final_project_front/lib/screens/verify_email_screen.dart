@@ -7,6 +7,7 @@ import 'package:email_validator/email_validator.dart';
 import '../widgets/user_input_login_signup.dart';
 import '../screens/new_password_screen.dart';
 import '../widgets/show_alert_dialog.dart';
+import '../widgets/show_loading_dialog.dart';
 
 class VerifyEmailScreen extends StatefulWidget {
   const VerifyEmailScreen({super.key});
@@ -41,7 +42,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
       showAlertDialog('錯誤', '尚未輸入信箱或格式不正確', context);
       return;
     } else {
-      _showLoadingDialog(); // 顯示加載對話框
+      showLoadingDialog(context); // 顯示加載對話框
       verifyEmail().catchError((error) {
         Navigator.of(context).pop(); // 有錯誤也需要關閉加載對話框
         showAlertDialog('錯誤', '出現錯誤: $error', context);
@@ -133,27 +134,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     );
   }
 
-  void _showLoadingDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false, // 用戶不能通過點擊外部來關閉對話框
-      builder: (BuildContext context) {
-        return const Dialog(
-          child: Padding(
-            padding: EdgeInsets.all(20),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(width: 20), // 提供一些水平空間
-                Text("正在處理...", style: TextStyle(fontSize: 16)), // 顯示加載信息
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
+
 
   Future<void> verifyEmail() async {
     final Uri apiUrl = Uri.parse('$basedApiUrl/send_verification_code');

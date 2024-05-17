@@ -5,6 +5,7 @@ import 'package:final_project/models/post_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../widgets/show_alert_dialog.dart';
+import '../widgets/show_loading_dialog.dart';
 
 class EditPostPage extends StatefulWidget {
   final LostThing lostThing;
@@ -74,40 +75,17 @@ class _EditPostPageState extends State<EditPostPage> {
         mylosting: _selectedPostType,
       );
 
-      _showLoadingDialog();
+      showLoadingDialog(context);
 
       int statusCode = await postProvider.updatePost(updatedLostThing, token!);
       Navigator.of(context).pop(); // Close the loading dialog
 
       if (statusCode == 200) {
-        showAlertDialog('成功', '貼文已更新',context, success: true, popTwice: true);
+        showAlertDialog('成功', '貼文已更新', context, success: true, popTwice: true);
       } else {
-        showAlertDialog('錯誤', '更新貼文失敗，請稍後再試',context);
+        showAlertDialog('錯誤', '更新貼文失敗，請稍後再試', context);
       }
     }
-  }
-
-  void _showLoadingDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false, // Users cannot dismiss by tapping outside
-      builder: (BuildContext context) {
-        return const Dialog(
-          child: Padding(
-            padding: EdgeInsets.all(20),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(width: 20), // Add some horizontal space
-                Text("正在處理...",
-                    style: TextStyle(fontSize: 16)), // Display loading message
-              ],
-            ),
-          ),
-        );
-      },
-    );
   }
 
   @override
@@ -247,6 +225,8 @@ class _EditPostPageState extends State<EditPostPage> {
                           ),
                           IconButton(
                             onPressed: _presentDatePicker,
+                            style: const ButtonStyle(
+                                iconSize: MaterialStatePropertyAll(30)),
                             icon: const Icon(
                               Icons.calendar_month,
                             ),

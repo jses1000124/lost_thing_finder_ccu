@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:final_project/models/lost_thing_and_Url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'login_screen.dart';
 import '../widgets/show_alert_dialog.dart';
 
 class NewPassword extends StatefulWidget {

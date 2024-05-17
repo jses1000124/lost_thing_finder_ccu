@@ -10,6 +10,7 @@ import 'package:final_project/data/create_new_room.dart';
 import 'package:final_project/screens/chat_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../widgets/show_alert_dialog.dart';
+import '../widgets/show_loading_dialog.dart';
 
 class LostThingDetailScreen extends StatefulWidget {
   final LostThing lostThings;
@@ -44,28 +45,6 @@ class _LostThing extends State<LostThingDetailScreen>
   Future<void> _loadToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     _token = prefs.getString('token');
-  }
-
-  void _showLoadingDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false, // 用戶不能通過點擊外部來關閉對話框
-      builder: (BuildContext context) {
-        return const Dialog(
-          child: Padding(
-            padding: EdgeInsets.all(20),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(width: 20), // 提供一些水平空間
-                Text("正在處理...", style: TextStyle(fontSize: 16)), // 顯示加載信息
-              ],
-            ),
-          ),
-        );
-      },
-    );
   }
 
   Future<void> _confirmDeletePosts() async {
@@ -108,23 +87,23 @@ class _LostThing extends State<LostThingDetailScreen>
     final postProvider = Provider.of<PostProvider>(context, listen: false);
 
     try {
-      _showLoadingDialog();
+      showLoadingDialog(context);
       int code = await postProvider.deletePost(widget.lostThings.id, _token!);
       Navigator.of(context).pop(); // Close the loading dialog
 
       if (code == 200) {
-        showAlertDialog('成功', '貼文已刪除',context, isRegister: true, popTwice: true);
+        showAlertDialog('成功', '貼文已刪除', context,
+            isRegister: true, popTwice: true);
       } else if (code == 404) {
-        showAlertDialog('錯誤', '貼文不存在',context, popTwice: true);
+        showAlertDialog('錯誤', '貼文不存在', context, popTwice: true);
       } else if (code == 403) {
-        showAlertDialog('錯誤', '你不是發文者',context, popTwice: true);
+        showAlertDialog('錯誤', '你不是發文者', context, popTwice: true);
       }
     } catch (e) {
       Navigator.of(context).pop(); // Close the loading dialog
-      showAlertDialog('錯誤', '未知錯誤：$e',context, popTwice: true);
+      showAlertDialog('錯誤', '未知錯誤：$e', context, popTwice: true);
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
