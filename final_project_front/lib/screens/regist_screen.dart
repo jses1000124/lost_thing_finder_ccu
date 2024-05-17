@@ -1,10 +1,13 @@
 import 'dart:convert';
 import 'dart:async';
+import 'package:final_project/models/lost_thing_and_Url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'login_screen.dart';
 import 'package:final_project/widgets/user_input_login_signup.dart';
 import 'package:email_validator/email_validator.dart';
+import '../widgets/show_alert_dialog.dart';
+import '../widgets/show_loading_dialog.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -83,21 +86,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void _sendVerificationEmail() {
     if (_accountController.text.isEmpty ||
         !EmailValidator.validate(_accountController.text)) {
-      _showAlertDialog('錯誤', '尚未輸入信箱或格式不正確');
+      showAlertDialog('錯誤', '尚未輸入信箱或格式不正確', context);
       return;
     } else if (!_formKey.currentState!.validate()) {
       return;
     } else {
-      _showLoadingDialog(); // 顯示加載對話框
+      showLoadingDialog(context); // 顯示加載對話框
       verifyEmail().catchError((error) {
         Navigator.of(context).pop(); // 有錯誤也需要關閉加載對話框
-        _showAlertDialog('錯誤', '出現錯誤: $error');
+        showAlertDialog('錯誤', '出現錯誤: $error', context);
       });
     }
   }
 
   void _verifyCodeAndSetEmailVerified() async {
-    final Uri apiUrl = Uri.parse('http://140.123.101.199:5000/verification');
+    final Uri apiUrl = Uri.parse('$basedApiUrl/verification');
     try {
       await http
           .post(
@@ -119,16 +122,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Navigator.of(context).pop(); // Close the dialog
                 _signUp();
               } else {
-                _showAlertDialog('錯誤', '驗證碼錯誤');
+                showAlertDialog('錯誤', '驗證碼錯誤', context);
                 codeController.clear();
               }
             },
           );
       // 設定超時時間
     } on TimeoutException catch (_) {
-      _showAlertDialog('超時', '驗證碼請求超時');
+      if(!mounted) return; // Ensure the widget is still mounted
+      showAlertDialog('超時', '驗證碼請求超時', context, popTwice: true);
     } catch (e) {
-      _showAlertDialog('錯誤', '未知錯誤：$e');
+      if(!mounted) return; // Ensure the widget is still mounted
+      showAlertDialog('錯誤', '未知錯誤：$e', context, popTwice: true);
     }
   }
 
@@ -173,31 +178,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  void _showLoadingDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false, // 用戶不能通過點擊外部來關閉對話框
-      builder: (BuildContext context) {
-        return const Dialog(
-          child: Padding(
-            padding: EdgeInsets.all(20),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(width: 20), // 提供一些水平空間
-                Text("正在處理...", style: TextStyle(fontSize: 16)), // 顯示加載信息
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
+
 
   Future<void> verifyEmail() async {
-    final Uri apiUrl =
-        Uri.parse('http://140.123.101.199:5000/send_verification_code');
+    final Uri apiUrl = Uri.parse('$basedApiUrl/send_verification_code');
     Map<String, String> requestBody = {
       'email': _accountController.text,
     };
@@ -211,19 +195,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
             if (response.statusCode == 200) {
               _showVerificationCodeDialog();
             } else {
-              _showAlertDialog('錯誤', '請稍後再試', popTwice: true);
+              showAlertDialog('錯誤', '請稍後再試', context, popTwice: true);
             }
           });
     } on TimeoutException catch (_) {
-      _showAlertDialog('超時', '驗證郵件請求超時', popTwice: true);
+      if(!mounted) return; // Ensure the widget is still mounted
+      showAlertDialog('超時', '驗證郵件請求超時', context, popTwice: true);
     } catch (e) {
-      _showAlertDialog('錯誤', '未知錯誤：$e', popTwice: true);
+      if(!mounted) return; // Ensure the widget is still mounted
+      showAlertDialog('錯誤', '未知錯誤：$e', context, popTwice: true);
     }
   }
 
   Future<void> _signUp() async {
     if (!_emailVerified) {
-      _showAlertDialog('錯誤', '請先驗證您的信箱');
+      showAlertDialog('錯誤', '請先驗證您的信箱', context);
       return;
     }
     if (!_formKey.currentState!.validate()) {
@@ -235,7 +221,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final String password = _passwordController.text;
     final String code = codeController.text;
 
-    final Uri apiUrl = Uri.parse('http://140.123.101.199:5000/register');
+    final Uri apiUrl = Uri.parse('$basedApiUrl/register');
     final Map<String, String> requestBody = {
       'account': account,
       'password': password,
@@ -251,20 +237,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
           .timeout(const Duration(seconds: 5)) // 設定超時時間
           .then((response) {
             if (response.statusCode == 201) {
-              _showAlertDialog('成功', '帳號已成功建立', isRegister: true);
+              showAlertDialog('成功', '帳號已成功建立', context, isRegister: true);
             } else if (response.statusCode == 400) {
               _clearTextFields();
-              _showAlertDialog('失敗', '使用者名稱或信箱已被註冊');
+              showAlertDialog('失敗', '使用者名稱或信箱已被註冊', context, popTwice: true);
             } else if (response.statusCode == 404) {
-              _showAlertDialog('失敗', '密碼不符合複雜度要求');
+              showAlertDialog('失敗', '密碼不符合複雜度要求', context, popTwice: true);
             } else {
-              _showAlertDialog('錯誤', '請稍後再試', popTwice: true);
+              showAlertDialog('錯誤', '請稍後再試', context, popTwice: true);
             }
           });
     } on TimeoutException catch (_) {
-      _showAlertDialog('超時', '註冊請求超時', popTwice: true);
+      if(!mounted) return; // Ensure the widget is still mounted
+      showAlertDialog('超時', '註冊請求超時', context, popTwice: true);
     } catch (e) {
-      _showAlertDialog('錯誤', '未知錯誤：$e', popTwice: true);
+      if(!mounted) return; // Ensure the widget is still mounted
+      showAlertDialog('錯誤', '未知錯誤：$e', context, popTwice: true);
     }
   }
 
@@ -274,50 +262,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _passwordController.clear();
     _confirmPasswordController.clear();
     codeController.clear();
-  }
-
-  void _showAlertDialog(String title, String message,
-      {bool isRegister = false, bool popTwice = false, bool toScreen = false}) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          icon: isRegister
-              ? const Icon(Icons.check, color: Colors.green, size: 60)
-              : const Icon(Icons.error,
-                  color: Color.fromARGB(255, 255, 97, 149), size: 60),
-          title: Text(title,
-              style: const TextStyle(fontSize: 16),
-              textAlign: TextAlign.center),
-          content: Text(message,
-              style: const TextStyle(fontSize: 16),
-              textAlign: TextAlign.center),
-          actions: [
-            TextButton(
-              child: const Text(
-                'OK',
-              ),
-              onPressed: () {
-                if (isRegister) {
-                  Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(
-                          builder: (context) => const LoginScreen()),
-                      (route) => false);
-                } else if (popTwice) {
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pop();
-                } else if (toScreen) {
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => const RegisterScreen()));
-                } else {
-                  Navigator.of(context).pop();
-                }
-              },
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
@@ -350,11 +294,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     errorText: _usernameError,
                     onChanged: _validateUsername),
                 const SizedBox(height: 20),
-                // Row(
-                //   children: [
-                // Expanded(
-                // flex: 14,
-                // child:
                 InputToLoginSignUp(
                     controller: _accountController,
                     icon: const Icon(Icons.mail),
@@ -362,33 +301,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     labelText: '信箱',
                     errorText: _emailError,
                     onChanged: _validateEmail),
-                // ),
-                // const SizedBox(width: 10),
-                // Expanded(
-                //   flex: 4,
-                //   child: TextButton(
-                //     onPressed: _emailVerified
-                //         ? null
-                //         : () {
-                //             if (!_emailVerified) {
-                //               _sendVerificationEmail();
-                //             }
-                //           },
-                //     style: TextButton.styleFrom(
-                //       backgroundColor: _emailVerified
-                //           ? Colors.green
-                //           : null, // Use green color when verified
-                //     ),
-                //     child: Text(
-                //       _emailVerified ? '成功' : '驗證',
-                //       style: TextStyle(
-                //         color: _emailVerified ? Colors.black : null,
-                //       ),
-                //     ),
-                //   ),
-                // ),
-                //   ],
-                // ),
                 const SizedBox(height: 20),
                 TextFormField(
                   controller: _passwordController,

@@ -1,12 +1,15 @@
-import '../widgets/auto_login_handler.dart';
-import 'package:final_project/firebase_options.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:final_project/models/userimg_id_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'models/post_provider.dart';
+import 'widgets/auto_login_handler.dart';
+import 'firebase_options.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
-import '../models/theme_provider.dart';
+import 'models/theme_provider.dart';
 import 'models/user_nicknames.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 final ThemeData lightTheme = ThemeData(
   useMaterial3: true,
@@ -16,7 +19,7 @@ final ThemeData lightTheme = ThemeData(
     onBackground: Colors.white,
     background: Colors.grey[100],
   ),
-  textTheme: GoogleFonts.latoTextTheme().apply(
+  textTheme: GoogleFonts.ibmPlexSansJpTextTheme().apply(
     bodyColor: Colors.black,
     displayColor: Colors.black,
   ),
@@ -33,7 +36,7 @@ final ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
     seedColor: const Color(0xFF6200EE),
   ),
-  textTheme: GoogleFonts.latoTextTheme().apply(
+  textTheme: GoogleFonts.ibmPlexSansJpTextTheme().apply(
     bodyColor: Colors.white,
     displayColor: Colors.white,
   ),
@@ -41,21 +44,36 @@ final ThemeData darkTheme = ThemeData(
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
 
+  // OneSignal Initialization
+  //Remove this method to stop OneSignal Debugging
+  OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
+  OneSignal.initialize("22ccb45f-f773-4a26-a4ea-aab2d267207a");
+// The promptForPushNotificationsWithUserResponse function will show the iOS or Android push notification prompt. We recommend removing the following code and instead using an In-App Message to prompt for notification permission
+  OneSignal.Notifications.requestPermission(true);
+  var permission = OneSignal.Notifications.permission;
+
   final themeProvider = ThemeProvider();
   await themeProvider.loadThemeMode();
   final userPreferences = UserPreferences();
   await userPreferences.loadPreferences();
+  final postProvider = PostProvider();
+  final userImgIdProvider = UserImgIdProvider();
+  await userImgIdProvider.loadUserImgId();
 
   runApp(MultiProvider(
     providers: [
+      ChangeNotifierProvider(create: (_) => postProvider),
       ChangeNotifierProvider(create: (_) => themeProvider),
       ChangeNotifierProvider(create: (_) => userPreferences),
+      ChangeNotifierProvider(create: (_) => userImgIdProvider),
     ],
     child: const MyApp(),
   ));
@@ -70,15 +88,15 @@ class MyApp extends StatelessWidget {
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent, // Transparent status bar
-        statusBarIconBrightness: Brightness.dark, // Dark status bar icons
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
         systemNavigationBarColor: themeProvider.themeMode == ThemeMode.dark
             ? darkTheme.primaryColor
-            : Colors.white, // Navigation bar color based on theme mode
+            : Colors.white,
         systemNavigationBarIconBrightness:
             themeProvider.themeMode == ThemeMode.dark
                 ? Brightness.light
-                : Brightness.dark, // Navigation bar icons based on theme mode
+                : Brightness.dark,
       ),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

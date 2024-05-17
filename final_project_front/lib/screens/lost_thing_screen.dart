@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import '../widgets/lost_things_list.dart';
-import '../models/lost_thing.dart';
+import '../models/lost_thing_and_Url.dart';
+import 'package:provider/provider.dart';
+import '../models/post_provider.dart';
 
 class LostThingScreen extends StatefulWidget {
-  final String searchedThingName; // Add this
+  final String searchedThingName;
 
   const LostThingScreen({super.key, this.searchedThingName = ''});
 
@@ -12,70 +15,40 @@ class LostThingScreen extends StatefulWidget {
 }
 
 class _LostThingScreenState extends State<LostThingScreen> {
-  List<LostThing> filteredLostThings = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _filterItems();
+  Future<void> _refreshPosts(BuildContext context) async {
+    await Provider.of<PostProvider>(context, listen: false).fetchPosts();
   }
-
-  void _filterItems() {
-    setState(() {
-      if (widget.searchedThingName.isEmpty) {
-        filteredLostThings = registedlostThings; // Show all if no search
-      } else {
-        filteredLostThings = registedlostThings.where((item) {
-          return item.lostThingName
-              .toLowerCase()
-              .contains(widget.searchedThingName.toLowerCase());
-        }).toList();
-      }
-    });
-  }
-
-  @override
-  void didUpdateWidget(covariant LostThingScreen oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.searchedThingName != oldWidget.searchedThingName) {
-      _filterItems();
-    }
-  }
-
-  final List<LostThing> registedlostThings = [
-    LostThing(
-      lostThingName: 'iPhone 12',
-      content: 'HI, I lost my iPhone 12, please help me to find it.',
-      imageUrl:
-          'https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/iphone-card-40-iphone15prohero-202309?wid=680&hei=528&fmt=p-jpg&qlt=95&.v=1693086290312',
-      date: DateTime.now(),
-      location: 'Taipei City',
-      postUser: 'John Doe',
-      postUserEmail: 'aa94022728@gmail.com',
-      headShotUrl: 'https://i.pravatar.cc/150?u=a042581f4e29026704d',
-    ),
-    LostThing(
-      lostThingName: 'MacBook Pro',
-      content: 'HI, I lost my MacBook Pro, please help me to find it.',
-      imageUrl:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/MacBook_Pro_15_inch_%282017%29_Touch_Bar.jpg/1920px-MacBook_Pro_15_inch_%282017%29_Touch_Bar.jpg',
-      date: DateTime.now(),
-      location: 'Taipei City',
-      postUser: 'Jane Doe',
-      postUserEmail: 'jses0922737039@gmail.com',
-      headShotUrl: 'https://i.pravatar.cc/150?u=a042581f4e29026704d',
-    ),
-  ]; // Your items
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Expanded(
-          child: LostThingsList(lostThings: filteredLostThings),
-        )
-      ],
-    );
+    
+    OneSignal.login("external_id");
+    
+    return Consumer<PostProvider>(builder: (context, postProvider, child) {
+      // Automatically rebuild this part of the UI whenever postProvider notifies listeners
+      List<LostThing> filteredLostThings = [];
+      if (widget.searchedThingName.isEmpty) {
+        filteredLostThings =
+            postProvider.posts.where((item) => item.mylosting == 0).toList();
+      } else {
+        filteredLostThings = postProvider.posts.where((item) {
+          final searchLower = widget.searchedThingName.toLowerCase();
+          return item.mylosting == 0 &&
+              (item.lostThingName.toLowerCase().contains(searchLower) ||
+                  item.location.toLowerCase().contains(searchLower));
+        }).toList();
+      }
+      return RefreshIndicator(
+        onRefresh: () => _refreshPosts(context),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Expanded(
+              child: LostThingsList(lostThings: filteredLostThings),
+            )
+          ],
+        ),
+      );
+    });
   }
 }

@@ -4,40 +4,45 @@ import 'package:flutter/material.dart';
 
 class ChatScreen extends StatefulWidget {
   final String chatID;
-  final String chatNickName;
+  final String chatUserEmail;
+  final String chatUserNickname;
+
   const ChatScreen(
-      {super.key, required this.chatID, required this.chatNickName});
+      {super.key,
+      required this.chatID,
+      required this.chatUserEmail,
+      required this.chatUserNickname});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  // Notification function
-  // void setupNotifications() async {
-  //   final fcm = FirebaseMessaging.instance;
-  //   await fcm.requestPermission();
-  //   final token = await fcm.getToken();
-  //   print(token);
-  // }
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   setupNotifications();
-  // }
-
   @override
   Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: chatScreen(context),
+      builder: (ctx, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        return snapshot.data as Widget;
+      },
+    );
+  }
+
+  Future<Widget> chatScreen(BuildContext context) async {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.chatNickName),
+        title: Text(widget.chatUserNickname),
       ),
       body: Column(
         children: [
           Expanded(
             child: ChatMessage(
-                chatID: widget.chatID, chatNickName: widget.chatNickName),
+                chatID: widget.chatID, chatNickName: widget.chatUserNickname),
           ),
           NewMessage(
             chatID: widget.chatID,

@@ -1,13 +1,17 @@
 import 'dart:convert';
 import 'dart:async';
 import 'package:final_project/data/get_user_data.dart';
+import 'package:final_project/models/lost_thing_and_Url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'bottom_bar.dart';
 import 'package:final_project/widgets/user_input_login_signup.dart';
 import 'regist_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'verify_email_screen.dart';
+import 'package:final_project/widgets/show_alert_dialog.dart';
+import '../widgets/show_loading_dialog.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -46,38 +50,16 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  void _showLoadingDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const Dialog(
-          child: Padding(
-            padding: EdgeInsets.all(20),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(width: 20),
-                Text("正在登入...", style: TextStyle(fontSize: 16)),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   Future<void> _login() async {
     if (_accountController.text.isEmpty || _passwordController.text.isEmpty) {
-      _showAlertDialog('失敗', '請填寫帳號密碼');
+      showAlertDialog('失敗', '請填寫帳號密碼', context);
       return;
     }
-    _showLoadingDialog();
+    showLoadingDialog(context);
     final String account = _accountController.text;
     final String password = _passwordController.text;
 
-    final Uri apiUrl = Uri.parse('http://140.123.101.199:5000/login');
+    final Uri apiUrl = Uri.parse('$basedApiUrl/login');
     final Map<String, String> requestBody = {
       'account': account,
       'password': password,
@@ -90,16 +72,18 @@ class _LoginScreenState extends State<LoginScreen> {
             body: jsonEncode(requestBody),
             headers: {'Content-Type': 'application/json'},
           )
-          .timeout(const Duration(seconds: 5))
+          .timeout(const Duration(seconds: 8))
           .then((response) async {
             if (response.statusCode == 200) {
               Navigator.of(context).pop();
+              OneSignal.login(account);
               final SharedPreferences prefs =
                   await SharedPreferences.getInstance();
               await prefs.setString('account', account);
               await prefs.setString('password', password);
               await prefs.setString(
                   'token', jsonDecode(response.body)['token']);
+              if (!mounted) return;
               await GetUserData().getUserData(context);
               await prefs.setBool('autoLogin', _autoLogin).then((value) =>
                   Navigator.of(context).pushReplacement(MaterialPageRoute(
@@ -107,50 +91,21 @@ class _LoginScreenState extends State<LoginScreen> {
             } else {
               // 根據不同的錯誤代碼顯示不同的錯誤信息
               if (response.statusCode == 401) {
-                _showAlertDialog('失敗', '無效的密碼', popTwice: true);
+                showAlertDialog('失敗', '無效的密碼', context, popTwice: true);
               } else if (response.statusCode == 404) {
-                _showAlertDialog('失敗', '帳號未找到', popTwice: true);
+                showAlertDialog('失敗', '帳號未找到', context, popTwice: true);
               } else {
-                _showAlertDialog('錯誤', '發生未預期的錯誤', popTwice: true);
+                showAlertDialog('錯誤', '發生未預期的錯誤', context, popTwice: true);
               }
             }
-          }); // 設定5秒超時
+          }); // 設定8秒超時
     } on TimeoutException catch (_) {
-      _showAlertDialog('超時', '請求超時', popTwice: true);
+      if (!mounted) return; // Ensure the widget is still mounted
+      showAlertDialog('超時', '請求超時', context, popTwice: true);
     } catch (e) {
-      _showAlertDialog('錯誤', '發生未預期的錯誤：$e', popTwice: true);
+      if (!mounted) return; // Ensure the widget is still mounted
+      showAlertDialog('錯誤', '發生未預期的錯誤：$e', context, popTwice: true);
     }
-  }
-
-  void _showAlertDialog(String title, String message, {bool popTwice = false}) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          icon: const Icon(Icons.error,
-              color: Color.fromARGB(255, 255, 97, 149), size: 60),
-          title: Text(
-            title,
-            style: const TextStyle(fontSize: 16),
-            textAlign: TextAlign.center,
-          ),
-          content: Text(message,
-              style: const TextStyle(fontSize: 16),
-              textAlign: TextAlign.center),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-                if (popTwice) {
-                  Navigator.of(context).pop();
-                }
-              },
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override

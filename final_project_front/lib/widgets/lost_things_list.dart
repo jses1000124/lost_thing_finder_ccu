@@ -1,5 +1,5 @@
-import 'package:final_project/models/lost_thing.dart';
 import 'package:flutter/material.dart';
+import '../models/lost_thing_and_Url.dart';
 import '../widgets/lost_thing_item.dart';
 
 class LostThingsList extends StatelessWidget {

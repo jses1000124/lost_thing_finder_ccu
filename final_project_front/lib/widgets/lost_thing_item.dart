@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
-import 'package:final_project/models/lost_thing.dart';
+import 'package:final_project/models/lost_thing_and_Url.dart';
 import 'package:final_project/screens/lost_thing_detail_screen.dart';
 
 class LostThingItem extends StatelessWidget {
@@ -32,14 +32,15 @@ class LostThingItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                color: const Color.fromARGB(0, 0, 0, 0),
-                child: FadeInImage(
-                  placeholder: MemoryImage(kTransparentImage),
-                  image: NetworkImage(lostThing.imageUrl),
-                  height: 80,
-                  width: 80,
-                ),
-              ),
+                  color: const Color.fromARGB(0, 0, 0, 0),
+                  child: lostThing.imageUrl != ''
+                      ? FadeInImage(
+                          placeholder: MemoryImage(kTransparentImage),
+                          image: NetworkImage(lostThing.imageUrl),
+                          height: 80,
+                          width: 80,
+                        )
+                      : const SizedBox()),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,

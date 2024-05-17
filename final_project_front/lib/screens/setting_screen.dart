@@ -1,6 +1,10 @@
+import 'package:final_project/models/lost_thing_and_Url.dart';
+import 'package:final_project/models/userimg_id_provider.dart';
+import 'package:final_project/screens/my_posts.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:settings_ui/settings_ui.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import '../models/theme_provider.dart';
 import 'package:http/http.dart' as http;
 import 'login_screen.dart';
@@ -8,7 +12,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'dart:async';
 import '../models/user_nicknames.dart';
-import '../data/get_nickname.dart';
+import 'change_passwd_in_login_page.dart';
+import 'package:mailto/mailto.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import '../widgets/show_alert_dialog.dart';
+import '../widgets/show_loading_dialog.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -17,7 +25,6 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  int avatarIndex = 0;
   final TextEditingController _nicknameController = TextEditingController();
   final TextEditingController _oldPasswordController = TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
@@ -37,7 +44,7 @@ class _SettingsPageState extends State<SettingsPage> {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     email = prefs.getString('email') ?? '';
     token = prefs.getString('token') ?? '';
-    nickname = await GetNickname().getNickname(email!);
+    nickname = prefs.getString('nickname') ?? '';
     setState(() {});
   }
 
@@ -53,79 +60,105 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    final userImgIdProvider =
+        Provider.of<UserImgIdProvider>(context, listen: false);
     return Consumer<UserPreferences>(builder: (context, userPrefs, child) {
-      return Column(
-        children: [
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.account_circle, size: 40),
-              title: Text(userPrefs.nickname,
-                  style: const TextStyle(
-                      fontSize: 20, overflow: TextOverflow.ellipsis)),
-            ),
+      return SettingsList(
+        sections: [
+          SettingsSection(
+            tiles: [
+              SettingsTile(
+                title: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .secondaryContainer
+                        .withOpacity(0.5),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      radius: 30,
+                      backgroundImage: AssetImage(
+                          'assets/images/avatar_${userImgIdProvider.userImgId}.png'),
+                    ),
+                    title: Text(userPrefs.nickname,
+                        style: const TextStyle(
+                            fontSize: 20,
+                            overflow: TextOverflow.ellipsis,
+                            fontWeight: FontWeight.bold)),
+                  ),
+                ),
+              ),
+              SettingsTile(
+                title: const Text('更改暱稱'),
+                leading: const Icon(Icons.person),
+                onPressed: (BuildContext context) => _changeNickName(context),
+              ),
+              SettingsTile(
+                title: const Text('更改頭像'),
+                leading: const Icon(Icons.image),
+                onPressed: (BuildContext context) => _changeAvatar(context),
+              ),
+              SettingsTile(
+                  title: const Text('我的貼文'),
+                  leading: const Icon(FontAwesomeIcons.pen),
+                  onPressed: (BuildContext context) =>
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => const MyPostsScreen(),
+                      ))),
+            ],
           ),
-          Expanded(
-            child: SettingsList(
-              sections: [
-                SettingsSection(
-                  tiles: [
-                    SettingsTile(
-                      title: const Text('更改暱稱'),
-                      leading: const Icon(Icons.person),
-                      onPressed: (BuildContext context) =>
-                          _changeNickName(context),
-                    ),
-                    SettingsTile(
-                      title: const Text('更改頭像'),
-                      leading: const Icon(Icons.image),
-                      onPressed: (BuildContext context) =>
-                          _changeAvatar(context),
-                    ),
-                  ],
-                ),
-                SettingsSection(
-                  title: const Text('偏好設定'),
-                  tiles: [
-                    SettingsTile.switchTile(
-                      title: const Text('切換深色模式'),
-                      leading: const Icon(Icons.dark_mode),
-                      initialValue: themeProvider.themeMode == ThemeMode.dark,
-                      onToggle: (bool value) {
-                        setState(() {
-                          themeProvider.setThemeMode(
-                              value ? ThemeMode.dark : ThemeMode.light);
-                        });
-                      },
-                    ),
-                  ],
-                ),
-                SettingsSection(
-                  title: const Text('回饋'),
-                  tiles: [
-                    SettingsTile(
-                      title: const Text('與我們聯絡'),
-                      leading: const Icon(Icons.mail),
-                      onPressed: (BuildContext context) {},
-                    ),
-                  ],
-                ),
-                SettingsSection(
-                  title: const Text('帳號安全˙'),
-                  tiles: [
-                    SettingsTile(
-                      title: const Text('更改密碼'),
-                      leading: const Icon(Icons.lock),
-                      onPressed: _changePassword,
-                    ),
-                    SettingsTile(
-                      title: const Text('登出'),
-                      leading: const Icon(Icons.logout),
-                      onPressed: (BuildContext context) => logout(),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+          SettingsSection(
+            title: const Text('偏好設定'),
+            tiles: [
+              SettingsTile.switchTile(
+                title: const Text('切換深色模式'),
+                leading: const Icon(Icons.dark_mode),
+                initialValue: themeProvider.themeMode == ThemeMode.dark,
+                onToggle: (bool value) {
+                  setState(() {
+                    themeProvider
+                        .setThemeMode(value ? ThemeMode.dark : ThemeMode.light);
+                  });
+                },
+              ),
+            ],
+          ),
+          SettingsSection(
+            title: const Text('回饋'),
+            tiles: [
+              SettingsTile(
+                title: const Text('與我們聯絡'),
+                leading: const Icon(Icons.mail),
+                onPressed: (BuildContext context) async {
+                  final mailtoLink = Mailto(
+                    to: ['ccufinalproject@gmail.com'],
+                    subject: '',
+                    body: '',
+                  );
+                  await launchUrlString('$mailtoLink');
+                },
+              ),
+            ],
+          ),
+          SettingsSection(
+            title: const Text('帳號安全˙'),
+            tiles: [
+              SettingsTile(
+                  title: const Text('更改密碼'),
+                  leading: const Icon(Icons.lock),
+                  onPressed: (BuildContext context) =>
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => const ChangePasswordScreen(),
+                      ))),
+              SettingsTile(
+                title: const Text('登出'),
+                leading: const Icon(Icons.logout),
+                onPressed: (BuildContext context) => logout(),
+              ),
+            ],
           ),
         ],
       );
@@ -138,19 +171,24 @@ class _SettingsPageState extends State<SettingsPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('選擇頭像'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: List.generate(5, (index) {
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      avatarIndex = index;
-                      Navigator.of(context).pop();
-                    });
-                  },
-                  child: Image.asset('assets/avatar_$index.png'),
-                );
-              }),
+          content: SizedBox(
+            width: double.maxFinite,
+            height: 300, // Set a fixed height to control the dialog size
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children:
+                      List.generate(3, (index) => _buildAvatar(context, index)),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: List.generate(
+                      2, (index) => _buildAvatar(context, index + 3)),
+                ),
+              ],
             ),
           ),
         );
@@ -158,67 +196,73 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  void _changePassword(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('更改密碼'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: [
-                TextField(
-                  decoration: InputDecoration(
-                    hintText: '請輸入舊密碼',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  controller: _oldPasswordController,
-                ),
-                const SizedBox(height: 20),
-                TextField(
-                  decoration: InputDecoration(
-                    hintText: '請輸入新密碼',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  controller: _newPasswordController,
-                ),
-                const SizedBox(height: 20),
-                TextField(
-                  decoration: InputDecoration(
-                    hintText: '確認輸入新密碼',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  controller: _checkNewPasswordController,
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        _sendChangedPassword();
-                      },
-                      child: const Text('確認'),
-                    ),
-                    const Spacer(),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text('取消'),
-                    ),
-                  ],
-                )
-              ],
-            ),
-          ),
-        );
+  Future<void> _sendChangedUserImgId(int index) async {
+    final Uri apiUrl = Uri.parse('$basedApiUrl/update_headshot');
+    final Map<String, String> requestBody = {
+      'token': token!,
+      'userimg': index.toString(),
+    };
+    final userImgIdProvider =
+        Provider.of<UserImgIdProvider>(context, listen: false);
+    showLoadingDialog(context);
+
+    try {
+      final response = await http.post(
+        apiUrl,
+        body: jsonEncode(requestBody),
+        headers: {'Content-Type': 'application/json'},
+      ).timeout(const Duration(seconds: 5));
+
+      if (!mounted) return;
+
+      Navigator.of(context).pop(); // Close the loading dialog
+
+      if (response.statusCode == 200) {
+        await userImgIdProvider
+            .updateUserImgId(index.toString())
+            .then((value) => {
+                  setState(() {}),
+                  showAlertDialog('成功', '頭像已更改\n(有時需要重新啟動App)', context,
+                      success: true, popTwice: true)
+                });
+      } else {
+        if (response.statusCode == 401) {
+          showAlertDialog('失敗', '無效的頭像', context);
+        } else if (response.statusCode == 404) {
+          showAlertDialog('失敗', '帳號未找到', context);
+        } else {
+          showAlertDialog('錯誤', '發生未預期的錯誤', context);
+        }
+      }
+    } on TimeoutException catch (_) {
+      if (!mounted) return;
+      Navigator.of(context).pop(); // Close the loading dialog
+      showAlertDialog('超時', '請求超時', context);
+    } catch (e) {
+      if (!mounted) return;
+      Navigator.of(context).pop(); // Close the loading dialog
+      showAlertDialog('錯誤', '發生未預期的錯誤：$e', context);
+    }
+  }
+
+  Widget _buildAvatar(BuildContext context, int index) {
+    return GestureDetector(
+      onTap: () {
+        _sendChangedUserImgId(index);
       },
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        height: 80,
+        width: 80,
+        clipBehavior: Clip.hardEdge,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          image: DecorationImage(
+            image: AssetImage('assets/images/avatar_$index.png'),
+            fit: BoxFit.cover,
+          ),
+        ),
+      ),
     );
   }
 
@@ -243,16 +287,16 @@ class _SettingsPageState extends State<SettingsPage> {
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        _sendChangedNickName();
+                        Navigator.of(context).pop();
                       },
-                      child: const Text('確認'),
+                      child: const Text('取消'),
                     ),
                     const Spacer(),
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        _sendChangedNickName();
                       },
-                      child: const Text('取消'),
+                      child: const Text('確認'),
                     ),
                   ],
                 )
@@ -264,146 +308,63 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  void _showAlertDialog(String title, String message,
-      {bool success = false, bool popTwice = false, bool toLogin = false}) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          icon: success
-              ? const Icon(Icons.check, color: Colors.green, size: 60)
-              : const Icon(Icons.error,
-                  color: Color.fromARGB(255, 255, 97, 149), size: 60),
-          title: Text(title,
-              style: const TextStyle(fontSize: 16),
-              textAlign: TextAlign.center),
-          content: Text(message,
-              style: const TextStyle(fontSize: 16),
-              textAlign: TextAlign.center),
-          actions: [
-            TextButton(
-              child: const Text(
-                'OK',
-              ),
-              onPressed: () {
-                if (toLogin) {
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => const LoginScreen()));
-                } else {
-                  Navigator.of(context).pop();
-                  if (popTwice) {
-                    Navigator.of(context).pop();
-                  }
-                }
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   Future<void> _sendChangedNickName() async {
     if (_nicknameController.text.isEmpty) {
-      _showAlertDialog('錯誤', '暱稱不可為空');
+      showAlertDialog('錯誤', '暱稱不可為空', context);
       return;
     }
+
     final String newNickName = _nicknameController.text;
-    final Uri apiUrl = Uri.parse('http://140.123.101.199:5000/update_nickname');
+    final Uri apiUrl = Uri.parse('$basedApiUrl/update_nickname');
     final Map<String, String> requestBody = {
       'token': token!,
       'identifier': email!,
       'new_nickname': newNickName,
     };
-    try {
-      await http
-          .post(
-            apiUrl,
-            body: jsonEncode(requestBody),
-            headers: {'Content-Type': 'application/json'},
-          )
-          .timeout(const Duration(seconds: 5))
-          .then((response) {
-            if (response.statusCode == 200) {
-              setState(() {
-                nickname = newNickName;
-              });
-              Provider.of<UserPreferences>(context, listen: false)
-                  .updateNickname(newNickName);
-              _showAlertDialog('成功', '暱稱已更改', success: true, popTwice: true);
-            } else {
-              // 根據不同的錯誤代碼顯示不同的錯誤信息
-              if (response.statusCode == 401) {
-                _showAlertDialog('失敗', '無效的暱稱');
-              } else if (response.statusCode == 404) {
-                _showAlertDialog('失敗', '帳號未找到');
-              } else {
-                _showAlertDialog('錯誤', '發生未預期的錯誤');
-              }
-            }
-          });
-    } on TimeoutException catch (_) {
-      _showAlertDialog('超時', '請求超時');
-    } catch (e) {
-      _showAlertDialog('錯誤', '發生未預期的錯誤：$e');
-    }
-  }
 
-  Future<void> _sendChangedPassword() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    String oldPassword = prefs.getString('password') ?? '';
-    if (oldPassword != _oldPasswordController.text) {
-      _showAlertDialog('錯誤', '舊密碼錯誤');
-      return;
-    }
-    if (_oldPasswordController.text.isEmpty ||
-        _newPasswordController.text.isEmpty ||
-        _checkNewPasswordController.text.isEmpty) {
-      _showAlertDialog('錯誤', '密碼不可為空');
-      return;
-    }
-    if (_newPasswordController.text != _checkNewPasswordController.text) {
-      _showAlertDialog('錯誤', '新密碼不一致');
-      return;
-    }
+    showLoadingDialog(context);
 
-    final String inputOldPassword = _oldPasswordController.text;
-    final String newPassword = _newPasswordController.text;
-    final Uri apiUrl = Uri.parse('http://140.123.101.199:5000/change_password');
-    final Map<String, String> requestBody = {
-      'token': token!,
-      'identifier': email!,
-      'old_password': inputOldPassword,
-      'new_password': newPassword,
-    };
     try {
-      await http
-          .post(
-            apiUrl,
-            body: jsonEncode(requestBody),
-            headers: {'Content-Type': 'application/json'},
-          )
-          .timeout(const Duration(seconds: 5))
-          .then((response) {
-            if (response.statusCode == 200) {
-              prefs.setString('password', newPassword);
-              prefs.setBool('autoLogin', false);
-              _showAlertDialog('成功', '密碼已更改', success: true, toLogin: true);
-            } else {
-              // 根據不同的錯誤代碼顯示不同的錯誤信息
-              if (response.statusCode == 401) {
-                _showAlertDialog('失敗', '無效的密碼');
-              } else if (response.statusCode == 404) {
-                _showAlertDialog('失敗', '帳號未找到');
-              } else {
-                _showAlertDialog('錯誤', '發生未預期的錯誤');
-              }
-            }
+      final response = await http.post(
+        apiUrl,
+        body: jsonEncode(requestBody),
+        headers: {'Content-Type': 'application/json'},
+      ).timeout(const Duration(seconds: 5));
+
+      if (!mounted) return; // Check if the widget is still mounted
+
+      Navigator.of(context).pop(); // Close the loading dialog
+
+      if (response.statusCode == 200) {
+        await Provider.of<UserPreferences>(context, listen: false)
+            .updateNickname(newNickName);
+
+        if (mounted) {
+          setState(() {
+            nickname = newNickName;
           });
+          showAlertDialog('成功', '暱稱已更改', context,
+              success: true, popTwice: true);
+        }
+      } else {
+        if (response.statusCode == 401) {
+          showAlertDialog('失敗', '無效的暱稱', context);
+        } else if (response.statusCode == 404) {
+          showAlertDialog('失敗', '帳號未找到', context);
+        } else {
+          showAlertDialog('錯誤', '發生未預期的錯誤', context);
+        }
+      }
     } on TimeoutException catch (_) {
-      _showAlertDialog('超時', '請求超時');
+      if (mounted) {
+        Navigator.of(context).pop(); // Close the loading dialog
+        showAlertDialog('超時', '請求超時', context);
+      }
     } catch (e) {
-      _showAlertDialog('錯誤', '發生未預期的錯誤：$e');
+      if (mounted) {
+        Navigator.of(context).pop(); // Close the loading dialog
+        showAlertDialog('錯誤', '發生未預期的錯誤：$e', context);
+      }
     }
   }
 

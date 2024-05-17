@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:final_project/data/get_nickname.dart';
-import 'package:final_project/screens/chat_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:final_project/data/get_nickname_and_userimage.dart';
+import 'package:final_project/screens/chat_screen.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class ChatListScreen extends StatefulWidget {
   const ChatListScreen({super.key});
@@ -18,12 +19,14 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final double size = MediaQuery.of(context).size.width;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('聊天室'),
       ),
       body: FutureBuilder(
-        future: _buildChatList(),
+        future: _buildChatList(size),
         builder: (ctx, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
@@ -36,102 +39,122 @@ class _ChatListScreenState extends State<ChatListScreen> {
     );
   }
 
-  Future<Widget> _buildChatList() async {
+  Future<Widget> _buildChatList(double size) async {
     final prefs = await _getPrefs();
     final authaccount = prefs.getString('email')!;
 
-    return StreamBuilder(
-      stream: FirebaseFirestore.instance
-          .collection('chat')
-          .where('member', arrayContains: authaccount)
-          .snapshots(),
-      builder: (ctx, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return const Center(
-            child: Text('還沒有訊息喔！快來聊天吧！'),
-          );
-        }
+    final chatSnapshots = await FirebaseFirestore.instance
+        .collection('chat')
+        .where('member', arrayContains: authaccount)
+        .get();
 
-        if (snapshot.hasError) {
-          return const Center(
-            child: Text('ERROR!'),
-          );
-        }
+    if (chatSnapshots.docs.isEmpty) {
+      return const Center(
+        child: Text('還沒有訊息喔！快來聊天吧！'),
+      );
+    }
 
-        return ListView(
-          children: snapshot.data!.docs
-              .map<Widget>((doc) => FutureBuilder<Widget>(
-                    future: _buildChatItem(doc, authaccount),
-                    builder: (ctx, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      }
-                      return snapshot.data as Widget;
-                    },
-                  ))
-              .toList(),
-        );
-      },
-    );
-  }
+    List<String> memberEmails = [];
 
-  Future<Widget> _buildChatItem(
-      DocumentSnapshot doc, String authaccount) async {
-    // Map<String, dynamic> data = doc.data()! as Map<String, dynamic>;
-    final chatID = doc.id;
-    final member = doc['member'] as List<dynamic>;
-    member.removeWhere((element) => element == authaccount);
-    final nickname = await GetNickname().getNickname(member[0]);
-    double size = MediaQuery.of(context).size.width;
+    for (var doc in chatSnapshots.docs) {
+      final member = doc['member'] as List<dynamic>;
+      member.removeWhere((element) => element == authaccount);
+      memberEmails.add(member[0]);
+    }
 
-    return ListTile(
-      title: Row(
-        children: [
-          const Icon(
-            Icons.account_circle,
-            size: 60,
-          ),
-          const SizedBox(width: 10),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    Map<String, List<dynamic>> memberNicknames = await getNickname(memberEmails);
+
+    return ListView(
+      children: chatSnapshots.docs.map<Widget>((doc) {
+        final member = doc['member'] as List<dynamic>;
+        member.removeWhere((element) => element == authaccount);
+        final memberEmail = member[0];
+        final nickname = memberNicknames[memberEmail]?[0] ?? memberEmail;
+
+        return Slidable(
+          key: Key(doc.id),
+          endActionPane: ActionPane(
+            motion: const ScrollMotion(),
             children: [
-              SizedBox(
-                width: size * 0.7,
-                child: Text(
-                  nickname.length > 10
-                      ? '${nickname.substring(0, 10)}...'
-                      : nickname,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                  maxLines: 1,
-                ),
+              SlidableAction(
+                onPressed: (context) async {
+                  final confirmed = await showDialog(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      title: const Text('確定要刪除此聊天室嗎？'),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(ctx).pop(false);
+                          },
+                          child: const Text('取消'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(ctx).pop(true);
+                          },
+                          child: const Text('確定'),
+                        ),
+                      ],
+                    ),
+                  );
+                  if (confirmed == true) {
+                    await FirebaseFirestore.instance
+                        .collection('chat')
+                        .doc(doc.id)
+                        .delete();
+                    setState(() {});
+                  }
+                },
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+                icon: Icons.delete,
+                label: '刪除',
               ),
-              if (doc['lastMessage'] != '')
-                SizedBox(
-                  width: size * 0.7,
-                  child: Text(
-                    '最新訊息：${doc['lastMessage'].length > 10 ? '${doc['lastMessage'].substring(0, 10)}...' : doc['lastMessage']}',
-                    maxLines: 1,
-                  ),
-                ),
             ],
           ),
-        ],
-      ),
-      onTap: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) =>
-                ChatScreen(chatID: chatID, chatNickName: nickname),
+          child: ListTile(
+            title: Row(
+              children: [
+                const Icon(
+                  Icons.account_circle,
+                  size: 60,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        nickname.length > 10
+                            ? '${nickname.substring(0, 10)}...'
+                            : nickname,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      if (doc['lastMessage'] != '')
+                        Text(
+                          '最新訊息：${doc['lastMessage'].length > 10 ? '${doc['lastMessage'].substring(0, 10)}...' : doc['lastMessage']}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) =>
+                      ChatScreen(chatID: doc.id, chatUserEmail: memberEmail, chatUserNickname: nickname),
+                ),
+              );
+            },
           ),
         );
-      },
+      }).toList(),
     );
   }
 }
