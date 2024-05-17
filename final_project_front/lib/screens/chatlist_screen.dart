@@ -62,14 +62,15 @@ class _ChatListScreenState extends State<ChatListScreen> {
       memberEmails.add(member[0]);
     }
 
-    Map<String, List<dynamic>> memberNicknames = await getNickname(memberEmails);
+    Map<String, List<dynamic>> userData = await getNickname(memberEmails);
 
     return ListView(
       children: chatSnapshots.docs.map<Widget>((doc) {
         final member = doc['member'] as List<dynamic>;
         member.removeWhere((element) => element == authaccount);
         final memberEmail = member[0];
-        final nickname = memberNicknames[memberEmail]?[0] ?? memberEmail;
+        final nickname = userData[memberEmail]?[0] ?? memberEmail;
+        final img = userData[memberEmail]?[1] ?? 0;
 
         return Slidable(
           key: Key(doc.id),
@@ -116,9 +117,9 @@ class _ChatListScreenState extends State<ChatListScreen> {
           child: ListTile(
             title: Row(
               children: [
-                const Icon(
-                  Icons.account_circle,
-                  size: 60,
+                CircleAvatar(
+                  backgroundImage: AssetImage('assets/images/avatar_$img.png'),
+                  radius: 20,
                 ),
                 const SizedBox(width: 10),
                 Expanded(
@@ -147,8 +148,12 @@ class _ChatListScreenState extends State<ChatListScreen> {
             onTap: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) =>
-                      ChatScreen(chatID: doc.id, chatUserEmail: memberEmail, chatUserNickname: nickname),
+                  builder: (context) => ChatScreen(
+                    chatID: doc.id,
+                    chatUserEmail: memberEmail,
+                    chatUserNickname: nickname,
+                    chatUserImage: img,
+                  ),
                 ),
               );
             },

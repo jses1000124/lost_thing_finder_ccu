@@ -6,8 +6,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ChatMessage extends StatelessWidget {
   final String chatID;
   final String chatNickName;
+  final String chatUserImage;
+
   const ChatMessage(
-      {super.key, required this.chatID, required this.chatNickName});
+      {super.key,
+      required this.chatID,
+      required this.chatNickName,
+      required this.chatUserImage});
 
   Future<SharedPreferences> _getPrefs() async {
     return await SharedPreferences.getInstance();
@@ -15,11 +20,14 @@ class ChatMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String authaccount = '';
-    String myNickname = '';
+    String? authaccount;
+    String? myNickname;
+    String? myImg;
+
     _getPrefs().then((prefs) {
       authaccount = prefs.getString('email')!;
       myNickname = prefs.getString('nickname')!;
+      myImg = prefs.getString('avatarid')!;
     });
 
     return StreamBuilder(
@@ -66,6 +74,8 @@ class ChatMessage extends StatelessWidget {
                 currentUser == authaccount ? myNickname : chatNickName;
 
             final imageURL = chatMessage['imageURL'] ?? '';
+            final userImage =
+                currentUser == authaccount ? myImg : chatUserImage;
 
             if (nextUserIsSame) {
               return MessageBubble.next(
@@ -75,8 +85,7 @@ class ChatMessage extends StatelessWidget {
               );
             } else {
               return MessageBubble.first(
-                userImage:
-                    'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+                userImage: userImage,
                 username: currentUserNickname,
                 message: chatMessage['text'],
                 isMe: currentUser == authaccount,

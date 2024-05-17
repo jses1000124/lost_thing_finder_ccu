@@ -59,9 +59,8 @@ class MessageBubble extends StatelessWidget {
             // Align user image to the right, if the message is from me.
             right: isMe ? 0 : null,
             child: CircleAvatar(
-              backgroundImage: NetworkImage(
-                userImage!,
-              ),
+              backgroundImage:
+                  AssetImage('assets/images/avatar_$userImage.png'),
               backgroundColor: theme.colorScheme.primary.withAlpha(180),
               radius: 23,
               child: GestureDetector(

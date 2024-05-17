@@ -6,12 +6,14 @@ class ChatScreen extends StatefulWidget {
   final String chatID;
   final String chatUserEmail;
   final String chatUserNickname;
+  final String chatUserImage;
 
   const ChatScreen(
       {super.key,
       required this.chatID,
       required this.chatUserEmail,
-      required this.chatUserNickname});
+      required this.chatUserNickname, 
+      required this.chatUserImage});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -42,7 +44,7 @@ class _ChatScreenState extends State<ChatScreen> {
         children: [
           Expanded(
             child: ChatMessage(
-                chatID: widget.chatID, chatNickName: widget.chatUserNickname),
+                chatID: widget.chatID, chatNickName: widget.chatUserNickname, chatUserImage: widget.chatUserImage),
           ),
           NewMessage(
             chatID: widget.chatID,

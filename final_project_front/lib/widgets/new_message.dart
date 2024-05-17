@@ -102,12 +102,15 @@ class _NewMessageState extends State<NewMessage> {
               enableSuggestions: true,
               autocorrect: true,
               textCapitalization: TextCapitalization.sentences,
+              style: const TextStyle(fontSize: 14),
               decoration: InputDecoration(
                 hintText: '輸 入 訊 息 . . .',
-                fillColor: const Color.fromARGB(255, 84, 84, 84),
+                fillColor: Theme.of(context).brightness == Brightness.dark
+                    ? const Color.fromARGB(255, 84, 84, 84)
+                    : Colors.white,
                 filled: true,
                 contentPadding:
-                    const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                    const EdgeInsets.symmetric(vertical: 1, horizontal: 10),
                 border: OutlineInputBorder(
                   borderRadius:
                       BorderRadius.circular(20.0), // Set the border radius

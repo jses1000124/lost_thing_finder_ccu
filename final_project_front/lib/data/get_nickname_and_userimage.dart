@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
-Future<Map<String, List<dynamic>>> getNickname(List<String> emails) async {
+Future<Map<String, List<String>>> getNickname(List<String> emails) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String? token = prefs.getString('token');
 
@@ -24,9 +24,11 @@ Future<Map<String, List<dynamic>>> getNickname(List<String> emails) async {
 
     if (response.statusCode == 200) {
       var body = json.decode(response.body);
-      List<dynamic> nicknames = List<dynamic>.from(body['nicknames']);
-      List<dynamic> userimgs = List<dynamic>.from(body['userimgs']);
-      Map<String, List<dynamic>> userDataMap = Map.fromIterables(emails,
+      List<String> nicknames = List<String>.from(body['nicknames']);
+      List<String> userimgs =
+          List<String>.from(body['userimgs'].map((i) => i.toString()).toList());
+
+      Map<String, List<String>> userDataMap = Map.fromIterables(emails,
           List.generate(emails.length, (i) => [nicknames[i], userimgs[i]]));
       return userDataMap;
     } else {

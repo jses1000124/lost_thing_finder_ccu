@@ -226,14 +226,18 @@ class _LostThing extends State<LostThingDetailScreen>
 
   void _handleMessageButtonPressed(
       BuildContext context, String authEmail, String postUserEmail) async {
-    String? nickname = (await getNickname([postUserEmail]))[postUserEmail] as String?;
     String? chatID = await createNewChatRoom(postUserEmail, authEmail);
+    List<dynamic> data = (await getNickname([postUserEmail]))[postUserEmail]!;
+    String nickname = data[0];
+    String chatUserImage = data[1];
 
     Navigator.of(context).pushReplacement(MaterialPageRoute(
       builder: (ctx) => ChatScreen(
           chatID: chatID,
           chatUserEmail: postUserEmail,
-          chatUserNickname: nickname!),
+          chatUserNickname: nickname,
+          chatUserImage: chatUserImage
+          ),
     ));
   }
 }
