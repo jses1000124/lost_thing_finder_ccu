@@ -12,12 +12,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'dart:async';
 import '../models/user_nicknames.dart';
-import '../data/get_nickname_and_userimage.dart';
 import 'change_passwd_in_login_page.dart';
 import 'package:mailto/mailto.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../widgets/show_alert_dialog.dart';
 import '../widgets/show_loading_dialog.dart';
+
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
   @override
@@ -205,41 +205,43 @@ class _SettingsPageState extends State<SettingsPage> {
     final userImgIdProvider =
         Provider.of<UserImgIdProvider>(context, listen: false);
     showLoadingDialog(context);
+
     try {
-      await http
-          .post(
-            apiUrl,
-            body: jsonEncode(requestBody),
-            headers: {'Content-Type': 'application/json'},
-          )
-          .timeout(const Duration(seconds: 5))
-          .then((response) async {
-            if (response.statusCode == 200) {
-              Navigator.of(context).pop(); // 關閉加載對話框
-              await userImgIdProvider.updateUserImgId(index.toString());
-              setState(() {});
-              showAlertDialog('成功', '頭像已更改\n(有時需要重新啟動App)',context,
-                  success: true, popTwice: true);
-            } else {
-              // 根據不同的錯誤代碼顯示不同的錯誤信息
-              if (response.statusCode == 401) {
-                Navigator.of(context).pop(); // 關閉加載對話框
-                showAlertDialog('失敗', '無效的頭像',context);
-              } else if (response.statusCode == 404) {
-                Navigator.of(context).pop(); // 關閉加載對話框
-                showAlertDialog('失敗', '帳號未找到',context);
-              } else {
-                Navigator.of(context).pop(); // 關閉加載對話框
-                showAlertDialog('錯誤', '發生未預期的錯誤',context);
-              }
-            }
-          });
+      final response = await http.post(
+        apiUrl,
+        body: jsonEncode(requestBody),
+        headers: {'Content-Type': 'application/json'},
+      ).timeout(const Duration(seconds: 5));
+
+      if (!mounted) return;
+
+      Navigator.of(context).pop(); // Close the loading dialog
+
+      if (response.statusCode == 200) {
+        await userImgIdProvider
+            .updateUserImgId(index.toString())
+            .then((value) => {
+                  setState(() {}),
+                  showAlertDialog('成功', '頭像已更改\n(有時需要重新啟動App)', context,
+                      success: true, popTwice: true)
+                });
+      } else {
+        if (response.statusCode == 401) {
+          showAlertDialog('失敗', '無效的頭像', context);
+        } else if (response.statusCode == 404) {
+          showAlertDialog('失敗', '帳號未找到', context);
+        } else {
+          showAlertDialog('錯誤', '發生未預期的錯誤', context);
+        }
+      }
     } on TimeoutException catch (_) {
-      Navigator.of(context).pop(); // 關閉加載對話框
-      showAlertDialog('超時', '請求超時',context);
+      if (!mounted) return;
+      Navigator.of(context).pop(); // Close the loading dialog
+      showAlertDialog('超時', '請求超時', context);
     } catch (e) {
-      Navigator.of(context).pop(); // 關閉加載對話框
-      showAlertDialog('錯誤', '發生未預期的錯誤：$e',context);
+      if (!mounted) return;
+      Navigator.of(context).pop(); // Close the loading dialog
+      showAlertDialog('錯誤', '發生未預期的錯誤：$e', context);
     }
   }
 
@@ -306,13 +308,12 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-
-
   Future<void> _sendChangedNickName() async {
     if (_nicknameController.text.isEmpty) {
-      showAlertDialog('錯誤', '暱稱不可為空',context);
+      showAlertDialog('錯誤', '暱稱不可為空', context);
       return;
     }
+
     final String newNickName = _nicknameController.text;
     final Uri apiUrl = Uri.parse('$basedApiUrl/update_nickname');
     final Map<String, String> requestBody = {
@@ -320,45 +321,50 @@ class _SettingsPageState extends State<SettingsPage> {
       'identifier': email!,
       'new_nickname': newNickName,
     };
-    showLoadingDialog(context);
-    try {
-      await http
-          .post(
-            apiUrl,
-            body: jsonEncode(requestBody),
-            headers: {'Content-Type': 'application/json'},
-          )
-          .timeout(const Duration(seconds: 5))
-          .then((response) async {
-            if (response.statusCode == 200) {
-              await Provider.of<UserPreferences>(context, listen: false)
-                  .updateNickname(newNickName);
-              setState(() {
-                nickname = newNickName;
-              });
-              Navigator.of(context).pop(); // 關閉加載對話框
 
-              showAlertDialog('成功', '暱稱已更改',context, success: true, popTwice: true);
-            } else {
-              // 根據不同的錯誤代碼顯示不同的錯誤信息
-              if (response.statusCode == 401) {
-                Navigator.of(context).pop(); // 關閉加載對話框
-                showAlertDialog('失敗', '無效的暱稱',context);
-              } else if (response.statusCode == 404) {
-                Navigator.of(context).pop(); // 關閉加載對話框
-                showAlertDialog('失敗', '帳號未找到',context);
-              } else {
-                Navigator.of(context).pop(); // 關閉加載對話框
-                showAlertDialog('錯誤', '發生未預期的錯誤',context);
-              }
-            }
+    showLoadingDialog(context);
+
+    try {
+      final response = await http.post(
+        apiUrl,
+        body: jsonEncode(requestBody),
+        headers: {'Content-Type': 'application/json'},
+      ).timeout(const Duration(seconds: 5));
+
+      if (!mounted) return; // Check if the widget is still mounted
+
+      Navigator.of(context).pop(); // Close the loading dialog
+
+      if (response.statusCode == 200) {
+        await Provider.of<UserPreferences>(context, listen: false)
+            .updateNickname(newNickName);
+
+        if (mounted) {
+          setState(() {
+            nickname = newNickName;
           });
+          showAlertDialog('成功', '暱稱已更改', context,
+              success: true, popTwice: true);
+        }
+      } else {
+        if (response.statusCode == 401) {
+          showAlertDialog('失敗', '無效的暱稱', context);
+        } else if (response.statusCode == 404) {
+          showAlertDialog('失敗', '帳號未找到', context);
+        } else {
+          showAlertDialog('錯誤', '發生未預期的錯誤', context);
+        }
+      }
     } on TimeoutException catch (_) {
-      Navigator.of(context).pop(); // 關閉加載對話框
-      showAlertDialog('超時', '請求超時',context);
+      if (mounted) {
+        Navigator.of(context).pop(); // Close the loading dialog
+        showAlertDialog('超時', '請求超時', context);
+      }
     } catch (e) {
-      Navigator.of(context).pop(); // 關閉加載對話框
-      showAlertDialog('錯誤', '發生未預期的錯誤：$e',context);
+      if (mounted) {
+        Navigator.of(context).pop(); // Close the loading dialog
+        showAlertDialog('錯誤', '發生未預期的錯誤：$e', context);
+      }
     }
   }
 
