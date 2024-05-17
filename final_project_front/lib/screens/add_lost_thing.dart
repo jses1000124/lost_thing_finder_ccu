@@ -285,7 +285,7 @@ class _AddLostThingState extends State<AddLostThing> {
                           IconButton(
                             onPressed: _presentDatePicker,
                             style: const ButtonStyle(
-                                iconSize: WidgetStatePropertyAll(30)),
+                                iconSize: MaterialStatePropertyAll(30)),
                             icon: const Icon(
                               Icons.calendar_month,
                             ),
