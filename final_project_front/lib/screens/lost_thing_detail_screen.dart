@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:final_project/data/get_nickname_and_userimage.dart';
-
 import 'edit_post_screen.dart';
 import 'package:final_project/models/post_provider.dart';
 import 'package:flutter/material.dart';
@@ -19,15 +18,16 @@ class LostThingDetailScreen extends StatefulWidget {
   const LostThingDetailScreen({super.key, required this.lostThings});
 
   @override
-  State<LostThingDetailScreen> createState() => _LostThing();
+  State<LostThingDetailScreen> createState() => _LostThingState();
 }
 
-class _LostThing extends State<LostThingDetailScreen>
+class _LostThingState extends State<LostThingDetailScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
   late Future<String?> _authEmailFuture;
   late String? _token;
+
   @override
   void initState() {
     super.initState();
@@ -55,7 +55,7 @@ class _LostThing extends State<LostThingDetailScreen>
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('確認刪除'),
-          content: const Text('確定要刪除嗎？'),
+          content: const Text('你確定要刪除這個貼文嗎？'),
           actions: <Widget>[
             TextButton(
               child: const Text('取消'),
@@ -64,7 +64,7 @@ class _LostThing extends State<LostThingDetailScreen>
               },
             ),
             TextButton(
-              child: const Text('確定'),
+              child: const Text('刪除'),
               onPressed: () {
                 Navigator.of(context).pop(true);
               },
@@ -97,18 +97,18 @@ class _LostThing extends State<LostThingDetailScreen>
       if (code == 200) {
         showAlertDialog('成功', '貼文已刪除', context, success: true, popTwice: true);
       } else if (code == 404) {
-        showAlertDialog('錯誤', '貼文不存在', context);
+        showAlertDialog('錯誤', '貼文未找到', context);
       } else if (code == 403) {
-        showAlertDialog('錯誤', '你不是發文者', context);
+        showAlertDialog('錯誤', '權限不足', context);
       } else if (code == 408) {
         showAlertDialog('錯誤', '請求超時', context);
       } else {
-        showAlertDialog('錯誤', '未知錯誤：$code', context);
+        showAlertDialog('錯誤', '發生錯誤：$code', context);
       }
     } catch (e) {
       if (!mounted) return; // Check again if an exception occurs
       Navigator.of(context).pop(); // Close the loading dialog
-      showAlertDialog('錯誤', '未知錯誤：$e', context);
+      showAlertDialog('錯誤', '發生錯誤：$e', context);
     }
   }
 
@@ -122,7 +122,7 @@ class _LostThing extends State<LostThingDetailScreen>
           String authEmail = snapshot.data!;
           return _buildUI(context, authEmail);
         } else {
-          return const CircularProgressIndicator();
+          return const Center(child: CircularProgressIndicator());
         }
       },
     );
@@ -133,7 +133,7 @@ class _LostThing extends State<LostThingDetailScreen>
     ThemeData theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(lostThings.mylosting == 1 ? '尋找主人的物品' : '主人丟失的物品'),
+        title: Text(lostThings.mylosting == 1 ? '尋找失物' : '發現失物'),
         actions: [
           if (authEmail == lostThings.postUserEmail)
             IconButton(
@@ -159,9 +159,7 @@ class _LostThing extends State<LostThingDetailScreen>
           children: [
             Text(
               lostThings.lostThingName,
-              style: theme.textTheme.titleLarge!.copyWith(
-                fontSize: 38,
-              ),
+              style: theme.textTheme.headline4,
             ),
             const SizedBox(height: 20),
             Row(
@@ -171,16 +169,14 @@ class _LostThing extends State<LostThingDetailScreen>
                       'assets/images/avatar_${lostThings.headShotIndex}.png'),
                   radius: 16,
                 ),
-                // Space between avatar and name
                 const SizedBox(width: 10),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(lostThings.postUser,
-                        style: theme.textTheme.titleMedium),
+                    Text(lostThings.postUser, style: theme.textTheme.subtitle1),
                     Text(
                       lostThings.formattedDate,
-                      style: theme.textTheme.titleSmall!.copyWith(
+                      style: theme.textTheme.subtitle2!.copyWith(
                         color: theme.colorScheme.secondary,
                       ),
                     )
@@ -190,7 +186,7 @@ class _LostThing extends State<LostThingDetailScreen>
                 Icon(Icons.location_on, color: theme.colorScheme.secondary),
                 Text(
                   lostThings.location,
-                  style: theme.textTheme.titleMedium,
+                  style: theme.textTheme.subtitle1,
                 ),
               ],
             ),
@@ -199,7 +195,7 @@ class _LostThing extends State<LostThingDetailScreen>
             const SizedBox(height: 20),
             Text(
               lostThings.content,
-              style: theme.textTheme.bodyLarge,
+              style: theme.textTheme.bodyText1,
             ),
             const SizedBox(height: 20),
             Center(
@@ -221,8 +217,8 @@ class _LostThing extends State<LostThingDetailScreen>
           ? ScaleTransition(
               scale: _animation,
               child: FloatingActionButton(
-                onPressed: () => _handleMessageButtonPressed(
-                    context, authEmail, lostThings.postUserEmail),
+                onPressed: () => _handleMessageButtonPressed(context, authEmail,
+                    lostThings.postUserEmail, lostThings.postUser),
                 child: const Icon(Icons.message),
               ),
             )
@@ -230,12 +226,15 @@ class _LostThing extends State<LostThingDetailScreen>
     );
   }
 
-  void _handleMessageButtonPressed(
-      BuildContext context, String authEmail, String postUserEmail) async {
+  void _handleMessageButtonPressed(BuildContext context, String authEmail,
+      String postUserEmail, String postUserNickname) async {
     await createNewChatRoom(postUserEmail, authEmail).then(
         (chatID) => Navigator.of(context).pushReplacement(MaterialPageRoute(
-              builder: (ctx) =>
-                  ChatScreen(chatID: chatID, chatUserEmail: postUserEmail),
+              builder: (ctx) => ChatScreen(
+                chatID: chatID,
+                chatUserEmail: postUserEmail,
+                chatUserNickname: postUserNickname,
+              ),
             )));
   }
 }
