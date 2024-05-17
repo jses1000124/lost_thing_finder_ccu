@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/lost_things_list.dart';
 import '../models/lost_thing_and_Url.dart';
 import 'package:provider/provider.dart';

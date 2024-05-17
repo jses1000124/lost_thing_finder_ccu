@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import '../widgets/show_loading_dialog.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:final_project/widgets/show_alert_dialog.dart';
 import '../models/lost_thing_and_Url.dart';
 import 'package:flutter/material.dart';
 import '../widgets/upload_image_widget.dart';
@@ -27,16 +28,16 @@ class _AddLostThingState extends State<AddLostThing> {
 
   void _submitForm() {
     if (_selectedDate == null) {
-      _showAlertDialog('日期尚未選擇', '請選擇一個日期才能提交');
+      showAlertDialog('日期尚未選擇', '請選擇一個日期才能提交', context);
       return;
     }
     if (_formKey.currentState!.validate()) {
       if (_imagepath.isNotEmpty) {
-        _showLoadingDialog();
+        showLoadingDialog(context);
 
         uploadImage();
       } else {
-        _showLoadingDialog();
+        showLoadingDialog(context);
 
         postDetails(null);
       }
@@ -85,56 +86,21 @@ class _AddLostThingState extends State<AddLostThing> {
 
       if (response.statusCode == 201) {
         Navigator.of(context).pop();
-        _showAlertDialog('成功', '上傳成功', isRegister: true, popTwice: true);
+        showAlertDialog('成功', '上傳成功', context,
+            success: true, popTwice: true);
       } else {
         Navigator.of(context).pop();
         final responseData = jsonDecode(response.body);
         String errorMessage = '上傳失敗: ${responseData['message']}';
-        _showAlertDialog('失敗', errorMessage);
+        showAlertDialog('失敗', errorMessage, context);
       }
     } on TimeoutException catch (_) {
       Navigator.of(context).pop();
-      _showAlertDialog('錯誤', '連線超時');
+      showAlertDialog('錯誤', '連線超時', context);
     } catch (e) {
       Navigator.of(context).pop();
-      _showAlertDialog('錯誤', '發生未知錯誤: $e');
+      showAlertDialog('錯誤', '發生未知錯誤: $e', context);
     }
-  }
-
-  void _showAlertDialog(String title, String message,
-      {bool isRegister = false, bool popTwice = false}) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          icon: isRegister
-              ? const Icon(Icons.check, color: Colors.green, size: 60)
-              : const Icon(Icons.error,
-                  color: Color.fromARGB(255, 255, 97, 149), size: 60),
-          title: Text(title,
-              style: const TextStyle(fontSize: 16),
-              textAlign: TextAlign.center),
-          content: Text(message,
-              style: const TextStyle(fontSize: 16),
-              textAlign: TextAlign.center),
-          actions: [
-            TextButton(
-              child: const Text(
-                'OK',
-              ),
-              onPressed: () {
-                if (popTwice) {
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pop();
-                } else {
-                  Navigator.of(context).pop();
-                }
-              },
-            ),
-          ],
-        );
-      },
-    );
   }
 
   void _presentDatePicker() async {
@@ -149,28 +115,6 @@ class _AddLostThingState extends State<AddLostThing> {
     setState(() {
       _selectedDate = pickedDate;
     });
-  }
-
-  void _showLoadingDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false, // 用戶不能通過點擊外部來關閉對話框
-      builder: (BuildContext context) {
-        return const Dialog(
-          child: Padding(
-            padding: EdgeInsets.all(20),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(width: 20), // 提供一些水平空間
-                Text("正在處理...", style: TextStyle(fontSize: 16)), // 顯示加載信息
-              ],
-            ),
-          ),
-        );
-      },
-    );
   }
 
   @override

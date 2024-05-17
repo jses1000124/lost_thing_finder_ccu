@@ -6,6 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:email_validator/email_validator.dart';
 import '../widgets/user_input_login_signup.dart';
 import '../screens/new_password_screen.dart';
+import '../widgets/show_alert_dialog.dart';
+import '../widgets/show_loading_dialog.dart';
 
 class VerifyEmailScreen extends StatefulWidget {
   const VerifyEmailScreen({super.key});
@@ -37,13 +39,13 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   void _sendVerificationEmail() {
     if (_emailController.text.isEmpty ||
         !EmailValidator.validate(_emailController.text)) {
-      _showAlertDialog('錯誤', '尚未輸入信箱或格式不正確');
+      showAlertDialog('錯誤', '尚未輸入信箱或格式不正確', context);
       return;
     } else {
-      _showLoadingDialog(); // 顯示加載對話框
+      showLoadingDialog(context); // 顯示加載對話框
       verifyEmail().catchError((error) {
         Navigator.of(context).pop(); // 有錯誤也需要關閉加載對話框
-        _showAlertDialog('錯誤', '出現錯誤: $error');
+        showAlertDialog('錯誤', '出現錯誤: $error', context);
       });
     }
   }
@@ -79,16 +81,16 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                   ),
                 );
               } else {
-                _showAlertDialog('錯誤', '驗證碼錯誤');
+                showAlertDialog('錯誤', '驗證碼錯誤', context);
                 codeController.clear();
               }
             },
           );
       // 設定超時時間
     } on TimeoutException catch (_) {
-      _showAlertDialog('超時', '驗證碼請求超時');
+      showAlertDialog('超時', '驗證碼請求超時', context);
     } catch (e) {
-      _showAlertDialog('錯誤', '未知錯誤：$e');
+      showAlertDialog('錯誤', '未知錯誤：$e', context);
     }
   }
 
@@ -132,27 +134,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     );
   }
 
-  void _showLoadingDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false, // 用戶不能通過點擊外部來關閉對話框
-      builder: (BuildContext context) {
-        return const Dialog(
-          child: Padding(
-            padding: EdgeInsets.all(20),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(width: 20), // 提供一些水平空間
-                Text("正在處理...", style: TextStyle(fontSize: 16)), // 顯示加載信息
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
+
 
   Future<void> verifyEmail() async {
     final Uri apiUrl = Uri.parse('$basedApiUrl/send_verification_code');
@@ -171,48 +153,19 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
               _showVerificationCodeDialog();
             } else {
               Navigator.of(context).pop(); // 關閉加載對話框
-              _showAlertDialog('錯誤', '請稍後再試');
+              showAlertDialog('錯誤', '請稍後再試', context);
             }
           });
     } on TimeoutException catch (_) {
       Navigator.of(context).pop(); // 關閉加載對話框
-      _showAlertDialog('超時', '驗證郵件請求超時');
+      showAlertDialog('超時', '驗證郵件請求超時', context);
     } catch (e) {
       Navigator.of(context).pop(); // 關閉加載對話框
-      _showAlertDialog('錯誤', '未知錯誤：$e');
+      showAlertDialog('錯誤', '未知錯誤：$e', context);
     }
   }
 
-  void _showAlertDialog(String title, String message,
-      {bool isRegister = false, bool popTwice = false}) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          icon: isRegister
-              ? const Icon(Icons.check, color: Colors.green, size: 60)
-              : const Icon(Icons.error,
-                  color: Color.fromARGB(255, 255, 97, 149), size: 60),
-          title: Text(title,
-              style: const TextStyle(fontSize: 16),
-              textAlign: TextAlign.center),
-          content: Text(message,
-              style: const TextStyle(fontSize: 16),
-              textAlign: TextAlign.center),
-          actions: [
-            TextButton(
-                child: const Text('OK'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  if (popTwice) {
-                    Navigator.of(context).pop();
-                  }
-                }),
-          ],
-        );
-      },
-    );
-  }
+
 
   @override
   Widget build(BuildContext context) {

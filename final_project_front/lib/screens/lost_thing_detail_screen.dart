@@ -1,6 +1,5 @@
 import 'dart:async';
-
-import 'package:final_project/data/get_nickname_and_userimage.dart';
+import 'edit_post_screen.dart';
 import 'package:final_project/models/post_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -10,6 +9,8 @@ import 'package:final_project/models/lost_thing_and_Url.dart';
 import 'package:final_project/data/create_new_room.dart';
 import 'package:final_project/screens/chat_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import '../widgets/show_alert_dialog.dart';
+import '../widgets/show_loading_dialog.dart';
 
 class LostThingDetailScreen extends StatefulWidget {
   final LostThing lostThings;
@@ -44,28 +45,6 @@ class _LostThing extends State<LostThingDetailScreen>
   Future<void> _loadToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     _token = prefs.getString('token');
-  }
-
-  void _showLoadingDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false, // 用戶不能通過點擊外部來關閉對話框
-      builder: (BuildContext context) {
-        return const Dialog(
-          child: Padding(
-            padding: EdgeInsets.all(20),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(width: 20), // 提供一些水平空間
-                Text("正在處理...", style: TextStyle(fontSize: 16)), // 顯示加載信息
-              ],
-            ),
-          ),
-        );
-      },
-    );
   }
 
   Future<void> _confirmDeletePosts() async {
@@ -108,57 +87,21 @@ class _LostThing extends State<LostThingDetailScreen>
     final postProvider = Provider.of<PostProvider>(context, listen: false);
 
     try {
-      _showLoadingDialog();
+      showLoadingDialog(context);
       int code = await postProvider.deletePost(widget.lostThings.id, _token!);
       Navigator.of(context).pop(); // Close the loading dialog
 
       if (code == 200) {
-        _showAlertDialog('成功', '貼文已刪除', isRegister: true, popTwice: true);
+        showAlertDialog('成功', '貼文已刪除', context, success: true, popTwice: true);
       } else if (code == 404) {
-        _showAlertDialog('錯誤', '貼文不存在', popTwice: true);
+        showAlertDialog('錯誤', '貼文不存在', context, popTwice: true);
       } else if (code == 403) {
-        _showAlertDialog('錯誤', '你不是發文者', popTwice: true);
+        showAlertDialog('錯誤', '你不是發文者', context, popTwice: true);
       }
     } catch (e) {
       Navigator.of(context).pop(); // Close the loading dialog
-      _showAlertDialog('錯誤', '未知錯誤：$e', popTwice: true);
+      showAlertDialog('錯誤', '未知錯誤：$e', context, popTwice: true);
     }
-  }
-
-  void _showAlertDialog(String title, String message,
-      {bool isRegister = false, bool popTwice = false}) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          icon: isRegister
-              ? const Icon(Icons.check, color: Colors.green, size: 60)
-              : const Icon(Icons.error,
-                  color: Color.fromARGB(255, 255, 97, 149), size: 60),
-          title: Text(title,
-              style: const TextStyle(fontSize: 16),
-              textAlign: TextAlign.center),
-          content: Text(message,
-              style: const TextStyle(fontSize: 16),
-              textAlign: TextAlign.center),
-          actions: [
-            TextButton(
-              child: const Text(
-                'OK',
-              ),
-              onPressed: () {
-                if (popTwice) {
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pop();
-                } else {
-                  Navigator.of(context).pop();
-                }
-              },
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
@@ -187,7 +130,11 @@ class _LostThing extends State<LostThingDetailScreen>
           if (authEmail == lostThings.postUserEmail)
             IconButton(
               icon: const Icon(Icons.edit),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  builder: (ctx) => EditPostPage(lostThing: lostThings),
+                ));
+              },
             ),
           if (authEmail == lostThings.postUserEmail)
             IconButton(

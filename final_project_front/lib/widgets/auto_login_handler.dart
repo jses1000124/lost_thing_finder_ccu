@@ -9,6 +9,7 @@ import 'package:final_project/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../widgets/show_alert_dialog.dart';
 
 class AutoLoginHandler extends StatefulWidget {
   const AutoLoginHandler({super.key});
@@ -63,7 +64,8 @@ class _AutoLoginHandlerState extends State<AutoLoginHandler> {
         }
       } catch (e) {
         if (mounted) {
-          _showAlertDialog('Error', 'An unexpected error occurred: $e');
+          showAlertDialog('Error', 'An unexpected error occurred: $e', context,
+              toLogin: true);
         }
       }
     } else {
@@ -76,45 +78,13 @@ class _AutoLoginHandlerState extends State<AutoLoginHandler> {
 
   void _handleLoginError(int statusCode) {
     if (statusCode == 401) {
-      _showAlertDialog('Failed', 'Invalid password');
+      showAlertDialog('Failed', 'Invalid password', context, toLogin: true);
     } else if (statusCode == 404) {
-      _showAlertDialog('Failed', 'Account not found');
+      showAlertDialog('Failed', 'Account not found', context, toLogin: true);
     } else {
-      _showAlertDialog('Error', 'An unexpected error occurred');
+      showAlertDialog('Error', 'An unexpected error occurred', context,
+          toLogin: true);
     }
-  }
-
-  void _showAlertDialog(String title, String message) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          icon: const Icon(Icons.error,
-              color: Color.fromARGB(255, 255, 97, 149), size: 60),
-          title: Text(title,
-              style: const TextStyle(fontSize: 16),
-              textAlign: TextAlign.center),
-          content: Text(message,
-              style: const TextStyle(fontSize: 16),
-              textAlign: TextAlign.center),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () {
-                SharedPreferences.getInstance().then((prefs) {
-                  prefs.remove('token');
-                  prefs.remove('autoLogin');
-                  prefs.remove('account');
-                  prefs.remove('password');
-                });
-                Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (context) => const LoginScreen()));
-              },
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
