@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:final_project/data/get_nickname_and_userimage.dart';
 import 'package:final_project/models/post_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -276,11 +277,14 @@ class _LostThing extends State<LostThingDetailScreen>
 
   void _handleMessageButtonPressed(
       BuildContext context, String authEmail, String postUserEmail) async {
-    String? chatID =
-        await createNewChatRoom(postUserEmail, authEmail);
+    String? nickname = (await getNickname([postUserEmail]))[postUserEmail] as String?;
+    String? chatID = await createNewChatRoom(postUserEmail, authEmail);
+
     Navigator.of(context).pushReplacement(MaterialPageRoute(
-      builder: (ctx) =>
-          ChatScreen(chatID: chatID, chatUserEmail: postUserEmail),
+      builder: (ctx) => ChatScreen(
+          chatID: chatID,
+          chatUserEmail: postUserEmail,
+          chatUserNickname: nickname!),
     ));
   }
 }

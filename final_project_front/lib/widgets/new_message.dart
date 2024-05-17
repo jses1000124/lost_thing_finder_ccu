@@ -3,6 +3,7 @@ import 'package:final_project/data/post_notification.dart';
 import 'package:final_project/data/upload_image.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NewMessage extends StatefulWidget {
@@ -30,6 +31,7 @@ class _NewMessageState extends State<NewMessage> {
 
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final userEmail = prefs.getString('email')!;
+    OneSignal.login(userEmail);
 
     FirebaseFirestore.instance
         .collection('chat')
@@ -47,7 +49,7 @@ class _NewMessageState extends State<NewMessage> {
         {'lastUpdated': Timestamp.now(), 'lastMessage': enteredMessage});
     _messagecontroller.clear();
 
-    sendNotification(userEmail, enteredMessage);
+    sendNotification('test01@csie.io', enteredMessage, userEmail);
   }
 
   void _showCameraImage() async {

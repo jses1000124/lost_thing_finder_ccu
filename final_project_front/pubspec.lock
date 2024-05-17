@@ -193,30 +193,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.17.0"
-  firebase_messaging:
-    dependency: "direct main"
-    description:
-      name: firebase_messaging
-      sha256: e0882a7426821f7caccaabfc15a535155cd15b4daa73a5a7b3af701a552d73ab
-      url: "https://pub.dev"
-    source: hosted
-    version: "14.9.2"
-  firebase_messaging_platform_interface:
-    dependency: transitive
-    description:
-      name: firebase_messaging_platform_interface
-      sha256: "52e12cc50e1395ad7ea3552dcbe9958fb1994b5afcf58ee4c0db053932a6fce5"
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.5.35"
-  firebase_messaging_web:
-    dependency: transitive
-    description:
-      name: firebase_messaging_web
-      sha256: "8812cc5929380b783f92290d934bf32e2fea06701583f47cdccd5f13f4f24522"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.8.5"
   firebase_storage:
     dependency: "direct main"
     description:
@@ -307,6 +283,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.3.4"
+  flutter_slidable:
+    dependency: "direct main"
+    description:
+      name: flutter_slidable
+      sha256: "673403d2eeef1f9e8483bd6d8d92aae73b1d8bd71f382bc3930f699c731bc27c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.0"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -329,18 +313,18 @@ packages:
     dependency: "direct main"
     description:
       name: geolocator
-      sha256: "6cb9fb6e5928b58b9a84bdf85012d757fd07aab8215c5205337021c4999bad27"
+      sha256: "149876cc5207a0f5daf4fdd3bfcf0a0f27258b3fe95108fa084f527ad0568f1b"
       url: "https://pub.dev"
     source: hosted
-    version: "11.1.0"
+    version: "12.0.0"
   geolocator_android:
     dependency: transitive
     description:
       name: geolocator_android
-      sha256: "80cd39a94100957431a6dd37cebd686f6d446bbc9a884d90c9a07b34fd28b923"
+      sha256: "00c7177a95823dd3ee35ef42fd8666cd27d219ae14cea472ac76a21dff43000b"
       url: "https://pub.dev"
     source: hosted
-    version: "4.5.5"
+    version: "4.6.0"
   geolocator_apple:
     dependency: transitive
     description:
@@ -353,18 +337,18 @@ packages:
     dependency: transitive
     description:
       name: geolocator_platform_interface
-      sha256: "009a21c4bc2761e58dccf07c24f219adaebe0ff707abdfd40b0a763d4003fab9"
+      sha256: c6005787efe9e27cb0f6b50230c217e6f0ef8e1e7a8b854efb4f46489e502603
       url: "https://pub.dev"
     source: hosted
-    version: "4.2.2"
+    version: "4.2.3"
   geolocator_web:
     dependency: transitive
     description:
       name: geolocator_web
-      sha256: "49d8f846ebeb5e2b6641fe477a7e97e5dd73f03cbfef3fd5c42177b7300fb0ed"
+      sha256: "7a22f400d831f924a89d931ba126a10e6b8b437f31e6b9311320435f3e1571bd"
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.0"
+    version: "4.0.0"
   geolocator_windows:
     dependency: transitive
     description:
@@ -425,10 +409,10 @@ packages:
     dependency: transitive
     description:
       name: image_picker_ios
-      sha256: f3285238eb1474ee42946f557ad7df17aa6a2cf4106c2f41bdc948cd71c8b5e5
+      sha256: "4824d8c7f6f89121ef0122ff79bb00b009607faecc8545b86bca9ab5ce1e95bf"
       url: "https://pub.dev"
     source: hosted
-    version: "0.8.11+1"
+    version: "0.8.11+2"
   image_picker_linux:
     dependency: transitive
     description:
@@ -601,10 +585,10 @@ packages:
     dependency: "direct main"
     description:
       name: onesignal_flutter
-      sha256: "7e4b32b69518a4a28063549f286783f295d719cad5f7de110d5a52f647f8ca06"
+      sha256: f3940387d6c7033a9c341aa0548f24d98217fce9182f9ad80bf2554b9dd3dc1a
       url: "https://pub.dev"
     source: hosted
-    version: "5.1.6"
+    version: "5.2.0"
   path:
     dependency: transitive
     description:

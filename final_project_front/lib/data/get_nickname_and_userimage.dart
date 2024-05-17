@@ -4,15 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
-Future<String> getNickname(String email) async {
+Future<Map<String, List<dynamic>>> getNickname(List<String> emails) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String? token = prefs.getString('token');
 
-  Uri url = Uri.parse('$basedApiUrl/getnickname_with_email');
+  Uri url = Uri.parse('$basedApiUrl/getnickname_with_emails');
 
-  final Map<String, String?> requestBody = {
-    'token': token,
-    'email': email,
+  final Map<String, dynamic> requestBody = {
+    'token': token!,
+    'emails': emails,
   };
 
   try {
@@ -24,14 +24,17 @@ Future<String> getNickname(String email) async {
 
     if (response.statusCode == 200) {
       var body = json.decode(response.body);
-      String? nickname = body['nickname'];
-      return nickname!;
+      List<dynamic> nicknames = List<dynamic>.from(body['nicknames']);
+      List<dynamic> userimgs = List<dynamic>.from(body['userimgs']);
+      Map<String, List<dynamic>> userDataMap = Map.fromIterables(emails,
+          List.generate(emails.length, (i) => [nicknames[i], userimgs[i]]));
+      return userDataMap;
     } else {
       debugPrint('Failed to get nickname: HTTP status ${response.statusCode}');
-      return '使用者不存在或已被刪除';
+      return {};
     }
   } catch (e) {
     debugPrint('Error occurred while fetching nickname: $e');
-    return 'NULL';
+    return {};
   }
 }
