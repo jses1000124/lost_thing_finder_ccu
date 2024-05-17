@@ -89,18 +89,24 @@ class _LostThing extends State<LostThingDetailScreen>
     try {
       showLoadingDialog(context);
       int code = await postProvider.deletePost(widget.lostThings.id, _token!);
+      if (!mounted) return; // Check again after the asynchronous operation
       Navigator.of(context).pop(); // Close the loading dialog
 
       if (code == 200) {
         showAlertDialog('成功', '貼文已刪除', context, success: true, popTwice: true);
       } else if (code == 404) {
-        showAlertDialog('錯誤', '貼文不存在', context, popTwice: true);
+        showAlertDialog('錯誤', '貼文不存在', context);
       } else if (code == 403) {
-        showAlertDialog('錯誤', '你不是發文者', context, popTwice: true);
+        showAlertDialog('錯誤', '你不是發文者', context);
+      } else if (code == 408) {
+        showAlertDialog('錯誤', '請求超時', context);
+      } else {
+        showAlertDialog('錯誤', '未知錯誤：$code', context);
       }
     } catch (e) {
+      if (!mounted) return; // Check again if an exception occurs
       Navigator.of(context).pop(); // Close the loading dialog
-      showAlertDialog('錯誤', '未知錯誤：$e', context, popTwice: true);
+      showAlertDialog('錯誤', '未知錯誤：$e', context);
     }
   }
 
@@ -224,10 +230,10 @@ class _LostThing extends State<LostThingDetailScreen>
 
   void _handleMessageButtonPressed(
       BuildContext context, String authEmail, String postUserEmail) async {
-    String? chatID = await createNewChatRoom(postUserEmail, authEmail);
-    Navigator.of(context).pushReplacement(MaterialPageRoute(
-      builder: (ctx) =>
-          ChatScreen(chatID: chatID, chatUserEmail: postUserEmail),
-    ));
+    await createNewChatRoom(postUserEmail, authEmail).then(
+        (chatID) => Navigator.of(context).pushReplacement(MaterialPageRoute(
+              builder: (ctx) =>
+                  ChatScreen(chatID: chatID, chatUserEmail: postUserEmail),
+            )));
   }
 }

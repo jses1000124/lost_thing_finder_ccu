@@ -12,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'verify_email_screen.dart';
 import 'package:final_project/widgets/show_alert_dialog.dart';
 import '../widgets/show_loading_dialog.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -49,10 +50,9 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-
   Future<void> _login() async {
     if (_accountController.text.isEmpty || _passwordController.text.isEmpty) {
-      showAlertDialog('失敗', '請填寫帳號密碼',context);
+      showAlertDialog('失敗', '請填寫帳號密碼', context);
       return;
     }
     showLoadingDialog(context);
@@ -72,7 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
             body: jsonEncode(requestBody),
             headers: {'Content-Type': 'application/json'},
           )
-          .timeout(const Duration(seconds: 5))
+          .timeout(const Duration(seconds: 8))
           .then((response) async {
             if (response.statusCode == 200) {
               Navigator.of(context).pop();
@@ -83,6 +83,7 @@ class _LoginScreenState extends State<LoginScreen> {
               await prefs.setString('password', password);
               await prefs.setString(
                   'token', jsonDecode(response.body)['token']);
+              if (!mounted) return;
               await GetUserData().getUserData(context);
               await prefs.setBool('autoLogin', _autoLogin).then((value) =>
                   Navigator.of(context).pushReplacement(MaterialPageRoute(
@@ -90,21 +91,22 @@ class _LoginScreenState extends State<LoginScreen> {
             } else {
               // 根據不同的錯誤代碼顯示不同的錯誤信息
               if (response.statusCode == 401) {
-                showAlertDialog('失敗', '無效的密碼',context, popTwice: true);
+                showAlertDialog('失敗', '無效的密碼', context, popTwice: true);
               } else if (response.statusCode == 404) {
-                showAlertDialog('失敗', '帳號未找到',context, popTwice: true);
+                showAlertDialog('失敗', '帳號未找到', context, popTwice: true);
               } else {
-                showAlertDialog('錯誤', '發生未預期的錯誤',context, popTwice: true);
+                showAlertDialog('錯誤', '發生未預期的錯誤', context, popTwice: true);
               }
             }
-          }); // 設定5秒超時
+          }); // 設定8秒超時
     } on TimeoutException catch (_) {
-      showAlertDialog('超時', '請求超時',context, popTwice: true);
+      if (!mounted) return; // Ensure the widget is still mounted
+      showAlertDialog('超時', '請求超時', context, popTwice: true);
     } catch (e) {
-      showAlertDialog('錯誤', '發生未預期的錯誤：$e',context, popTwice: true);
+      if (!mounted) return; // Ensure the widget is still mounted
+      showAlertDialog('錯誤', '發生未預期的錯誤：$e', context, popTwice: true);
     }
   }
-
 
   @override
   void dispose() {

@@ -65,6 +65,7 @@ class _EditPostPageState extends State<EditPostPage> {
     if (_formKey.currentState?.validate() ?? false) {
       final postProvider = Provider.of<PostProvider>(context, listen: false);
       SharedPreferences prefs = await SharedPreferences.getInstance();
+      if (!mounted) return; // Ensure the widget is still mounted
       String? token = prefs.getString('token');
 
       LostThing updatedLostThing = widget.lostThing.copyWith(
@@ -74,14 +75,16 @@ class _EditPostPageState extends State<EditPostPage> {
         date: _selectedDate,
         mylosting: _selectedPostType,
       );
-
       showLoadingDialog(context);
 
       int statusCode = await postProvider.updatePost(updatedLostThing, token!);
+      if (!mounted) return; // Ensure the widget is still mounted
       Navigator.of(context).pop(); // Close the loading dialog
 
       if (statusCode == 200) {
         showAlertDialog('成功', '貼文已更新', context, success: true, popTwice: true);
+      } else if (statusCode == 408) {
+        showAlertDialog('錯誤', '請求超時', context);
       } else {
         showAlertDialog('錯誤', '更新貼文失敗，請稍後再試', context);
       }
