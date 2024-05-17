@@ -81,10 +81,11 @@ class PostProvider with ChangeNotifier {
     final Uri apiUrl = Uri.parse('$basedApiUrl/update_post');
     final Map<String, Object?> requestBody = {
       'token': token,
-      'id': updatedPost.id,
-      'name': updatedPost.lostThingName,
+      'post_id': updatedPost.id,
+      'title': updatedPost.lostThingName,
+      'context': updatedPost.content,
       'location': updatedPost.location,
-      'content': updatedPost.content,
+      'date': updatedPost.date,
       'my_losting': updatedPost.mylosting,
     };
 
