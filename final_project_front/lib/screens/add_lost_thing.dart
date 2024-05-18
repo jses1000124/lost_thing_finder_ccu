@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:final_project/data/upload_image.dart';
 import '../widgets/show_loading_dialog.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:final_project/widgets/show_alert_dialog.dart';
 import '../models/lost_thing_and_Url.dart';
@@ -34,8 +34,15 @@ class _AddLostThingState extends State<AddLostThing> {
     if (_formKey.currentState!.validate()) {
       if (_imagepath.isNotEmpty) {
         showLoadingDialog(context);
-
-        uploadImage();
+        UploadImage uploadImage = UploadImage();
+        uploadImage
+            .uploadImage(context, _imagepath, 'lostThing')
+            .then((imageUrl) {
+          postDetails(imageUrl);
+        }).catchError((error) {
+          Navigator.of(context).pop(); // Close loading dialog
+          showAlertDialog('上傳失敗', '圖片上傳失敗，請重試', context);
+        });
       } else {
         showLoadingDialog(context);
 
@@ -44,23 +51,23 @@ class _AddLostThingState extends State<AddLostThing> {
     }
   }
 
-  Future<void> uploadImage() async {
-    Reference ref = FirebaseStorage.instance
-        .ref()
-        .child('images/${DateTime.now().millisecondsSinceEpoch}');
+  // Future<void> uploadImage() async {
+  //   Reference ref = FirebaseStorage.instance
+  //       .ref()
+  //       .child('images/${DateTime.now().millisecondsSinceEpoch}');
 
-    // 上傳文件
-    UploadTask uploadTask = ref.putFile(File(_imagepath));
+  //   // 上傳文件
+  //   UploadTask uploadTask = ref.putFile(File(_imagepath));
 
-    // 可選：如果你需要獲取文件上傳進度
-    // uploadTask.snapshotEvents.listen((event) {
-    //   print('Task state: ${event.state}');
-    //   print('Progress: ${(event.bytesTransferred / event.totalBytes) * 100} %');
-    // });
-    String imageUrl = await (await uploadTask).ref.getDownloadURL();
-    debugPrint('File uploaded to $imageUrl');
-    postDetails(imageUrl);
-  }
+  //   // 可選：如果你需要獲取文件上傳進度
+  //   // uploadTask.snapshotEvents.listen((event) {
+  //   //   print('Task state: ${event.state}');
+  //   //   print('Progress: ${(event.bytesTransferred / event.totalBytes) * 100} %');
+  //   // });
+  //   String imageUrl = await (await uploadTask).ref.getDownloadURL();
+  //   debugPrint('File uploaded to $imageUrl');
+  //   postDetails(imageUrl);
+  // }
 
   void postDetails(String? imageUrl) async {
     final Uri apiUrl = Uri.parse('$basedApiUrl/post');

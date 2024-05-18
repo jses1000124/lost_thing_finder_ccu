@@ -56,8 +56,9 @@ class _NewMessageState extends State<NewMessage> {
     ImagePicker picker = ImagePicker();
     XFile? image = await picker.pickImage(source: ImageSource.camera);
     if (image == null) return;
-
-    imageURL = await UploadImage().uploadImage(image.path, 'chatImage');
+    if (!mounted) return;
+    imageURL =
+        await UploadImage().uploadImage(context, image.path, 'chatImage');
 
     _submitMessage();
   }
@@ -66,8 +67,9 @@ class _NewMessageState extends State<NewMessage> {
     ImagePicker picker = ImagePicker();
     XFile? image = await picker.pickImage(source: ImageSource.gallery);
     if (image == null) return;
-
-    imageURL = await UploadImage().uploadImage(image.path, 'chatImage');
+    if (!mounted) return;
+    imageURL =
+        await UploadImage().uploadImage(context, image.path, 'chatImage');
 
     _submitMessage();
   }
