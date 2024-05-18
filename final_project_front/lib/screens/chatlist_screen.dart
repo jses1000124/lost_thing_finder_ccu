@@ -24,6 +24,16 @@ class _ChatListScreenState extends State<ChatListScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _getPrefs().then((prefs) {
+      setState(() {
+        authaccount = prefs.getString('email');
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final double size = MediaQuery.of(context).size.width;
 
@@ -31,165 +41,185 @@ class _ChatListScreenState extends State<ChatListScreen> {
       appBar: AppBar(
         title: const Text('聊天室'),
       ),
-      body: FutureBuilder(
-        future: _buildChatList(size),
-        builder: (ctx, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          return snapshot.data as Widget;
-        },
-      ),
-    );
-  }
-
-  Future<Widget> _buildChatList(double size) async {
-    final prefs = await _getPrefs();
-    authaccount = prefs.getString('email')!;
-    final sanitizeEmail = _sanitizeEmail(authaccount ?? '');
-
-    final chatSnapshots = await FirebaseFirestore.instance
-        .collection('chat')
-        .where('member', arrayContains: authaccount)
-        .get();
-
-    if (chatSnapshots.docs.isEmpty) {
-      return const Center(
-        child: Text('還沒有訊息喔！快來聊天吧！'),
-      );
-    }
-
-    List<String> memberEmails = [];
-
-    for (var doc in chatSnapshots.docs) {
-      final member = doc['member'] as List<dynamic>;
-      member.removeWhere((element) => element == authaccount);
-      memberEmails.add(member[0]);
-    }
-
-    Map<String, List<dynamic>> userData = await getNickname(memberEmails);
-
-    return ListView(
-      children: chatSnapshots.docs.map<Widget>((doc) {
-        final member = doc['member'] as List<dynamic>;
-        member.removeWhere((element) => element == authaccount);
-        final memberEmail = member[0];
-        final nickname = userData[memberEmail]?[0] ?? memberEmail;
-        final img = userData[memberEmail]?[1] ?? 0;
-        final isRead =
-            (doc['readStatus'] as Map<String, dynamic>)[sanitizeEmail] ?? true;
-
-        return Slidable(
-          key: Key(doc.id),
-          endActionPane: ActionPane(
-            motion: const ScrollMotion(),
-            children: [
-              SlidableAction(
-                onPressed: (context) async {
-                  final confirmed = await showDialog(
-                    context: context,
-                    builder: (ctx) => AlertDialog(
-                      title: const Text('確定要刪除此聊天室嗎？'),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(ctx).pop(false);
-                          },
-                          child: const Text('取消'),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(ctx).pop(true);
-                          },
-                          child: const Text('確定'),
-                        ),
-                      ],
-                    ),
-                  );
-                  if (confirmed == true) {
-                    await FirebaseFirestore.instance
-                        .collection('chat')
-                        .doc(doc.id)
-                        .delete();
-                    setState(() {});
-                  }
-                },
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
-                icon: Icons.delete,
-                label: '刪除',
-              ),
-            ],
-          ),
-          child: ListTile(
-            title: Row(
-              children: [
-                CircleAvatar(
-                  backgroundImage: AssetImage('assets/images/avatar_$img.png'),
-                  radius: 20,
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        nickname.length > 10
-                            ? '${nickname.substring(0, 10)}...'
-                            : nickname,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      if (doc['lastMessage'] != '')
-                        Text(
-                          '${doc['lastMessage'].length > 10 ? '${doc['lastMessage'].substring(0, 10)}...' : doc['lastMessage']}',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: isRead
-                              ? const TextStyle(color: Colors.grey)
-                              : const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                        ),
-                    ],
-                  ),
-                ),
-                if (!isRead)
-                  const Icon(
-                    Icons.brightness_1,
-                    color: Colors.blue,
-                    size: 12,
-                  ),
-              ],
-            ),
-            onTap: () async {
-              // Mark the chat as read
-
-              await FirebaseFirestore.instance
+      body: authaccount == null
+          ? const Center(child: CircularProgressIndicator())
+          : StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
                   .collection('chat')
-                  .doc(doc.id)
-                  .update({
-                'readStatus.$sanitizeEmail': true,
-              });
+                  .where('member', arrayContains: authaccount)
+                  .snapshots(),
+              builder: (ctx, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return const Center(child: Text('還沒有訊息喔！快來聊天吧！'));
+                }
 
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => ChatScreen(
-                    chatID: doc.id,
-                    chatUserEmail: memberEmail,
-                    chatUserNickname: nickname,
-                    chatUserImage: img,
+                return FutureBuilder<Map<String, List<dynamic>>>(
+                  future: getNickname(
+                    snapshot.data!.docs.map((doc) {
+                      final members = (doc['member'] as List<dynamic>)
+                          .map((e) => e as String)
+                          .toList();
+                      members.remove(authaccount);
+                      return members.first;
+                    }).toList(),
                   ),
-                ),
-              );
-            },
-          ),
-        );
-      }).toList(),
+                  builder: (ctx, userSnapshot) {
+                    if (userSnapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (!userSnapshot.hasData) {
+                      return const Center(child: Text('獲取用戶資料失敗'));
+                    }
+
+                    final userData = userSnapshot.data!;
+
+                    return ListView(
+                      children: snapshot.data!.docs.map<Widget>((doc) {
+                        final members = (doc['member'] as List<dynamic>);
+                        members.remove(authaccount);
+                        final memberEmail = members.first;
+                        final nickname =
+                            userData[memberEmail]?[0] ?? memberEmail;
+                        final img = userData[memberEmail]?[1] ?? '0';
+                        final isRead = (doc['readStatus'] as Map<String,
+                                dynamic>)[_sanitizeEmail(authaccount!)] ??
+                            true;
+
+                        return Slidable(
+                          key: Key(doc.id),
+                          endActionPane: ActionPane(
+                            motion: const ScrollMotion(),
+                            children: [
+                              SlidableAction(
+                                onPressed: (context) async {
+                                  final confirmed = await showDialog(
+                                    context: context,
+                                    builder: (ctx) => AlertDialog(
+                                      title: const Text('確定要刪除此聊天室嗎？'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(ctx).pop(false);
+                                          },
+                                          child: const Text('取消'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(ctx).pop(true);
+                                          },
+                                          child: const Text('確定'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                  if (confirmed == true) {
+                                    await FirebaseFirestore.instance
+                                        .collection('chat')
+                                        .doc(doc.id)
+                                        .delete();
+                                  }
+                                },
+                                backgroundColor: Colors.red,
+                                foregroundColor: Colors.white,
+                                icon: Icons.delete,
+                                label: '刪除',
+                              ),
+                            ],
+                          ),
+                          child: ListTile(
+                            title: Row(
+                              children: [
+                                CircleAvatar(
+                                  backgroundImage: AssetImage(
+                                      'assets/images/avatar_$img.png'),
+                                  radius: 20,
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        nickname.length > 10
+                                            ? '${nickname.substring(0, 10)}...'
+                                            : nickname,
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      if (doc['lastMessage'] != '')
+                                        Text(
+                                          '${doc['lastMessage'].length > 10 ? '${doc['lastMessage'].substring(0, 10)}...' : doc['lastMessage']}',
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: isRead
+                                              ? const TextStyle(
+                                                  color: Colors.grey)
+                                              : const TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                        )
+                                      else if (doc['isLastMessageImage'])
+                                        Text(
+                                          '圖片',
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: isRead
+                                              ? const TextStyle(
+                                                  color: Colors.grey)
+                                              : const TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                                if (!isRead)
+                                  const Icon(
+                                    Icons.brightness_1,
+                                    color: Colors.blue,
+                                    size: 12,
+                                  ),
+                              ],
+                            ),
+                            onTap: () async {
+                              // Mark the chat as read
+
+                              await FirebaseFirestore.instance
+                                  .collection('chat')
+                                  .doc(doc.id)
+                                  .update({
+                                'readStatus.${_sanitizeEmail(authaccount!)}':
+                                    true,
+                              });
+
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => ChatScreen(
+                                    chatID: doc.id,
+                                    chatUserEmail: memberEmail,
+                                    chatUserNickname: nickname,
+                                    chatUserImage: img,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      }).toList(),
+                    );
+                  },
+                );
+              },
+            ),
     );
   }
 }

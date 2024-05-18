@@ -8,7 +8,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class NewMessage extends StatefulWidget {
   final String chatID;
-  const NewMessage({super.key, required this.chatID});
+  final String chatUserEmail;
+
+  const NewMessage(
+      {super.key, required this.chatID, required this.chatUserEmail});
 
   @override
   State<NewMessage> createState() => _NewMessageState();
@@ -18,6 +21,10 @@ class _NewMessageState extends State<NewMessage> {
   final _messagecontroller = TextEditingController();
   String imageURL = '';
 
+  String _sanitizeEmail(String email) {
+    return email.replaceAll('.', '_');
+  }
+
   @override
   void dispose() {
     _messagecontroller.dispose();
@@ -26,6 +33,7 @@ class _NewMessageState extends State<NewMessage> {
 
   void _submitMessage() async {
     final enteredMessage = _messagecontroller.text;
+    final sanitizechatUserEmail = _sanitizeEmail(widget.chatUserEmail);
 
     if (enteredMessage.trim().isEmpty && imageURL.isEmpty) return;
 
@@ -45,11 +53,16 @@ class _NewMessageState extends State<NewMessage> {
       'imageURL': imageURL,
     });
 
-    FirebaseFirestore.instance.collection('chat').doc(widget.chatID).update(
-        {'lastUpdated': Timestamp.now(), 'lastMessage': enteredMessage});
+    FirebaseFirestore.instance.collection('chat').doc(widget.chatID).update({
+      'isLastMessageImage': imageURL.isNotEmpty ? true : false,
+      'lastUpdated': Timestamp.now(),
+      'lastMessage': enteredMessage,
+      'readStatus.$sanitizechatUserEmail': false
+    });
+
     _messagecontroller.clear();
 
-    sendNotification('test01@csie.io', enteredMessage, userEmail);
+    sendNotification(widget.chatUserEmail, enteredMessage, userEmail);
   }
 
   void _showCameraImage() async {
