@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:easy_search_bar/easy_search_bar.dart';
+import '../widgets/chaticon_with_notification.dart';
 import 'add_lost_thing.dart';
 import '../screens/chatlist_screen.dart';
 import '../screens/finded_lost_thing_screen.dart';
@@ -43,6 +44,7 @@ class _BottomBarState extends State<BottomBar> {
       }
     });
   }
+  
 
   void _updateSearch(String value) {
     setState(() {
@@ -68,15 +70,7 @@ class _BottomBarState extends State<BottomBar> {
                 putActionsOnRight: true,
                 title: Text(_title),
                 onSearch: _updateSearch,
-                actions: [
-                  IconButton(
-                    icon: const Icon(Icons.chat),
-                    onPressed: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const ChatListScreen(),
-                      ),
-                    ),
-                  ),
+                actions: [ChatIconWithNotification(),
                 ],
                 suggestions: const [],
               ),

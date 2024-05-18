@@ -27,7 +27,7 @@ class _AutoLoginHandlerState extends State<AutoLoginHandler> {
 
   Future<void> _checkAndLogin() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    if(!mounted) return; // Ensure the widget is still mounted
+    if (!mounted) return; // Ensure the widget is still mounted
     final postProvider = Provider.of<PostProvider>(context, listen: false);
 
     bool autoLogin = prefs.getBool('autoLogin') ?? false;

@@ -1,6 +1,7 @@
 import 'package:final_project/models/lost_thing_and_Url.dart';
 import 'package:final_project/models/userimg_id_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -39,6 +40,8 @@ class GetUserData {
         String? nickname = body['nickname'];
         String? returnedAccount = body['email'];
         int? userimgid = body['userimg'];
+
+        OneSignal.login(returnedAccount!);
 
         if (username != null) {
           await prefs.setString('username', username);

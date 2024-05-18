@@ -58,7 +58,7 @@ void main() async {
   OneSignal.initialize("22ccb45f-f773-4a26-a4ea-aab2d267207a");
 // The promptForPushNotificationsWithUserResponse function will show the iOS or Android push notification prompt. We recommend removing the following code and instead using an In-App Message to prompt for notification permission
   OneSignal.Notifications.requestPermission(true);
-  var permission = OneSignal.Notifications.permission;
+  OneSignal.Notifications.permission;
 
   final themeProvider = ThemeProvider();
   await themeProvider.loadThemeMode();

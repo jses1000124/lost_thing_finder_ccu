@@ -35,8 +35,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final double size = MediaQuery.of(context).size.width;
-
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text('聊天室'),

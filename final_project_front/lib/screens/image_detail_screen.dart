@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class ImageDetailScreen extends StatelessWidget {
   final String imageURL;
@@ -18,8 +19,14 @@ class ImageDetailScreen extends StatelessWidget {
         boundaryMargin: const EdgeInsets.all(20),
         minScale: 0.1,
         maxScale: 10.0,
-        clipBehavior: Clip.none, // 允許圖片超出邊界
-        child: Center(child: Image.network(imageURL)),
+        clipBehavior: Clip.none, // Allow image to exceed boundary
+        child: Center(
+          child: CachedNetworkImage(
+            imageUrl: imageURL,
+            placeholder: (context, url) => const CircularProgressIndicator(),
+            errorWidget: (context, url, error) => const Icon(Icons.error),
+          ),
+        ),
       ),
     );
   }
