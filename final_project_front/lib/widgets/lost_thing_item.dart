@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:transparent_image/transparent_image.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:final_project/models/lost_thing_and_Url.dart';
 import 'package:final_project/screens/lost_thing_detail_screen.dart';
 
@@ -12,9 +12,6 @@ class LostThingItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 3,
-      // color: Theme.of(context).brightness == Brightness.light
-      //     ? Colors.white
-      //     : null,
       child: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: 20,
@@ -32,15 +29,19 @@ class LostThingItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                  color: const Color.fromARGB(0, 0, 0, 0),
-                  child: lostThing.imageUrl != ''
-                      ? FadeInImage(
-                          placeholder: MemoryImage(kTransparentImage),
-                          image: NetworkImage(lostThing.imageUrl),
-                          height: 80,
-                          width: 80,
-                        )
-                      : const SizedBox()),
+                color: const Color.fromARGB(0, 0, 0, 0),
+                child: lostThing.imageUrl.isNotEmpty
+                    ? CachedNetworkImage(
+                        imageUrl: lostThing.imageUrl,
+                        placeholder: (context, url) =>
+                            const CircularProgressIndicator(),
+                        errorWidget: (context, url, error) =>
+                            const Icon(Icons.error),
+                        height: 80,
+                        width: 80,
+                      )
+                    : const SizedBox(),
+              ),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
