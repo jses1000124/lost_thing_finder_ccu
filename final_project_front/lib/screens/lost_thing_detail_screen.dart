@@ -206,8 +206,9 @@ class _LostThingState extends State<LostThingDetailScreen>
                       child: CachedNetworkImage(
                         imageUrl: lostThings.imageUrl,
                         placeholder: (context, url) =>
-                            CircularProgressIndicator(),
-                        errorWidget: (context, url, error) => Icon(Icons.error),
+                            const CircularProgressIndicator(),
+                        errorWidget: (context, url, error) =>
+                            const Icon(Icons.error),
                         fit: BoxFit.cover,
                       ),
                     )
