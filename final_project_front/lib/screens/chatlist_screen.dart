@@ -13,8 +13,14 @@ class ChatListScreen extends StatefulWidget {
 }
 
 class _ChatListScreenState extends State<ChatListScreen> {
+  String? authaccount;
+
   Future<SharedPreferences> _getPrefs() async {
     return await SharedPreferences.getInstance();
+  }
+
+  String _sanitizeEmail(String email) {
+    return email.replaceAll('.', '_');
   }
 
   @override
@@ -41,7 +47,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
   Future<Widget> _buildChatList(double size) async {
     final prefs = await _getPrefs();
-    final authaccount = prefs.getString('email')!;
+    authaccount = prefs.getString('email')!;
+    final sanitizeEmail = _sanitizeEmail(authaccount ?? '');
 
     final chatSnapshots = await FirebaseFirestore.instance
         .collection('chat')
@@ -71,6 +78,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
         final memberEmail = member[0];
         final nickname = userData[memberEmail]?[0] ?? memberEmail;
         final img = userData[memberEmail]?[1] ?? 0;
+        final isRead =
+            (doc['readStatus'] as Map<String, dynamic>)[sanitizeEmail] ?? true;
 
         return Slidable(
           key: Key(doc.id),
@@ -136,16 +145,37 @@ class _ChatListScreenState extends State<ChatListScreen> {
                       ),
                       if (doc['lastMessage'] != '')
                         Text(
-                          '最新訊息：${doc['lastMessage'].length > 10 ? '${doc['lastMessage'].substring(0, 10)}...' : doc['lastMessage']}',
+                          '${doc['lastMessage'].length > 10 ? '${doc['lastMessage'].substring(0, 10)}...' : doc['lastMessage']}',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
+                          style: isRead
+                              ? const TextStyle(color: Colors.grey)
+                              : const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
                         ),
                     ],
                   ),
                 ),
+                if (!isRead)
+                  const Icon(
+                    Icons.brightness_1,
+                    color: Colors.blue,
+                    size: 12,
+                  ),
               ],
             ),
-            onTap: () {
+            onTap: () async {
+              // Mark the chat as read
+
+              await FirebaseFirestore.instance
+                  .collection('chat')
+                  .doc(doc.id)
+                  .update({
+                'readStatus.$sanitizeEmail': true,
+              });
+
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => ChatScreen(

@@ -2,6 +2,7 @@ import 'package:final_project/models/lost_thing_and_Url.dart';
 import 'package:final_project/models/userimg_id_provider.dart';
 import 'package:final_project/screens/my_posts.dart';
 import 'package:flutter/material.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -49,6 +50,8 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> logout() async {
+    OneSignal.logout();
+
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('autoLogin', false);
     await prefs.setString('account', '');
