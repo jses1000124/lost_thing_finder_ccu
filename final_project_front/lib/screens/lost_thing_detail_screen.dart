@@ -217,8 +217,8 @@ class _LostThingState extends State<LostThingDetailScreen>
           ? ScaleTransition(
               scale: _animation,
               child: FloatingActionButton(
-                onPressed: () => _handleMessageButtonPressed(context, authEmail,
-                    lostThings.postUserEmail, lostThings.postUser),
+                onPressed: () => _handleMessageButtonPressed(
+                    context, authEmail, lostThings.postUserEmail),
                 child: const Icon(Icons.message),
               ),
             )
@@ -238,8 +238,7 @@ class _LostThingState extends State<LostThingDetailScreen>
           chatID: chatID,
           chatUserEmail: postUserEmail,
           chatUserNickname: nickname,
-          chatUserImage: chatUserImage
-          ),
+          chatUserImage: chatUserImage),
     ));
   }
 }
