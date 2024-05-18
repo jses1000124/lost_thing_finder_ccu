@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:final_project/models/lost_thing_and_Url.dart';
 import 'package:final_project/screens/lost_thing_detail_screen.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 class LostThingItem extends StatelessWidget {
   const LostThingItem(this.lostThing, {super.key});
@@ -37,6 +38,15 @@ class LostThingItem extends StatelessWidget {
                           height: 80,
                           width: 80,
                           child: Center(child: CircularProgressIndicator()),
+                        ),
+                        cacheKey: lostThing.imageUrl, // 使用圖片URL作為緩存鍵
+                        // 可選項: 配置緩存選項，如最大緩存大小等
+                        cacheManager: CacheManager(
+                          Config(
+                            'customCacheKey',
+                            stalePeriod: const Duration(days: 2), // 7天內不會重新加載
+                            maxNrOfCacheObjects: 100, // 最大緩存圖片數量
+                          ),
                         ),
                         errorWidget: (context, url, error) =>
                             const Icon(Icons.error),

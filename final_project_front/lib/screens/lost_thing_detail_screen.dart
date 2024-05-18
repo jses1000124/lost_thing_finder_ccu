@@ -3,6 +3,7 @@ import 'package:final_project/data/create_new_room.dart';
 import 'package:final_project/data/get_nickname_and_userimage.dart';
 import 'package:final_project/models/lost_thing_and_Url.dart';
 import 'package:final_project/screens/chat_screen.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'edit_post_screen.dart';
 import 'package:final_project/models/post_provider.dart';
 import 'package:flutter/material.dart';
@@ -210,6 +211,14 @@ class _LostThingState extends State<LostThingDetailScreen>
                         errorWidget: (context, url, error) =>
                             const Icon(Icons.error),
                         fit: BoxFit.cover,
+                        cacheKey: lostThings.imageUrl, // 使用圖片URL作為緩存鍵
+                        cacheManager: CacheManager(
+                          Config(
+                            'customCacheKey',
+                            stalePeriod: const Duration(days: 2), // 7天內不會重新加載
+                            maxNrOfCacheObjects: 100, // 最大緩存圖片數量
+                          ),
+                        ),
                       ),
                     )
                   : const SizedBox(),

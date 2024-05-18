@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 class ImageDetailScreen extends StatelessWidget {
   final String imageURL;
@@ -25,6 +26,13 @@ class ImageDetailScreen extends StatelessWidget {
             imageUrl: imageURL,
             placeholder: (context, url) => const CircularProgressIndicator(),
             errorWidget: (context, url, error) => const Icon(Icons.error),
+            fit: BoxFit.contain,
+            cacheKey: imageURL, // 使用圖片URL作為緩存鍵
+            cacheManager: CacheManager(Config(
+              'customCacheKey',
+              stalePeriod: const Duration(days: 2), // 7天內不會重新加載
+              maxNrOfCacheObjects: 100, // 最大緩存圖片數量
+            )),
           ),
         ),
       ),
