@@ -62,6 +62,7 @@ dependencies:
   onesignal_flutter: ^5.1.6
   easy_search_bar: ^2.5.0
   flutter_slidable: ^3.1.0
+  cached_network_image: ^3.3.1
 
 dev_dependencies:
   flutter_test:

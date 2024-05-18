@@ -57,16 +57,7 @@ class UploadProgressDialog extends StatelessWidget {
               ],
             );
           } else {
-            return const Expanded(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 16.0),
-                  Text('正在初始化上傳...'),
-                ],
-              ),
-            );
+            return const SizedBox();
           }
         },
       ),

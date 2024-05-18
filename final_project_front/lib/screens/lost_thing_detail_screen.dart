@@ -1,14 +1,14 @@
 import 'dart:async';
+import 'package:final_project/data/create_new_room.dart';
 import 'package:final_project/data/get_nickname_and_userimage.dart';
+import 'package:final_project/models/lost_thing_and_Url.dart';
+import 'package:final_project/screens/chat_screen.dart';
 import 'edit_post_screen.dart';
 import 'package:final_project/models/post_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:transparent_image/transparent_image.dart';
-import 'package:final_project/models/lost_thing_and_Url.dart';
-import 'package:final_project/data/create_new_room.dart';
-import 'package:final_project/screens/chat_screen.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../widgets/show_alert_dialog.dart';
 import '../widgets/show_loading_dialog.dart';
@@ -203,9 +203,11 @@ class _LostThingState extends State<LostThingDetailScreen>
               child: lostThings.imageUrl.isNotEmpty
                   ? ClipRRect(
                       borderRadius: BorderRadius.circular(8),
-                      child: FadeInImage(
-                        placeholder: MemoryImage(kTransparentImage),
-                        image: NetworkImage(lostThings.imageUrl),
+                      child: CachedNetworkImage(
+                        imageUrl: lostThings.imageUrl,
+                        placeholder: (context, url) =>
+                            CircularProgressIndicator(),
+                        errorWidget: (context, url, error) => Icon(Icons.error),
                         fit: BoxFit.cover,
                       ),
                     )
