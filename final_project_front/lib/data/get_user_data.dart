@@ -59,7 +59,7 @@ class GetUserData {
           debugPrint("Nickname is null in the response");
         }
 
-        if (returnedAccount != null) {
+        if (returnedAccount != '') {
           await prefs.setString('email', returnedAccount);
         } else {
           debugPrint("Account is null in the response");

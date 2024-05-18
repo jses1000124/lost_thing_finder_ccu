@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:final_project/screens/image_detail_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -100,7 +101,7 @@ class MessageBubble extends StatelessWidget {
                         ),
                       ),
                     ),
-                  if (imageURL != '')
+                  if (imageURL.isNotEmpty)
                     InkWell(
                       onTap: () {
                         Navigator.push(context, MaterialPageRoute(builder: (_) {
@@ -125,15 +126,32 @@ class MessageBubble extends StatelessWidget {
                             bottomLeft: const Radius.circular(12),
                             bottomRight: const Radius.circular(12),
                           ),
-                          image: DecorationImage(
-                            image: NetworkImage(imageURL),
-                            fit: BoxFit.cover, // 使用 BoxFit.cover 來保持圖片的原始比例
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.only(
+                            topLeft: !isMe && isFirstInSequence
+                                ? Radius.zero
+                                : const Radius.circular(12),
+                            topRight: isMe && isFirstInSequence
+                                ? Radius.zero
+                                : const Radius.circular(12),
+                            bottomLeft: const Radius.circular(12),
+                            bottomRight: const Radius.circular(12),
+                          ),
+                          child: CachedNetworkImage(
+                            imageUrl: imageURL,
+                            placeholder: (context, url) => const Center(
+                                child: CircularProgressIndicator()),
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.error),
+                            fit: BoxFit
+                                .cover, // Use BoxFit.cover to maintain the image's aspect ratio
                           ),
                         ),
                       ),
                     ),
                   // The "speech" box surrounding the message.
-                  if (imageURL == '')
+                  if (imageURL.isEmpty)
                     Container(
                       decoration: BoxDecoration(
                         color: isMe

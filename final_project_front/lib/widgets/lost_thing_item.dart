@@ -33,8 +33,11 @@ class LostThingItem extends StatelessWidget {
                 child: lostThing.imageUrl.isNotEmpty
                     ? CachedNetworkImage(
                         imageUrl: lostThing.imageUrl,
-                        placeholder: (context, url) =>
-                            const CircularProgressIndicator(),
+                        placeholder: (context, url) => const SizedBox(
+                          height: 80,
+                          width: 80,
+                          child: Center(child: CircularProgressIndicator()),
+                        ),
                         errorWidget: (context, url, error) =>
                             const Icon(Icons.error),
                         height: 80,
