@@ -44,6 +44,11 @@ class MessageBubble extends StatelessWidget {
   // Show the user context menu when the user image is tapped.
   void _showUserContextMenu() {}
 
+  Future<bool> _isImageCached(String url) async {
+    final fileInfo = await DefaultCacheManager().getFileFromCache(url);
+    return fileInfo != null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -93,59 +98,129 @@ class MessageBubble extends StatelessWidget {
                       ),
                     ),
                   if (imageURL.isNotEmpty)
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (_) {
-                          return ImageDetailScreen(imageURL: imageURL);
-                        }));
+                    FutureBuilder<bool>(
+                      future: _isImageCached(imageURL),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        } else if (snapshot.hasError) {
+                          return const Icon(Icons.error);
+                        } else if (snapshot.hasData && snapshot.data == true) {
+                          // 如果图片已缓存，直接显示图片，不使用占位符
+                          return InkWell(
+                            onTap: () {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (_) {
+                                return ImageDetailScreen(imageURL: imageURL);
+                              }));
+                            },
+                            child: Container(
+                              width: 200, // 設定容器的寬度
+                              height: 200,
+                              margin: const EdgeInsets.symmetric(
+                                vertical: 2,
+                                horizontal: 12,
+                              ),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.only(
+                                  topLeft: !isMe && isFirstInSequence
+                                      ? Radius.zero
+                                      : const Radius.circular(12),
+                                  topRight: isMe && isFirstInSequence
+                                      ? Radius.zero
+                                      : const Radius.circular(12),
+                                  bottomLeft: const Radius.circular(12),
+                                  bottomRight: const Radius.circular(12),
+                                ),
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.only(
+                                  topLeft: !isMe && isFirstInSequence
+                                      ? Radius.zero
+                                      : const Radius.circular(12),
+                                  topRight: isMe && isFirstInSequence
+                                      ? Radius.zero
+                                      : const Radius.circular(12),
+                                  bottomLeft: const Radius.circular(12),
+                                  bottomRight: const Radius.circular(12),
+                                ),
+                                child: CachedNetworkImage(
+                                  imageUrl: imageURL,
+                                  cacheKey: imageURL,
+                                  cacheManager: CacheManager(Config(
+                                    'customCacheKey',
+                                    stalePeriod:
+                                        const Duration(days: 4), // 4天內不會重新加載
+                                    maxNrOfCacheObjects: 100, // 最大緩存圖片數量
+                                  )),
+                                  fit: BoxFit
+                                      .cover, // Use BoxFit.cover to maintain the image's aspect ratio
+                                ),
+                              ),
+                            ),
+                          );
+                        } else {
+                          // 如果图片未缓存，显示占位符
+                          return InkWell(
+                            onTap: () {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (_) {
+                                return ImageDetailScreen(imageURL: imageURL);
+                              }));
+                            },
+                            child: Container(
+                              width: 200, // 設定容器的寬度
+                              height: 200,
+                              margin: const EdgeInsets.symmetric(
+                                vertical: 2,
+                                horizontal: 12,
+                              ),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.only(
+                                  topLeft: !isMe && isFirstInSequence
+                                      ? Radius.zero
+                                      : const Radius.circular(12),
+                                  topRight: isMe && isFirstInSequence
+                                      ? Radius.zero
+                                      : const Radius.circular(12),
+                                  bottomLeft: const Radius.circular(12),
+                                  bottomRight: const Radius.circular(12),
+                                ),
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.only(
+                                  topLeft: !isMe && isFirstInSequence
+                                      ? Radius.zero
+                                      : const Radius.circular(12),
+                                  topRight: isMe && isFirstInSequence
+                                      ? Radius.zero
+                                      : const Radius.circular(12),
+                                  bottomLeft: const Radius.circular(12),
+                                  bottomRight: const Radius.circular(12),
+                                ),
+                                child: CachedNetworkImage(
+                                  imageUrl: imageURL,
+                                  placeholder: (context, url) => const Center(
+                                      child: CircularProgressIndicator()),
+                                  errorWidget: (context, url, error) =>
+                                      const Icon(Icons.error),
+                                  cacheKey: imageURL,
+                                  cacheManager: CacheManager(Config(
+                                    'customCacheKey',
+                                    stalePeriod:
+                                        const Duration(days: 4), // 4天內不會重新加載
+                                    maxNrOfCacheObjects: 100, // 最大緩存圖片數量
+                                  )),
+                                  fit: BoxFit
+                                      .cover, // Use BoxFit.cover to maintain the image's aspect ratio
+                                ),
+                              ),
+                            ),
+                          );
+                        }
                       },
-                      child: Container(
-                        width: 200, // 設定容器的寬度
-                        height: 200,
-                        margin: const EdgeInsets.symmetric(
-                          vertical: 2,
-                          horizontal: 12,
-                        ),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.only(
-                            topLeft: !isMe && isFirstInSequence
-                                ? Radius.zero
-                                : const Radius.circular(12),
-                            topRight: isMe && isFirstInSequence
-                                ? Radius.zero
-                                : const Radius.circular(12),
-                            bottomLeft: const Radius.circular(12),
-                            bottomRight: const Radius.circular(12),
-                          ),
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.only(
-                            topLeft: !isMe && isFirstInSequence
-                                ? Radius.zero
-                                : const Radius.circular(12),
-                            topRight: isMe && isFirstInSequence
-                                ? Radius.zero
-                                : const Radius.circular(12),
-                            bottomLeft: const Radius.circular(12),
-                            bottomRight: const Radius.circular(12),
-                          ),
-                          child: CachedNetworkImage(
-                            imageUrl: imageURL,
-                            placeholder: (context, url) => const Center(
-                                child: CircularProgressIndicator()),
-                            errorWidget: (context, url, error) =>
-                                const Icon(Icons.error),
-                            fit: BoxFit
-                                .cover, // Use BoxFit.cover to maintain the image's aspect ratio
-                            cacheKey: imageURL, // 使用圖片URL作為緩存鍵
-                            cacheManager: CacheManager(Config(
-                              'customCacheKey',
-                              stalePeriod: const Duration(days: 2), // 7天內不會重新加載
-                              maxNrOfCacheObjects: 100, // 最大緩存圖片數量
-                            )),
-                          ),
-                        ),
-                      ),
                     ),
                   if (imageURL.isEmpty)
                     Container(

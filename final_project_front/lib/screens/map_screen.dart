@@ -14,95 +14,95 @@ class _MapPageState extends State<MapPage> {
   final List<Map<String, dynamic>> buildings = [
     {
       "name": "圖書資訊大樓",
-      "latlng": LatLng(23.5633, 120.4741),
+      "latlng": const LatLng(23.5633, 120.4741),
     },
     {
       "name": "共同教室大樓",
-      "latlng": LatLng(23.5630, 120.4763),
+      "latlng": const LatLng(23.5630, 120.4763),
     },
     {
       "name": "行政大樓",
-      "latlng": LatLng(23.5621, 120.4752),
+      "latlng": const LatLng(23.5621, 120.4752),
     },
     {
       "name": "資訊工程學系暨研究所",
-      "latlng": LatLng(23.5623, 120.4778),
+      "latlng": const LatLng(23.5623, 120.4778),
     },
     {
       "name": "禮堂",
-      "latlng": LatLng(23.5616, 120.4770),
+      "latlng": const LatLng(23.5616, 120.4770),
     },
     {
       "name": "管理學院",
-      "latlng": LatLng(23.5608, 120.4760),
+      "latlng": const LatLng(23.5608, 120.4760),
     },
     {
       "name": "文學院",
-      "latlng": LatLng(23.5614, 120.4737),
+      "latlng": const LatLng(23.5614, 120.4737),
     },
     {
       "name": "社會科學院",
-      "latlng": LatLng(23.5606, 120.4741),
+      "latlng": const LatLng(23.5606, 120.4741),
     },
     {
       "name": "電機工程學系",
-      "latlng": LatLng(23.5621, 120.4773),
+      "latlng": const LatLng(23.5621, 120.4773),
     },
     {
       "name": "化學工程學系",
-      "latlng": LatLng(23.5616, 120.4781),
+      "latlng": const LatLng(23.5616, 120.4781),
     },
     {
       "name": "機械工程學系",
-      "latlng": LatLng(23.5625, 120.4787),
+      "latlng": const LatLng(23.5625, 120.4787),
     },
     {
       "name": "創新大樓",
-      "latlng": LatLng(23.5618, 120.4794),
+      "latlng": const LatLng(23.5618, 120.4794),
     },
     {
       "name": "管理學院二館",
-      "latlng": LatLng(23.5611, 120.4792),
+      "latlng": const LatLng(23.5611, 120.4792),
     },
     {
       "name": "法學院",
-      "latlng": LatLng(23.5645, 120.4770),
+      "latlng": const LatLng(23.5645, 120.4770),
     },
     {
       "name": "教育學院一館",
-      "latlng": LatLng(23.5634, 120.4763),
+      "latlng": const LatLng(23.5634, 120.4763),
     },
     {
       "name": "教育學院二館",
-      "latlng": LatLng(23.5631, 120.4768),
+      "latlng": const LatLng(23.5631, 120.4768),
     },
     {
       "name": "理學院一館",
-      "latlng": LatLng(23.5644, 120.4760),
+      "latlng": const LatLng(23.5644, 120.4760),
     },
     {
       "name": "理學院二館",
-      "latlng": LatLng(23.5650, 120.4748),
+      "latlng": const LatLng(23.5650, 120.4748),
     },
     {
       "name": "大學部宿舍A棟",
-      "latlng": LatLng(23.5607, 120.4689),
+      "latlng": const LatLng(23.5607, 120.4689),
     },
     {
       "name": "大學部宿舍B棟",
-      "latlng": LatLng(23.5607, 120.4684),
+      "latlng": const LatLng(23.5607, 120.4684),
     },
     {
       "name": "大學部宿舍C棟",
-      "latlng": LatLng(23.5600, 120.4687),
+      "latlng": const LatLng(23.5600, 120.4687),
     },
     {
       "name": "大學部宿舍D棟",
-      "latlng": LatLng(23.5599, 120.4692),
+      "latlng": const LatLng(23.5599, 120.4692),
     },
     {
       "name": "大學部宿舍E棟",
-      "latlng": LatLng(23.5600, 120.4697),
+      "latlng": const LatLng(23.5600, 120.4697),
     },
   ];
 
@@ -172,7 +172,7 @@ class _MapPageState extends State<MapPage> {
                   TileLayer(
                     urlTemplate:
                         "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                    subdomains: ['a', 'b', 'c'],
+                    subdomains: const ['a', 'b', 'c'],
                   ),
                   MarkerLayer(
                     markers: [
@@ -237,7 +237,7 @@ class _MapPageState extends State<MapPage> {
                 LatLng currentLatLng = await _determineLatLng();
                 _mapController.move(currentLatLng, 15.0);
               },
-              child: Icon(Icons.my_location),
+              child: const Icon(Icons.my_location),
             ),
           ),
         ],
