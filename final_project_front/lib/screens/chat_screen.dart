@@ -46,7 +46,8 @@ class _ChatScreenState extends State<ChatScreen> {
             child: ChatMessage(
                 chatID: widget.chatID,
                 chatNickName: widget.chatUserNickname,
-                chatUserImage: widget.chatUserImage),
+                chatUserImage: widget.chatUserImage,
+                chatUserEmail: widget.chatUserEmail),
           )
         ],
       ),

@@ -1,3 +1,4 @@
+import 'package:final_project/data/post_notification.dart';
 import 'package:final_project/data/upload_image.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,12 +11,14 @@ class ChatMessage extends StatefulWidget {
   final String chatID;
   final String chatNickName;
   final String chatUserImage;
+  final String chatUserEmail;
 
   const ChatMessage({
     super.key,
     required this.chatID,
     required this.chatNickName,
     required this.chatUserImage,
+    required this.chatUserEmail,
   });
 
   @override
@@ -23,6 +26,7 @@ class ChatMessage extends StatefulWidget {
 }
 
 class _ChatMessageState extends State<ChatMessage> {
+  final List<types.Message> _messages = [];
   late Future<SharedPreferences> _prefs;
   String? authAccount;
   String? myNickname;
@@ -89,6 +93,7 @@ class _ChatMessageState extends State<ChatMessage> {
       'userEmail': authAccount,
       'chatID': widget.chatID,
       'imageURL': imageURL,
+      'isRead': false,
     });
   }
 
@@ -111,6 +116,44 @@ class _ChatMessageState extends State<ChatMessage> {
       'userEmail': authAccount,
       'chatID': widget.chatID,
       'imageURL': imageURL,
+      'isRead': false,
+    });
+  }
+
+  void _sendMessage(types.PartialText message) {
+    FirebaseFirestore.instance
+        .collection('chat')
+        .doc(widget.chatID)
+        .collection('message')
+        .add({
+      'userEmail': authAccount,
+      'text': message.text,
+      'createdAt': Timestamp.now(),
+      'imageURL': '',
+      'isRead': false,
+    });
+
+    FirebaseFirestore.instance.collection('chat').doc(widget.chatID).update({
+      'isLastMessageImage': imageURL.isNotEmpty ? true : false,
+      'lastUpdated': Timestamp.now(),
+      'lastMessage': message.text,
+      'readStatus.${widget.chatUserEmail.replaceAll('.', '_')}': false
+    });
+
+    sendNotification(widget.chatUserEmail, widget.chatNickName, message.text);
+  }
+
+  void _handlePreviewDataFetched(
+    types.TextMessage message,
+    types.PreviewData previewData,
+  ) {
+    final index = _messages.indexWhere((element) => element.id == message.id);
+    final updatedMessage = (_messages[index] as types.TextMessage).copyWith(
+      previewData: previewData,
+    );
+
+    setState(() {
+      _messages[index] = updatedMessage;
     });
   }
 
@@ -120,34 +163,36 @@ class _ChatMessageState extends State<ChatMessage> {
       final chatMessage = doc.data() as Map<String, dynamic>;
       final isCurrentUser = chatMessage['userEmail'] == authAccount;
 
+      final user = types.User(
+        id: chatMessage['userEmail'],
+        firstName: isCurrentUser ? myNickname : widget.chatNickName,
+        imageUrl: isCurrentUser ? myImg : widget.chatUserImage,
+      );
+
       if (chatMessage['imageURL'] != null &&
           chatMessage['imageURL'].isNotEmpty) {
         return types.ImageMessage(
-          author: types.User(
-            id: chatMessage['userEmail'],
-            firstName: isCurrentUser ? myNickname : widget.chatNickName,
-            imageUrl: isCurrentUser ? myImg : widget.chatUserImage,
-          ),
+          author: user,
           createdAt:
               (chatMessage['createdAt'] as Timestamp).millisecondsSinceEpoch,
           id: doc.id,
           name: 'Image',
           size: 50,
           uri: chatMessage['imageURL'],
+          metadata: {
+            'isRead': chatMessage['isRead'] ?? false,
+          },
         );
       } else {
         return types.TextMessage(
-          author: types.User(
-            id: chatMessage['userEmail'],
-            firstName: isCurrentUser ? myNickname : widget.chatNickName,
-            imageUrl: isCurrentUser ? myImg : widget.chatUserImage,
-          ),
+          author: user,
           createdAt:
               (chatMessage['createdAt'] as Timestamp).millisecondsSinceEpoch,
           id: doc.id,
-          text: chatMessage['text'] == '' || chatMessage['text'] == null
-              ? ''
-              : chatMessage['text'],
+          text: chatMessage['text'] ?? '',
+          metadata: {
+            'isRead': chatMessage['isRead'] ?? false,
+          },
         );
       }
     }).toList();
@@ -191,16 +236,7 @@ class _ChatMessageState extends State<ChatMessage> {
           hideBackgroundOnEmojiMessages: true,
           messages: messages,
           onSendPressed: (types.PartialText message) {
-            FirebaseFirestore.instance
-                .collection('chat')
-                .doc(widget.chatID)
-                .collection('message')
-                .add({
-              'userEmail': authAccount,
-              'text': message.text,
-              'createdAt': Timestamp.now(),
-              'imageURL': '',
-            });
+            _sendMessage(message);
           },
           user: types.User(
             id: authAccount ?? '',
@@ -210,6 +246,7 @@ class _ChatMessageState extends State<ChatMessage> {
           onAttachmentPressed: () {
             _showOptions(context);
           },
+          onPreviewDataFetched: _handlePreviewDataFetched,
         );
       },
     );
