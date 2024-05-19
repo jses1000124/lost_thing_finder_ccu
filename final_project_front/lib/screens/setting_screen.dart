@@ -147,7 +147,7 @@ class _SettingsPageState extends State<SettingsPage> {
             ],
           ),
           SettingsSection(
-            title: const Text('帳號安全˙'),
+            title: const Text('帳號安全'),
             tiles: [
               SettingsTile(
                   title: const Text('更改密碼'),
