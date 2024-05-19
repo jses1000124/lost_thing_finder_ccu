@@ -140,7 +140,7 @@ class _ChatMessageState extends State<ChatMessage> {
       'readStatus.${widget.chatUserEmail.replaceAll('.', '_')}': false
     });
 
-    sendNotification(widget.chatUserEmail, widget.chatNickName, message.text);
+    sendNotification(widget.chatUserEmail, myNickname!, message.text);
   }
 
   void _handlePreviewDataFetched(
