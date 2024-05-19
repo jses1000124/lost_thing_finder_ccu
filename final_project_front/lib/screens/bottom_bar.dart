@@ -45,6 +45,9 @@ class _BottomBarState extends State<BottomBar> {
     });
   }
   
+  
+
+
 
   void _updateSearch(String value) {
     setState(() {
@@ -70,7 +73,8 @@ class _BottomBarState extends State<BottomBar> {
                 putActionsOnRight: true,
                 title: Text(_title),
                 onSearch: _updateSearch,
-                actions: [ChatIconWithNotification(),
+                actions: const [
+                  ChatIconWithNotification(),
                 ],
                 suggestions: const [],
               ),
