@@ -4,7 +4,7 @@ import 'package:final_project/models/lost_thing_and_Url.dart';
 import 'package:final_project/models/post_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:final_project/data/get_user_data.dart';
-import 'package:final_project/screens/bottom_bar.dart';
+import 'package:final_project/screens/main_page.dart';
 import 'package:final_project/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
