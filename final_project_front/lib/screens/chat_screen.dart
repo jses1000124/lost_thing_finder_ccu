@@ -47,9 +47,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 chatID: widget.chatID,
                 chatNickName: widget.chatUserNickname,
                 chatUserImage: widget.chatUserImage),
-          ),
-          NewMessage(
-              chatID: widget.chatID, chatUserEmail: widget.chatUserEmail),
+          )
         ],
       ),
     );
