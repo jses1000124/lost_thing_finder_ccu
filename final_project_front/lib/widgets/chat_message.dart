@@ -1,8 +1,10 @@
+import 'package:final_project/data/upload_image.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ChatMessage extends StatefulWidget {
   final String chatID;
@@ -25,6 +27,7 @@ class _ChatMessageState extends State<ChatMessage> {
   String? authAccount;
   String? myNickname;
   String? myImg;
+  String imageURL = '';
 
   @override
   void initState() {
@@ -39,6 +42,75 @@ class _ChatMessageState extends State<ChatMessage> {
       authAccount = prefs.getString('email');
       myNickname = prefs.getString('nickname');
       myImg = prefs.getString('avatarid');
+    });
+  }
+
+  void _showOptions(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return SizedBox(
+              height: 200,
+              child: Column(children: <Widget>[
+                ListTile(
+                    onTap: () {
+                      Navigator.pop(context);
+                      _showCameraImage();
+                    },
+                    leading: const Icon(Icons.photo_camera),
+                    title: const Text("拍攝照片")),
+                ListTile(
+                    onTap: () {
+                      Navigator.pop(context);
+                      _showPhotoLibrary();
+                    },
+                    leading: const Icon(Icons.photo_library),
+                    title: const Text("選擇照片"))
+              ]));
+        });
+  }
+
+  void _showCameraImage() async {
+    ImagePicker picker = ImagePicker();
+    XFile? image = await picker.pickImage(source: ImageSource.camera);
+    if (image == null) return;
+    if (!mounted) return;
+    var url = await UploadImage().uploadImage(context, image.path, 'chatImage');
+    setState(() {
+      imageURL = url;
+    });
+    FirebaseFirestore.instance
+        .collection('chat')
+        .doc(widget.chatID)
+        .collection('message')
+        .add({
+      'text': '',
+      'createdAt': Timestamp.now(),
+      'userEmail': authAccount,
+      'chatID': widget.chatID,
+      'imageURL': imageURL,
+    });
+  }
+
+  void _showPhotoLibrary() async {
+    ImagePicker picker = ImagePicker();
+    XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    if (image == null) return;
+    if (!mounted) return;
+    var url = await UploadImage().uploadImage(context, image.path, 'chatImage');
+    setState(() {
+      imageURL = url;
+    });
+    FirebaseFirestore.instance
+        .collection('chat')
+        .doc(widget.chatID)
+        .collection('message')
+        .add({
+      'text': '',
+      'createdAt': Timestamp.now(),
+      'userEmail': authAccount,
+      'chatID': widget.chatID,
+      'imageURL': imageURL,
     });
   }
 
@@ -60,7 +132,7 @@ class _ChatMessageState extends State<ChatMessage> {
               (chatMessage['createdAt'] as Timestamp).millisecondsSinceEpoch,
           id: doc.id,
           name: 'Image',
-          size: 0, // You may want to include the actual size if available
+          size: 50,
           uri: chatMessage['imageURL'],
         );
       } else {
@@ -73,7 +145,9 @@ class _ChatMessageState extends State<ChatMessage> {
           createdAt:
               (chatMessage['createdAt'] as Timestamp).millisecondsSinceEpoch,
           id: doc.id,
-          text: chatMessage['text'],
+          text: chatMessage['text'] == '' || chatMessage['text'] == null
+              ? ''
+              : chatMessage['text'],
         );
       }
     }).toList();
@@ -125,7 +199,7 @@ class _ChatMessageState extends State<ChatMessage> {
               'userEmail': authAccount,
               'text': message.text,
               'createdAt': Timestamp.now(),
-              'imageURL': '', // Update this if you have images
+              'imageURL': '',
             });
           },
           user: types.User(
@@ -133,6 +207,9 @@ class _ChatMessageState extends State<ChatMessage> {
             firstName: myNickname,
             imageUrl: myImg,
           ),
+          onAttachmentPressed: () {
+            _showOptions(context);
+          },
         );
       },
     );
