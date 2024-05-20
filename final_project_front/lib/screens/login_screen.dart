@@ -89,19 +89,24 @@ class _LoginScreenState extends State<LoginScreen> {
             } else {
               // 根據不同的錯誤代碼顯示不同的錯誤信息
               if (response.statusCode == 401) {
-                showAlertDialog('失敗', '無效的密碼', context, popTwice: true);
+                Navigator.of(context).pop();
+                showAlertDialog('失敗', '無效的密碼', context);
               } else if (response.statusCode == 404) {
-                showAlertDialog('失敗', '帳號未找到', context, popTwice: true);
+                Navigator.of(context).pop();
+                showAlertDialog('失敗', '帳號未找到', context);
               } else {
-                showAlertDialog('錯誤', '發生未預期的錯誤', context, popTwice: true);
+                Navigator.of(context).pop();
+                showAlertDialog('錯誤', '發生未預期的錯誤', context);
               }
             }
           }); // 設定8秒超時
     } on TimeoutException catch (_) {
       if (!mounted) return; // Ensure the widget is still mounted
+      Navigator.of(context).pop();
       showAlertDialog('超時', '請求超時', context, popTwice: true);
     } catch (e) {
       if (!mounted) return; // Ensure the widget is still mounted
+      Navigator.of(context).pop();
       showAlertDialog('錯誤', '發生未預期的錯誤：$e', context, popTwice: true);
     }
   }

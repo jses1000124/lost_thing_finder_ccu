@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:easy_search_bar/easy_search_bar.dart';
 import '../widgets/chaticon_with_notification.dart';
 import 'add_lost_thing.dart';
-import '../screens/chatlist_screen.dart';
 import '../screens/finded_lost_thing_screen.dart';
 import '../screens/lost_thing_screen.dart';
 import 'map_screen.dart';
@@ -79,13 +78,7 @@ class _BottomBarState extends State<BottomBar> {
             )
           : AppBar(
               title: _selectedIndex == 2 ? const Text('地圖') : const Text('設定'),
-              actions: <Widget>[
-                IconButton(
-                  icon: const Icon(Icons.chat),
-                  onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const ChatListScreen())),
-                )
-              ],
+              actions: const [ChatIconWithNotification()],
             ),
       body: Center(child: _widgetOptions[_selectedIndex]),
       floatingActionButton: _selectedIndex == 0 || _selectedIndex == 1

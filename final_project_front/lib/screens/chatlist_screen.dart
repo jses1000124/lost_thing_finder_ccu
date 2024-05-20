@@ -1,12 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_project/screens/chat_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:final_project/data/get_nickname_and_userimage.dart';
-import 'package:final_project/screens/chat_screen.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
 class ChatListScreen extends StatefulWidget {
   const ChatListScreen({super.key});
@@ -201,17 +198,18 @@ class _ChatListScreenState extends State<ChatListScreen> {
                                 'readStatus.${_sanitizeEmail(authaccount!)}':
                                     true,
                               });
-
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => ChatScreen(
-                                    chatID: doc.id,
-                                    chatUserEmail: memberEmail,
-                                    chatUserNickname: nickname,
-                                    chatUserImage: img,
+                              if (context.mounted) {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => ChatScreen(
+                                      chatID: doc.id,
+                                      chatUserEmail: memberEmail,
+                                      chatUserNickname: nickname,
+                                      chatUserImage: img,
+                                    ),
                                   ),
-                                ),
-                              );
+                                );
+                              }
                             },
                           ),
                         );

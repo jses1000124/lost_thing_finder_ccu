@@ -7,7 +7,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:final_project/widgets/show_alert_dialog.dart';
 import '../models/lost_thing_and_Url.dart';
 import 'package:flutter/material.dart';
-import '../widgets/upload_image_widget.dart';
+import 'package:flutter/foundation.dart'; // for kIsWeb
+import '../widgets/upload_image_widget.dart'
+    if (kIsWeb) 'package:final_project/data/web_upload_image.dart';
 import 'package:http/http.dart' as http;
 
 class AddLostThing extends StatefulWidget {
@@ -50,7 +52,6 @@ class _AddLostThingState extends State<AddLostThing> {
       }
     }
   }
-
 
   void postDetails(String? imageUrl) async {
     final Uri apiUrl = Uri.parse('$basedApiUrl/post');
@@ -289,7 +290,9 @@ class _AddLostThingState extends State<AddLostThing> {
                           ),
                           child: const Icon(Icons.camera_alt, size: 50),
                         )
-                      : Image.file(File(_imagepath), fit: BoxFit.cover),
+                      : kIsWeb
+                          ? Image.network(_imagepath, fit: BoxFit.cover)
+                          : Image.file(File(_imagepath), fit: BoxFit.cover),
                 ),
                 const SizedBox(height: 20),
                 Row(

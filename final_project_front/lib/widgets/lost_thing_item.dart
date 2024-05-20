@@ -36,57 +36,62 @@ class LostThingItem extends StatelessWidget {
             children: [
               Container(
                 color: const Color.fromARGB(0, 0, 0, 0),
-                child: FutureBuilder<bool>(
-                  future: _isImageCached(lostThing.imageUrl),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const SizedBox(
-                        height: 80,
-                        width: 80,
-                        child: Center(child: CircularProgressIndicator()),
-                      );
-                    } else if (snapshot.hasError) {
-                      return const Icon(Icons.error);
-                    } else if (snapshot.hasData && snapshot.data == true) {
-                      // 如果图片已缓存，直接显示图片，不使用占位符
-                      return CachedNetworkImage(
-                        imageUrl: lostThing.imageUrl,
-                        cacheKey: lostThing.imageUrl,
-                        cacheManager: CacheManager(
-                          Config(
-                            'customCacheKey',
-                            stalePeriod: const Duration(days: 4),
-                            maxNrOfCacheObjects: 100,
-                          ),
-                        ),
-                        height: 80,
-                        width: 80,
-                      );
-                    } else {
-                      // 如果图片未缓存，显示占位符
-                      return CachedNetworkImage(
-                        imageUrl: lostThing.imageUrl,
-                        placeholder: (context, url) => const SizedBox(
-                          height: 80,
-                          width: 80,
-                          child: Center(child: CircularProgressIndicator()),
-                        ),
-                        cacheKey: lostThing.imageUrl,
-                        cacheManager: CacheManager(
-                          Config(
-                            'customCacheKey',
-                            stalePeriod: const Duration(days: 2),
-                            maxNrOfCacheObjects: 100,
-                          ),
-                        ),
-                        errorWidget: (context, url, error) =>
-                            const Icon(Icons.error),
-                        height: 80,
-                        width: 80,
-                      );
-                    }
-                  },
-                ),
+                child: lostThing.imageUrl != ''
+                    ? FutureBuilder<bool>(
+                        future: _isImageCached(lostThing.imageUrl),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const SizedBox(
+                              height: 80,
+                              width: 80,
+                              child: Center(child: CircularProgressIndicator()),
+                            );
+                          } else if (snapshot.hasError) {
+                            return const Icon(Icons.error);
+                          } else if (snapshot.hasData &&
+                              snapshot.data == true) {
+                            // 如果图片已缓存，直接显示图片，不使用占位符
+                            return CachedNetworkImage(
+                              imageUrl: lostThing.imageUrl,
+                              cacheKey: lostThing.imageUrl,
+                              cacheManager: CacheManager(
+                                Config(
+                                  'customCacheKey',
+                                  stalePeriod: const Duration(days: 4),
+                                  maxNrOfCacheObjects: 100,
+                                ),
+                              ),
+                              height: 80,
+                              width: 80,
+                            );
+                          } else {
+                            // 如果图片未缓存，显示占位符
+                            return CachedNetworkImage(
+                              imageUrl: lostThing.imageUrl,
+                              placeholder: (context, url) => const SizedBox(
+                                height: 80,
+                                width: 80,
+                                child:
+                                    Center(child: CircularProgressIndicator()),
+                              ),
+                              cacheKey: lostThing.imageUrl,
+                              cacheManager: CacheManager(
+                                Config(
+                                  'customCacheKey',
+                                  stalePeriod: const Duration(days: 2),
+                                  maxNrOfCacheObjects: 100,
+                                ),
+                              ),
+                              errorWidget: (context, url, error) =>
+                                  const Icon(Icons.error),
+                              height: 80,
+                              width: 80,
+                            );
+                          }
+                        },
+                      )
+                    : const SizedBox(),
               ),
               Expanded(
                 child: Column(

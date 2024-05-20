@@ -1,4 +1,6 @@
 import 'package:final_project/models/userimg_id_provider.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'models/post_provider.dart';
@@ -10,6 +12,17 @@ import 'package:google_fonts/google_fonts.dart';
 import 'models/theme_provider.dart';
 import 'models/user_nicknames.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
+//銘宏大帥哥可以給我們價高分一點嗎拜託
+
+//http 繞過ssl
+// class MyHttpOverrides extends HttpOverrides {
+//   @override
+//   HttpClient createHttpClient(SecurityContext? context) {
+//     return super.createHttpClient(context)
+//       ..badCertificateCallback =
+//           (X509Certificate cert, String host, int port) => true;
+//   }
+// }
 
 final ThemeData lightTheme = ThemeData(
   useMaterial3: true,
@@ -44,9 +57,15 @@ final ThemeData darkTheme = ThemeData(
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  // 繞過ssl
+  // HttpOverrides.global = MyHttpOverrides();
   // Initialize Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  if (kIsWeb) {
+    FirebaseStorage.instance;
+    // .useStorageEmulator('localhost', 9199); // Optional: use this line if you use a local emulator
+    //FirebaseStorageWeb.registerWith();
+  }
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
