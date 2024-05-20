@@ -15,7 +15,7 @@ class PostProvider with ChangeNotifier {
   }
 
   void connectAndListen() {
-    socket = io.io('$basedApiUrl:5000', <String, dynamic>{
+    socket = io.io(basedApiUrl, <String, dynamic>{
       'transports': ['websocket'],
       'autoConnect': true,
     });
