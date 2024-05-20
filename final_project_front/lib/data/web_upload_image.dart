@@ -1,17 +1,29 @@
+import 'dart:html' as html;
 import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 class UploadImage {
   Future<String> uploadImage(
       BuildContext context, String imagePath, String saveFolder) async {
+    // 使用 file_picker 选择文件
+
+    // 获取文件
+    var file = File(imagePath).readAsBytesSync();
+
+    // 创建 Firebase Storage 参考
     Reference ref = FirebaseStorage.instance
         .ref()
         .child('$saveFolder/${DateTime.now().millisecondsSinceEpoch}');
 
-    UploadTask uploadTask = ref.putFile(File(imagePath));
+    // 将文件转换为 Blob
+    var blob = html.Blob([file]);
 
-    // Show upload progress dialog
+    // 创建上传任务
+    UploadTask uploadTask = ref.putBlob(blob);
+
+    // 显示上传进度对话框
     await showDialog(
       context: context,
       barrierDismissible: false,
@@ -20,7 +32,7 @@ class UploadImage {
       },
     );
 
-    // Get download URL once the upload is complete
+    // 上传完成后获取下载 URL
     String imageUrl = await (await uploadTask).ref.getDownloadURL();
     debugPrint('File uploaded to $imageUrl');
     return imageUrl;

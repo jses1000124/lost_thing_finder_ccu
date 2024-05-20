@@ -1,5 +1,7 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:final_project/data/post_notification.dart';
 import 'package:final_project/data/upload_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -56,13 +58,14 @@ class _ChatMessageState extends State<ChatMessage> {
           return SizedBox(
               height: 200,
               child: Column(children: <Widget>[
-                ListTile(
-                    onTap: () {
-                      Navigator.pop(context);
-                      _showCameraImage();
-                    },
-                    leading: const Icon(Icons.photo_camera),
-                    title: const Text("拍攝照片")),
+                if (!kIsWeb)
+                  ListTile(
+                      onTap: () {
+                        Navigator.pop(context);
+                        _showCameraImage();
+                      },
+                      leading: const Icon(Icons.photo_camera),
+                      title: const Text("拍攝照片")),
                 ListTile(
                     onTap: () {
                       Navigator.pop(context);
@@ -75,52 +78,41 @@ class _ChatMessageState extends State<ChatMessage> {
   }
 
   void _showCameraImage() async {
-    ImagePicker picker = ImagePicker();
-    XFile? image = await picker.pickImage(source: ImageSource.camera);
-    if (image == null) return;
-    if (!mounted) return;
-    var url = await UploadImage().uploadImage(context, image.path, 'chatImage');
+    var url = await uploadCameraImage(context, 'chatImage');
     setState(() {
       imageURL = url;
     });
-    FirebaseFirestore.instance
-        .collection('chat')
-        .doc(widget.chatID)
-        .collection('message')
-        .add({
-      'text': '',
-      'createdAt': Timestamp.now(),
-      'userEmail': authAccount,
-      'chatID': widget.chatID,
-      'imageURL': imageURL,
-      'isRead': false,
-    });
+    types.PartialText message = const types.PartialText(
+      text: '',
+    );
+    _sendMessage(message, imageURL: imageURL);
   }
 
   void _showPhotoLibrary() async {
-    ImagePicker picker = ImagePicker();
-    XFile? image = await picker.pickImage(source: ImageSource.gallery);
-    if (image == null) return;
-    if (!mounted) return;
-    var url = await UploadImage().uploadImage(context, image.path, 'chatImage');
-    setState(() {
-      imageURL = url;
-    });
-    FirebaseFirestore.instance
-        .collection('chat')
-        .doc(widget.chatID)
-        .collection('message')
-        .add({
-      'text': '',
-      'createdAt': Timestamp.now(),
-      'userEmail': authAccount,
-      'chatID': widget.chatID,
-      'imageURL': imageURL,
-      'isRead': false,
-    });
+    String? imageURL = '';
+    if (kIsWeb) {
+      FilePickerResult? result = await FilePicker.platform.pickFiles();
+      if (result == null) return;
+
+      await uploadImageWeb(context, 'chatImage', result.files.single.bytes!)
+          .then((value) {
+        imageURL = value;
+      });
+    } else {
+      await uploadImageOther(context, 'chatImage').then((value) {
+        imageURL = value;
+      });
+    }
+
+    types.PartialText message = const types.PartialText(
+      text: '',
+    );
+
+    _sendMessage(message, imageURL: imageURL!);
   }
 
-  void _sendMessage(types.PartialText message) {
+  void _sendMessage(types.PartialText message, {required String imageURL}) {
+    // debugPrint('imageURL: $imageURL');
     FirebaseFirestore.instance
         .collection('chat')
         .doc(widget.chatID)
@@ -129,7 +121,7 @@ class _ChatMessageState extends State<ChatMessage> {
       'userEmail': authAccount,
       'text': message.text,
       'createdAt': Timestamp.now(),
-      'imageURL': '',
+      'imageURL': imageURL,
       'isRead': false,
     });
 
@@ -140,7 +132,8 @@ class _ChatMessageState extends State<ChatMessage> {
       'readStatus.${widget.chatUserEmail.replaceAll('.', '_')}': false
     });
 
-    sendNotification(widget.chatUserEmail, myNickname!, message.text);
+    sendNotification(widget.chatUserEmail, myNickname!,
+        imageURL.isNotEmpty ? '📷 Image' : message.text);
   }
 
   void _handlePreviewDataFetched(
@@ -236,7 +229,7 @@ class _ChatMessageState extends State<ChatMessage> {
           hideBackgroundOnEmojiMessages: true,
           messages: messages,
           onSendPressed: (types.PartialText message) {
-            _sendMessage(message);
+            _sendMessage(message, imageURL: '');
           },
           user: types.User(
             id: authAccount ?? '',
