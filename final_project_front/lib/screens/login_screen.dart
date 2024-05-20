@@ -103,11 +103,11 @@ class _LoginScreenState extends State<LoginScreen> {
     } on TimeoutException catch (_) {
       if (!mounted) return; // Ensure the widget is still mounted
       Navigator.of(context).pop();
-      showAlertDialog('超時', '請求超時', context, popTwice: true);
+      showAlertDialog('超時', '請求超時', context);
     } catch (e) {
       if (!mounted) return; // Ensure the widget is still mounted
       Navigator.of(context).pop();
-      showAlertDialog('錯誤', '發生未預期的錯誤：$e', context, popTwice: true);
+      showAlertDialog('錯誤', '發生未預期的錯誤：$e', context);
     }
   }
 

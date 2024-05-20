@@ -27,6 +27,7 @@ class _AddLostThingState extends State<AddLostThing> {
   String _imagepath = "";
   DateTime? _selectedDate;
   String? _postType;
+  Uint8List _imageBytes = Uint8List(0);
 
   void _submitForm() {
     if (_selectedDate == null) {
@@ -34,23 +35,34 @@ class _AddLostThingState extends State<AddLostThing> {
       return;
     }
     if (_formKey.currentState!.validate()) {
-      if (_imagepath.isNotEmpty) {
+      if (_imagepath.isNotEmpty || _imageBytes.isNotEmpty) {
         showLoadingDialog(context);
-        UploadImage uploadImage = UploadImage();
-        uploadImage
-            .uploadImage(context, _imagepath, 'lostThing')
-            .then((imageUrl) {
-          postDetails(imageUrl);
-        }).catchError((error) {
-          Navigator.of(context).pop(); // Close loading dialog
-          showAlertDialog('上傳失敗', '圖片上傳失敗，請重試', context);
-        });
-      } else {
-        showLoadingDialog(context);
-
-        postDetails(null);
+        if (kIsWeb) {
+          debugPrint('Uploading image from web');
+          uploadImageWeb(context, 'lostThing', _imageBytes).then((imageUrl) {
+            postDetails(imageUrl);
+          }).catchError((error) {
+            Navigator.of(context).pop(); // Close loading dialog
+            showAlertDialog('上傳失敗', '圖片上傳失敗，請重試', context);
+          });
+        } else if (!kIsWeb) {
+          debugPrint('Uploading image from device');
+          uploadImageOther(context, 'lostThing', filePath: _imagepath)
+              .then((imageUrl) {
+            postDetails(imageUrl);
+          }).catchError((error) {
+            Navigator.of(context).pop(); // Close loading dialog
+            showAlertDialog('上傳失敗', '圖片上傳失敗，請重試', context);
+          });
+        }
       }
+    } else {
+      debugPrint('Uploading no image');
+      showLoadingDialog(context);
+
+      postDetails(null);
     }
+    debugPrint('returning from submitForm');
   }
 
   void postDetails(String? imageUrl) async {
@@ -278,9 +290,18 @@ class _AddLostThingState extends State<AddLostThing> {
                   onImagePicked: (path) {
                     setState(() {
                       _imagepath = path;
+                      _imageBytes = Uint8List(
+                          0); // Reset image bytes when using file path
                     });
                   },
-                  child: _imagepath.isEmpty
+                  onImageWebPicked: (bytes) {
+                    setState(() {
+                      _imageBytes = bytes;
+                      _imagepath =
+                          ""; // Reset image path when using web image bytes
+                    });
+                  },
+                  child: _imagepath.isEmpty && _imageBytes.isEmpty
                       ? Container(
                           height: 150,
                           width: double.infinity,
@@ -291,7 +312,7 @@ class _AddLostThingState extends State<AddLostThing> {
                           child: const Icon(Icons.camera_alt, size: 50),
                         )
                       : kIsWeb
-                          ? Image.network(_imagepath, fit: BoxFit.cover)
+                          ? Image.memory(_imageBytes, fit: BoxFit.cover)
                           : Image.file(File(_imagepath), fit: BoxFit.cover),
                 ),
                 const SizedBox(height: 20),
