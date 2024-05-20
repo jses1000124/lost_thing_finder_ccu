@@ -1,6 +1,6 @@
 import 'package:intl/intl.dart';
 
-const String basedApiUrl = 'http://140.123.101.199:5000';
+const String basedApiUrl = 'http://36.227.19.78:5000';
 
 final formatter = DateFormat('yyyy/MM/dd');
 
