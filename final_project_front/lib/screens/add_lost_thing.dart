@@ -261,7 +261,7 @@ class _AddLostThingState extends State<AddLostThing> {
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       labelText: '物品描述',
                       border: OutlineInputBorder(),
-                      labelStyle: TextStyle(fontSize: 22)),
+                       labelStyle: TextStyle(fontSize: 22)),
                   style: const TextStyle(fontSize: 18),
                   controller: _descriptionController,
                   maxLines: 6,
