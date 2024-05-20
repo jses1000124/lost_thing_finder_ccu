@@ -1,6 +1,6 @@
 import 'package:intl/intl.dart';
 
-const String basedApiUrl = 'http://220.135.224.5:5000';
+const String basedApiUrl = 'https://www.ccufinder.ninja:5000';
 
 final formatter = DateFormat('yyyy/MM/dd');
 
