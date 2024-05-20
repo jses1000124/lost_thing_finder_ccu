@@ -71,6 +71,7 @@ dependencies:
   mime: ^1.0.5
   flutter_cache_manager: ^3.3.2
   firebase_storage_web: ^3.9.5
+  flutter_web_optimizer: ^1.4.1
 
 dev_dependencies:
   flutter_test:
