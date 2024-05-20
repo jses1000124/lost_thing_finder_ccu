@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:async'; // Add this import for timeout handling
-
+import 'package:final_project/models/lost_thing_and_Url.dart';
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'lost_thing_and_Url.dart';
@@ -16,7 +16,7 @@ class PostProvider with ChangeNotifier {
   }
 
   void connectAndListen() {
-    socket = io.io('http://140.123.101.199:5000', <String, dynamic>{
+    socket = io.io('http://$basedApiUrl:5000', <String, dynamic>{
       'transports': ['websocket'],
       'autoConnect': true,
     });
