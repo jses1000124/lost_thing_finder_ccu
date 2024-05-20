@@ -3,7 +3,6 @@ import 'dart:async'; // Add this import for timeout handling
 import 'package:final_project/models/lost_thing_and_Url.dart';
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
-import 'lost_thing_and_Url.dart';
 import 'package:http/http.dart' as http;
 
 class PostProvider with ChangeNotifier {
@@ -16,7 +15,7 @@ class PostProvider with ChangeNotifier {
   }
 
   void connectAndListen() {
-    socket = io.io('http://$basedApiUrl:5000', <String, dynamic>{
+    socket = io.io('$basedApiUrl:5000', <String, dynamic>{
       'transports': ['websocket'],
       'autoConnect': true,
     });
@@ -63,7 +62,9 @@ class PostProvider with ChangeNotifier {
     try {
       final response = await http.post(apiUrl,
           body: jsonEncode(requestBody),
-          headers: {'Content-Type': 'application/json'}).timeout(const Duration(seconds: 10)); // Set timeout duration
+          headers: {
+            'Content-Type': 'application/json'
+          }).timeout(const Duration(seconds: 10)); // Set timeout duration
 
       if (response.statusCode == 200) {
         posts.removeWhere((post) => post.id == postId);
@@ -96,7 +97,9 @@ class PostProvider with ChangeNotifier {
     try {
       final response = await http.post(apiUrl,
           body: jsonEncode(requestBody),
-          headers: {'Content-Type': 'application/json'}).timeout(const Duration(seconds: 10)); // Set timeout duration
+          headers: {
+            'Content-Type': 'application/json'
+          }).timeout(const Duration(seconds: 10)); // Set timeout duration
 
       if (response.statusCode == 200) {
         // Find the post and update its details
