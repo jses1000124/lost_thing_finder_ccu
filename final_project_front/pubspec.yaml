@@ -72,10 +72,16 @@ dependencies:
   flutter_cache_manager: ^3.3.2
   firebase_storage_web: ^3.9.5
   flutter_web_optimizer: ^1.4.1
+  flutter_launcher_icons: ^0.13.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/icon.png"
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
