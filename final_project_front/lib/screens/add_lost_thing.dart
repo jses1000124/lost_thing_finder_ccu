@@ -8,8 +8,7 @@ import 'package:final_project/widgets/show_alert_dialog.dart';
 import '../models/lost_thing_and_Url.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart'; // for kIsWeb
-import '../widgets/upload_image_widget.dart'
-    if (kIsWeb) 'package:final_project/data/web_upload_image.dart';
+import '../widgets/upload_image_widget.dart';
 import 'package:http/http.dart' as http;
 
 class AddLostThing extends StatefulWidget {
@@ -235,7 +234,7 @@ class _AddLostThingState extends State<AddLostThing> {
                           IconButton(
                             onPressed: _presentDatePicker,
                             style: const ButtonStyle(
-                                iconSize: MaterialStatePropertyAll(30)),
+                                iconSize: WidgetStatePropertyAll(30)),
                             icon: const Icon(
                               Icons.calendar_month,
                             ),
@@ -273,7 +272,7 @@ class _AddLostThingState extends State<AddLostThing> {
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       labelText: '物品描述',
                       border: OutlineInputBorder(),
-                       labelStyle: TextStyle(fontSize: 22)),
+                      labelStyle: TextStyle(fontSize: 22)),
                   style: const TextStyle(fontSize: 18),
                   controller: _descriptionController,
                   maxLines: 6,

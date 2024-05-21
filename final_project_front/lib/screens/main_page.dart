@@ -79,6 +79,10 @@ class _BottomBarState extends State<BottomBar> {
                   ChatIconWithNotification(),
                 ],
                 suggestions: const [],
+                searchCursorColor: Theme.of(context).colorScheme.brightness ==
+                        Brightness.light
+                    ? Colors.black
+                    : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
               ),
             )
           : AppBar(
@@ -88,20 +92,20 @@ class _BottomBarState extends State<BottomBar> {
       body: Center(child: _widgetOptions[_selectedIndex]),
       floatingActionButton: _selectedIndex == 0 || _selectedIndex == 1
           ? FloatingActionButton(
-              mini: true,
+              // web won't use mini
+              // mini: true,
               onPressed: () {
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => const AddLostThing()));
               },
-              backgroundColor: Theme.of(context).colorScheme.background,
+              backgroundColor:
+                  Theme.of(context).colorScheme.onPrimaryFixedVariant,
               child: const Icon(Icons.add),
             )
           : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: Theme(
-        data: ThemeData(
-          splashColor: Colors.transparent,
-        ),
+        data: ThemeData(splashColor: Colors.transparent),
         child: BottomNavigationBar(
           onTap: _onItemTapped,
           currentIndex: _selectedIndex,
@@ -111,7 +115,7 @@ class _BottomBarState extends State<BottomBar> {
           unselectedLabelStyle: const TextStyle(
             fontSize: 14,
           ),
-          backgroundColor: Theme.of(context).colorScheme.background,
+          backgroundColor: Theme.of(context).colorScheme.surface,
           selectedItemColor: const Color.fromARGB(255, 35, 108, 243),
           unselectedItemColor: const Color(0xFF546480),
           type: BottomNavigationBarType.fixed,

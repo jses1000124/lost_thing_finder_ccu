@@ -29,8 +29,8 @@ final ThemeData lightTheme = ThemeData(
   colorScheme: ColorScheme.fromSeed(
     brightness: Brightness.light,
     seedColor: const Color.fromARGB(255, 42, 76, 190),
-    onBackground: Colors.white,
-    background: Colors.grey[100],
+    onSurface: Colors.white,
+    surface: Colors.grey[100],
   ),
   textTheme: GoogleFonts.ibmPlexSansJpTextTheme().apply(
     bodyColor: Colors.black,
