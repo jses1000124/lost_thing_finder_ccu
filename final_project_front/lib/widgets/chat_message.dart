@@ -111,7 +111,7 @@ class _ChatMessageState extends State<ChatMessage> {
   }
 
   void _sendMessage(types.PartialText message, {required String imageURL}) {
-    // debugPrint('imageURL: $imageURL');
+
     FirebaseFirestore.instance
         .collection('chat')
         .doc(widget.chatID)
