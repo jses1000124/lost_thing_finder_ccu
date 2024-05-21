@@ -73,6 +73,7 @@ dependencies:
   firebase_storage_web: ^3.9.5
   flutter_web_optimizer: ^1.4.1
   flutter_launcher_icons: ^0.13.1
+  web: ^0.5.1
 
 dev_dependencies:
   flutter_test:

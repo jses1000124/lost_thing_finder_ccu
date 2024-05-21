@@ -1,8 +1,9 @@
-import 'dart:html' as html;
+import 'dart:typed_data';
 import 'dart:io';
-import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:web/web.dart' as web;
+import 'package:js/js_util.dart' as js_util;
 
 class UploadImage {
   Future<String> uploadImage(
@@ -10,15 +11,18 @@ class UploadImage {
     // 使用 file_picker 选择文件
 
     // 获取文件
-    var file = File(imagePath).readAsBytesSync();
+    Uint8List file = File(imagePath).readAsBytesSync();
 
     // 创建 Firebase Storage 参考
     Reference ref = FirebaseStorage.instance
         .ref()
         .child('$saveFolder/${DateTime.now().millisecondsSinceEpoch}');
 
+    // 将 Uint8List 转换为 JSArray
+    var jsArray = js_util.jsify([file]);
+
     // 将文件转换为 Blob
-    var blob = html.Blob([file]);
+    var blob = web.Blob(jsArray);
 
     // 创建上传任务
     UploadTask uploadTask = ref.putBlob(blob);
