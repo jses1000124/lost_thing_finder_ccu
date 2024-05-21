@@ -29,7 +29,9 @@ class _BottomBarState extends State<BottomBar> {
     _widgetOptions = [
       const LostThingScreen(),
       const FindedThingScreen(),
-      // const MapPage(),正式版本再開啟
+      //正式版本再開啟
+      // const MapPage(),
+      //測試版本使用
       const DevelopingScreen(),
       const SettingsPage(),
     ];
@@ -52,7 +54,10 @@ class _BottomBarState extends State<BottomBar> {
       _widgetOptions = [
         LostThingScreen(searchedThingName: searchVal),
         FindedThingScreen(searchedThingName: searchVal),
-        const MapPage(),
+        //正式版本再開啟
+        // const MapPage(),
+        //測試版本使用
+        const DevelopingScreen(),
         const SettingsPage(),
       ];
     });
