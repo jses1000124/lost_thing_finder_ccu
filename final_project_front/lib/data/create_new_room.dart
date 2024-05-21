@@ -24,6 +24,8 @@ Future<String> createNewChatRoom(String postUserEmail, String authEmail) async {
     'lastUpdated': Timestamp.now(),
     'lastMessage': '',
     'member': [postUserEmail, authEmail],
+    'readStatus': {postUserEmail: false, authEmail: false},
+    'isLastMessageImage': false,
   });
   return roomRef.id;
 }

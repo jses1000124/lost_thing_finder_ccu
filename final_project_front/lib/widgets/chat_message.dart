@@ -210,11 +210,6 @@ class _ChatMessageState extends State<ChatMessage> {
             child: Text('ERROR!'),
           );
         }
-        if (!chatSnapshot.hasData || chatSnapshot.data!.docs.isEmpty) {
-          return const Center(
-            child: Text('還沒有訊息喔！快來聊天吧！'),
-          );
-        }
 
         final chatDocs = chatSnapshot.data!.docs;
         final messages = _mapFirestoreDataToChatMessages(chatDocs);
