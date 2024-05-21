@@ -431,11 +431,20 @@ class _MapPageState extends State<MapPage> {
         LatLng(23.56534881671811, 120.46974267519383),
       ],
     },
+    {
+      "name": "大吃",
+      "points": [
+        LatLng(23.55769171187763, 120.47261648072129),
+        LatLng(23.558353305613952, 120.47070385075924),
+        LatLng(23.553416082096117, 120.47084820019222),
+        LatLng(23.55334165017198, 120.47275180831163),
+      ],
+    },
   ];
 
   LatLng? _currentLatLng;
   final MapController _mapController = MapController();
-  String? _hoveredBuildingName;
+  OverlayEntry? _overlayEntry;
 
   Future<LatLng> _determineLatLng() async {
     bool serviceEnabled;
@@ -472,18 +481,54 @@ class _MapPageState extends State<MapPage> {
     });
   }
 
-  void _handlePolygonHover(LatLng point) {
+  void _handlePolygonHover(LatLng point, TapPosition tapPosition) {
+    String? hoveredBuildingName;
+
     for (var building in buildings) {
       if (_isPointInPolygon(point, building['points'])) {
-        setState(() {
-          _hoveredBuildingName = building['name'];
-        });
-        return;
+        hoveredBuildingName = building['name'];
+        break;
       }
     }
-    setState(() {
-      _hoveredBuildingName = null;
-    });
+
+    if (hoveredBuildingName != null) {
+      _showOverlay(context, hoveredBuildingName, tapPosition);
+    } else {
+      _removeOverlay();
+    }
+  }
+
+  void _showOverlay(
+      BuildContext context, String text, TapPosition tapPosition) {
+    _removeOverlay();
+    final overlay = Overlay.of(context);
+    if (overlay != null) {
+      _overlayEntry = OverlayEntry(
+        builder: (context) => Positioned(
+          left: tapPosition.global.dx + 10,
+          top: tapPosition.global.dy + 10,
+          child: Material(
+            color: Colors.transparent,
+            child: Container(
+              padding: const EdgeInsets.all(8.0),
+              color: Colors.black54,
+              child: Text(
+                text,
+                style: const TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      overlay.insert(_overlayEntry!);
+    }
+  }
+
+  void _removeOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
   }
 
   bool _isPointInPolygon(LatLng point, List<LatLng> polygon) {
@@ -538,7 +583,7 @@ class _MapPageState extends State<MapPage> {
                   center: currentLatLng,
                   zoom: 15.0,
                   onTap: (tapPosition, point) {
-                    _handlePolygonHover(point);
+                    _handlePolygonHover(point, tapPosition);
                   },
                 ),
                 children: [
@@ -551,7 +596,7 @@ class _MapPageState extends State<MapPage> {
                     polygons: buildings.map((building) {
                       return Polygon(
                         points: List<LatLng>.from(building['points']),
-                        color: Colors.red.withOpacity(0.3),
+                        color: Colors.transparent,
                         borderStrokeWidth: 0.0,
                         borderColor: Colors.transparent,
                         isFilled: true,
@@ -601,35 +646,12 @@ class _MapPageState extends State<MapPage> {
               child: Icon(Icons.my_location),
             ),
           ),
-          if (_hoveredBuildingName != null)
-            Positioned(
-              top: 10,
-              left: 10,
-              child: Container(
-                padding: EdgeInsets.all(8.0),
-                color: Colors.transparent,
-                child: Text(
-                  _hoveredBuildingName!,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    shadows: [
-                      Shadow(
-                        blurRadius: 10.0,
-                        color: Colors.black,
-                        offset: Offset(1.0, 1.0),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
         ],
       ),
     );
   }
 }
 
-// void main() => runApp(MaterialApp(
-//       home: MapPage(),
-//     ));
+void main() => runApp(MaterialApp(
+      home: MapPage(),
+    ));
