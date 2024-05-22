@@ -34,13 +34,12 @@ class PostProvider with ChangeNotifier {
         isLoading = false; // Update loading state
 
         // Mask author emails before printing
-        var maskedData = posts.map((post) {
-          var postMap = post.toMap();
-          postMap['author_email'] = '****@****.***'; // Mask email
-          return postMap;
-        }).toList();
-
-        print('Filtered posts data: $maskedData');
+        // var maskedData = posts.map((post) {
+        //   var postMap = post.toMap();
+        //   postMap['author_email'] = '****@****.***'; // Mask email
+        //   return postMap;
+        // }).toList();
+        // print('Filtered posts data: $maskedData');
         notifyListeners();
       } catch (e) {
         print('Error parsing posts data: $e');
