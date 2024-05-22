@@ -18,7 +18,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
   Future<SharedPreferences> _getPrefs() async {
     return await SharedPreferences.getInstance();
   }
-
+  
   String _sanitizeEmail(String email) {
     return email.replaceAll('.', '_');
   }

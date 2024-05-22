@@ -90,7 +90,8 @@ class _ChatMessageState extends State<ChatMessage> {
   void _showPhotoLibrary() async {
     String? imageURL = '';
     if (kIsWeb) {
-      FilePickerResult? result = await FilePicker.platform.pickFiles();
+      FilePickerResult? result =
+          await FilePicker.platform.pickFiles(type: FileType.image);
       if (result == null) return;
 
       await uploadImageWeb(context, 'chatImage', result.files.single.bytes!)
@@ -111,7 +112,6 @@ class _ChatMessageState extends State<ChatMessage> {
   }
 
   void _sendMessage(types.PartialText message, {required String imageURL}) {
-
     FirebaseFirestore.instance
         .collection('chat')
         .doc(widget.chatID)
