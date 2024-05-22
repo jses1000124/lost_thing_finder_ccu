@@ -652,6 +652,6 @@ class _MapPageState extends State<MapPage> {
   }
 }
 
-void main() => runApp(MaterialApp(
-      home: MapPage(),
-    ));
+// void main() => runApp(MaterialApp(
+//       home: MapPage(),
+//     ));
