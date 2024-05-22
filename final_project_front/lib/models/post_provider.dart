@@ -27,10 +27,20 @@ class PostProvider with ChangeNotifier {
     });
 
     socket.on('posts_data', (data) {
-      print('Received posts data: $data');
+      print('Received posts data');
       try {
         posts = (data as List).map((item) => LostThing.fromMap(item)).toList();
+        posts = posts.reversed.toList(); // Reverse the list of posts
         isLoading = false; // Update loading state
+
+        // Mask author emails before printing
+        var maskedData = posts.map((post) {
+          var postMap = post.toMap();
+          postMap['author_email'] = '****@****.***'; // Mask email
+          return postMap;
+        }).toList();
+
+        print('Filtered posts data: $maskedData');
         notifyListeners();
       } catch (e) {
         print('Error parsing posts data: $e');

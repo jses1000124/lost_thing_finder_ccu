@@ -72,4 +72,18 @@ class LostThing {
       id: id ?? this.id,
     );
   }
+    Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'title': lostThingName,
+      'context': content,
+      'location': location,
+      'date': date.toIso8601String(),
+      'image': imageUrl,
+      'author_email': postUserEmail,
+      'my_losting': mylosting,
+      'author_nickname': postUser,
+      'userimg': headShotIndex,
+    };
+  }
 }
