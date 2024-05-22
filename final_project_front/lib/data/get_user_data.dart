@@ -1,5 +1,6 @@
 import 'package:final_project/models/lost_thing_and_Url.dart';
 import 'package:final_project/models/userimg_id_provider.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
@@ -41,7 +42,7 @@ class GetUserData {
         String? returnedAccount = body['email'];
         int? userimgid = body['userimg'];
 
-        OneSignal.login(returnedAccount!);
+        if (!kIsWeb) OneSignal.login(returnedAccount!);
 
         if (username != null) {
           await prefs.setString('username', username);
@@ -60,7 +61,7 @@ class GetUserData {
         }
 
         if (returnedAccount != '') {
-          await prefs.setString('email', returnedAccount);
+          await prefs.setString('email', returnedAccount!);
         } else {
           debugPrint("Account is null in the response");
         }

@@ -32,7 +32,7 @@ final ThemeData lightTheme = ThemeData(
     onSurface: Colors.white,
     surface: Colors.grey[100],
   ),
-  textTheme: GoogleFonts.ibmPlexSansJpTextTheme().apply(
+  textTheme: GoogleFonts.latoTextTheme().apply(
     bodyColor: Colors.black,
     displayColor: Colors.black,
   ),
@@ -49,7 +49,7 @@ final ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
     seedColor: const Color(0xFF6200EE),
   ),
-  textTheme: GoogleFonts.ibmPlexSansJpTextTheme().apply(
+  textTheme: GoogleFonts.latoTextTheme().apply(
     bodyColor: Colors.white,
     displayColor: Colors.white,
   ),
@@ -63,8 +63,6 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   if (kIsWeb) {
     FirebaseStorage.instance;
-    // .useStorageEmulator('localhost', 9199); // Optional: use this line if you use a local emulator
-    //FirebaseStorageWeb.registerWith();
   }
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -72,11 +70,13 @@ void main() async {
   ]);
 
   // OneSignal Initialization
-  
-  OneSignal.initialize("22ccb45f-f773-4a26-a4ea-aab2d267207a");
+  if (!kIsWeb) {
+    OneSignal.initialize("22ccb45f-f773-4a26-a4ea-aab2d267207a");
+    OneSignal.Notifications.requestPermission(true);
+    OneSignal.Notifications.permission;
+  }
+
 // The promptForPushNotificationUWithUserResponse function will show the iOS or Android push notification prompt. We recommend removing the following code and instead using an In-App Message to prompt for notification permission
-  OneSignal.Notifications.requestPermission(true);
-  OneSignal.Notifications.permission;
 
   final themeProvider = ThemeProvider();
   await themeProvider.loadThemeMode();

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_project/screens/chat_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:final_project/data/get_nickname_and_userimage.dart';
@@ -18,7 +19,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
   Future<SharedPreferences> _getPrefs() async {
     return await SharedPreferences.getInstance();
   }
-  
+
   String _sanitizeEmail(String email) {
     return email.replaceAll('.', '_');
   }
@@ -45,6 +46,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
               stream: FirebaseFirestore.instance
                   .collection('chat')
                   .where('member', arrayContains: authaccount)
+                  .orderBy('lastUpdated', descending: true)
                   .snapshots(),
               builder: (ctx, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -190,7 +192,6 @@ class _ChatListScreenState extends State<ChatListScreen> {
                             ),
                             onTap: () async {
                               // Mark the chat as read
-
                               await FirebaseFirestore.instance
                                   .collection('chat')
                                   .doc(doc.id)

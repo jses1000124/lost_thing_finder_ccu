@@ -132,7 +132,7 @@ class _ChatMessageState extends State<ChatMessage> {
     });
 
     sendNotification(widget.chatUserEmail, myNickname!,
-        imageURL.isNotEmpty ? '📷 Image' : message.text);
+        imageURL.isNotEmpty ? '📷 圖片' : message.text);
   }
 
   void _handlePreviewDataFetched(
@@ -140,13 +140,15 @@ class _ChatMessageState extends State<ChatMessage> {
     types.PreviewData previewData,
   ) {
     final index = _messages.indexWhere((element) => element.id == message.id);
-    final updatedMessage = (_messages[index] as types.TextMessage).copyWith(
-      previewData: previewData,
-    );
+    if (index >= 0) {
+      final updatedMessage = (_messages[index] as types.TextMessage).copyWith(
+        previewData: previewData,
+      );
 
-    setState(() {
-      _messages[index] = updatedMessage;
-    });
+      setState(() {
+        _messages[index] = updatedMessage;
+      });
+    }
   }
 
   List<types.Message> _mapFirestoreDataToChatMessages(

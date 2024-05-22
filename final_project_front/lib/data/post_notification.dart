@@ -27,5 +27,4 @@ Future<void> sendNotification(
   } else {
     debugPrint('Failed to send notification');
   }
-  print(response.body);
 }
