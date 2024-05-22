@@ -23,7 +23,7 @@ Future<void> sendNotification(
   );
 
   if (response.statusCode == 200) {
-    debugPrint('Notification sent to $targetEmail successfully');
+    debugPrint('Notification sent successfully');
   } else {
     debugPrint('Failed to send notification');
   }
