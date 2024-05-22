@@ -54,12 +54,11 @@ class _AddLostThingState extends State<AddLostThing> {
             showAlertDialog('上傳失敗', '圖片上傳失敗，請重試', context);
           });
         }
+      } else {
+        debugPrint('Uploading no image');
+        showLoadingDialog(context);
+        postDetails(null);
       }
-    } else {
-      debugPrint('Uploading no image');
-      showLoadingDialog(context);
-
-      postDetails(null);
     }
     debugPrint('returning from submitForm');
   }
