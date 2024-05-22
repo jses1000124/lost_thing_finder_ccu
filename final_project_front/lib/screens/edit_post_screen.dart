@@ -229,7 +229,7 @@ class _EditPostPageState extends State<EditPostPage> {
                           IconButton(
                             onPressed: _presentDatePicker,
                             style: const ButtonStyle(
-                                iconSize: MaterialStatePropertyAll(30)),
+                                iconSize: WidgetStatePropertyAll(30)),
                             icon: const Icon(
                               Icons.calendar_month,
                             ),

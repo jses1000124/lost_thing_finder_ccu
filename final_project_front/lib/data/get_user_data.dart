@@ -1,5 +1,6 @@
 import 'package:final_project/models/lost_thing_and_Url.dart';
 import 'package:final_project/models/userimg_id_provider.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
@@ -41,12 +42,12 @@ class GetUserData {
         String? returnedAccount = body['email'];
         int? userimgid = body['userimg'];
 
-        OneSignal.login(returnedAccount!);
+        if (!kIsWeb) OneSignal.login(returnedAccount!);
 
         if (username != null) {
           await prefs.setString('username', username);
         } else {
-          debugPrint("Username is null in the response");
+          // debugPrint("Username is null in the response");
         }
 
         if (nickname != null) {
@@ -56,13 +57,13 @@ class GetUserData {
                 .loadPreferences();
           });
         } else {
-          debugPrint("Nickname is null in the response");
+          // debugPrint("Nickname is null in the response");
         }
 
         if (returnedAccount != '') {
-          await prefs.setString('email', returnedAccount);
+          await prefs.setString('email', returnedAccount!);
         } else {
-          debugPrint("Account is null in the response");
+          // debugPrint("Account is null in the response");
         }
         if (userimgid != null) {
           await prefs.setString('avatarid', userimgid.toString()).then((value) {
@@ -70,14 +71,14 @@ class GetUserData {
                 .loadUserImgId();
           });
         } else {
-          debugPrint("User image ID is null in the response");
+          // debugPrint("User image ID is null in the response");
         }
       } else {
-        debugPrint(
-            "Failed to get user data: HTTP status ${response.statusCode}");
+        // debugPrint(
+        //     "Failed to get user data: HTTP status ${response.statusCode}");
       }
     } catch (e) {
-      debugPrint("Error occurred while fetching user data: $e");
+      // debugPrint("Error occurred while fetching user data: $e");
     }
   }
 }

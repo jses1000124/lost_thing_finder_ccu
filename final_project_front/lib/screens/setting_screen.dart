@@ -87,10 +87,14 @@ class _SettingsPageState extends State<SettingsPage> {
                           'assets/images/avatar_${userImgIdProvider.userImgId}.png'),
                     ),
                     title: Text(userPrefs.nickname,
-                        style: const TextStyle(
+                        style: TextStyle(
                             fontSize: 20,
                             overflow: TextOverflow.ellipsis,
-                            fontWeight: FontWeight.bold)),
+                            fontWeight: FontWeight.bold,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black)),
                   ),
                 ),
               ),

@@ -94,6 +94,9 @@ class _LoginScreenState extends State<LoginScreen> {
               } else if (response.statusCode == 404) {
                 Navigator.of(context).pop();
                 showAlertDialog('失敗', '帳號未找到', context);
+              } else if (response.statusCode == 987) {
+                Navigator.of(context).pop();
+                showAlertDialog('失敗', '輸入錯誤密碼超過三次\n為了保護您的帳號，已封鎖15分鐘', context);
               } else {
                 Navigator.of(context).pop();
                 showAlertDialog('錯誤', '發生未預期的錯誤', context);

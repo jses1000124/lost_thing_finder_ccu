@@ -90,7 +90,8 @@ class _ChatMessageState extends State<ChatMessage> {
   void _showPhotoLibrary() async {
     String? imageURL = '';
     if (kIsWeb) {
-      FilePickerResult? result = await FilePicker.platform.pickFiles();
+      FilePickerResult? result =
+          await FilePicker.platform.pickFiles(type: FileType.image);
       if (result == null) return;
 
       await uploadImageWeb(context, 'chatImage', result.files.single.bytes!)
@@ -111,7 +112,6 @@ class _ChatMessageState extends State<ChatMessage> {
   }
 
   void _sendMessage(types.PartialText message, {required String imageURL}) {
-    // debugPrint('imageURL: $imageURL');
     FirebaseFirestore.instance
         .collection('chat')
         .doc(widget.chatID)
@@ -132,7 +132,7 @@ class _ChatMessageState extends State<ChatMessage> {
     });
 
     sendNotification(widget.chatUserEmail, myNickname!,
-        imageURL.isNotEmpty ? '📷 Image' : message.text);
+        imageURL.isNotEmpty ? '📷 圖片' : message.text);
   }
 
   void _handlePreviewDataFetched(
@@ -140,13 +140,15 @@ class _ChatMessageState extends State<ChatMessage> {
     types.PreviewData previewData,
   ) {
     final index = _messages.indexWhere((element) => element.id == message.id);
-    final updatedMessage = (_messages[index] as types.TextMessage).copyWith(
-      previewData: previewData,
-    );
+    if (index >= 0) {
+      final updatedMessage = (_messages[index] as types.TextMessage).copyWith(
+        previewData: previewData,
+      );
 
-    setState(() {
-      _messages[index] = updatedMessage;
-    });
+      setState(() {
+        _messages[index] = updatedMessage;
+      });
+    }
   }
 
   List<types.Message> _mapFirestoreDataToChatMessages(
@@ -210,18 +212,13 @@ class _ChatMessageState extends State<ChatMessage> {
             child: Text('ERROR!'),
           );
         }
-        if (!chatSnapshot.hasData || chatSnapshot.data!.docs.isEmpty) {
-          return const Center(
-            child: Text('還沒有訊息喔！快來聊天吧！'),
-          );
-        }
 
         final chatDocs = chatSnapshot.data!.docs;
         final messages = _mapFirestoreDataToChatMessages(chatDocs);
 
         return Chat(
           theme: DefaultChatTheme(
-            backgroundColor: Theme.of(context).colorScheme.background,
+            backgroundColor: Theme.of(context).colorScheme.surface,
             inputBackgroundColor:
                 Theme.of(context).colorScheme.secondary.withOpacity(0.1),
           ),

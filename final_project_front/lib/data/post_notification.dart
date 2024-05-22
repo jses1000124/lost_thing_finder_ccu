@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -23,9 +22,8 @@ Future<void> sendNotification(
   );
 
   if (response.statusCode == 200) {
-    print('Notification sent to $targetEmail successfully');
+    // debugPrint('Notification sent successfully');
   } else {
-    debugPrint('Failed to send notification');
+    // debugPrint('Failed to send notification');
   }
-  print(response.body);
 }

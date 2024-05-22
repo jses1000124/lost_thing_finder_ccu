@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -80,7 +79,8 @@ class UploadImageWidget extends StatelessWidget {
   }
 
   Future<Uint8List> _showPhotoWebLibrary() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles();
+    FilePickerResult? result =
+        await FilePicker.platform.pickFiles(type: FileType.image);
     if (result == null) return Uint8List(0);
 
     return result.files.single.bytes!;
