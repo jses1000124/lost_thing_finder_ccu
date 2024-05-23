@@ -3,14 +3,14 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import '../data/building_data.dart';
 
-class MapPage extends StatefulWidget {
-  const MapPage({super.key});
+class MapSelectPage extends StatefulWidget {
+  const MapSelectPage({super.key});
 
   @override
-  State<MapPage> createState() => _MapPageState();
+  State<MapSelectPage> createState() => _MapPageState();
 }
 
-class _MapPageState extends State<MapPage> {
+class _MapPageState extends State<MapSelectPage> {
   
   LatLng? _selectedLatLng;
   LatLng? _confirmedLatLng;
@@ -198,5 +198,5 @@ class _MapPageState extends State<MapPage> {
 
 void main() => runApp(MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: MapPage(),
+      home: MapSelectPage(),
     ));
