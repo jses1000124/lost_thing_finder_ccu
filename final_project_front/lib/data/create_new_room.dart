@@ -25,8 +25,8 @@ Future<String> createNewChatRoom(String postUserEmail, String authEmail) async {
     'lastMessage': '',
     'member': [postUserEmail, authEmail],
     'readStatus': {
-      postUserEmail.replaceAll('.', '_'): false,
-      authEmail.replaceAll('.', '_'): false
+      postUserEmail.replaceAll('.', '_'): true,
+      authEmail.replaceAll('.', '_'): true
     },
     'isLastMessageImage': false,
   });
