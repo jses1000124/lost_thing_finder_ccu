@@ -30,9 +30,9 @@ class _BottomBarState extends State<BottomBar> {
       const LostThingScreen(),
       const FindedThingScreen(),
       //正式版本再開啟
-      // const MapPage(),
+      const MapPage(),
       //測試版本使用
-      const DevelopingScreen(),
+      // const DevelopingScreen(),
       const SettingsPage(),
     ];
   }
@@ -55,9 +55,9 @@ class _BottomBarState extends State<BottomBar> {
         LostThingScreen(searchedThingName: searchVal),
         FindedThingScreen(searchedThingName: searchVal),
         //正式版本再開啟
-        // const MapPage(),
+        const MapPage(),
         //測試版本使用
-        const DevelopingScreen(),
+        // const DevelopingScreen(),
         const SettingsPage(),
       ];
     });
@@ -93,7 +93,7 @@ class _BottomBarState extends State<BottomBar> {
       floatingActionButton: _selectedIndex == 0 || _selectedIndex == 1
           ? FloatingActionButton(
               // web won't use mini
-              // mini: true,
+              mini: true,
               onPressed: () {
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => const AddLostThing()));
