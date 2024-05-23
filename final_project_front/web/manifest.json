@@ -1,11 +1,11 @@
 {
-    "name": "final_project",
-    "short_name": "final_project",
+    "name": "尋中正",
+    "short_name": "尋中正",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "當你在中正大學遺失物品時，可以幫助你尋找遺失的物品",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
