@@ -121,6 +121,7 @@ class MyApp extends StatelessWidget {
         theme: lightTheme,
         darkTheme: darkTheme,
         themeMode: themeProvider.themeMode,
+        title: "尋中正",
         home: const AutoLoginHandler(),
       ),
     );
