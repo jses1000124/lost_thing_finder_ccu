@@ -75,6 +75,7 @@ dependencies:
   flutter_launcher_icons: ^0.13.1
   web: ^0.5.1
   firebase_auth: ^4.19.6
+  js: ^0.6.7
 
 dev_dependencies:
   flutter_test:
