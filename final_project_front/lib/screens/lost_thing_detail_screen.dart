@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_project/data/create_new_room.dart';
 import 'package:final_project/data/get_nickname_and_userimage.dart';
 import 'package:final_project/models/lost_thing_and_Url.dart';
 import 'package:final_project/screens/chat_screen.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'edit_post_screen.dart';
 import 'package:final_project/models/post_provider.dart';
@@ -96,6 +98,16 @@ class _LostThingState extends State<LostThingDetailScreen>
       Navigator.of(context).pop(); // Close the loading dialog
 
       if (code == 200) {
+        // Delete the image from Firebase Storage
+        Uri uri = Uri.parse(widget.lostThings.imageUrl);
+        String fileName = uri.pathSegments[4];
+        FirebaseStorage.instance
+            .ref()
+            .child(fileName)
+            .delete()
+            .then((i) => print("Delete success"))
+            .catchError((error) => print('Failed to delete file: $error'));
+
         showAlertDialog('成功', '貼文已刪除', context, success: true, popTwice: true);
       } else if (code == 404) {
         showAlertDialog('錯誤', '貼文未找到', context);
