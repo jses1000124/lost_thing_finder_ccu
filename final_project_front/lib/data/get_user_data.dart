@@ -8,7 +8,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../models/user_nicknames.dart';
-import 'dart:js' as js;
+// import 'web_register_notification.dart'
+//     if (dart.library.html) './web_register_notification.dart';
 
 class GetUserData {
   Future<void> getUserData(BuildContext context) async {
@@ -45,8 +46,8 @@ class GetUserData {
 
         if (!kIsWeb)
           OneSignal.login(returnedAccount!);
-        else
-          js.context.callMethod('setExternalUserId', [returnedAccount!]);
+        // else
+        //   setExternalUserId(returnedAccount!);
 
         if (username != null) {
           await prefs.setString('username', username);

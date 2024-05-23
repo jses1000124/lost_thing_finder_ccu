@@ -92,8 +92,10 @@ class _ChatMessageState extends State<ChatMessage> {
     if (kIsWeb) {
       FilePickerResult? result =
           await FilePicker.platform.pickFiles(type: FileType.image);
-      if (result == null) return;
-
+      if (result == null) {
+        print("not get image file");
+        return;
+      }
       await uploadImageWeb(context, 'chatImage', result.files.single.bytes!)
           .then((value) {
         imageURL = value;
