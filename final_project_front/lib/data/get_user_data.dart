@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../models/user_nicknames.dart';
+// build web要取消註解
 // import 'web_register_notification.dart'
 //     if (dart.library.html) './web_register_notification.dart';
 
@@ -46,6 +47,7 @@ class GetUserData {
 
         if (!kIsWeb)
           OneSignal.login(returnedAccount!);
+        // build web要取消註解
         // else
         //   setExternalUserId(returnedAccount!);
 
