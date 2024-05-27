@@ -11,12 +11,10 @@ class MapSelectPage extends StatefulWidget {
 }
 
 class _MapPageState extends State<MapSelectPage> {
-  
   LatLng? _selectedLatLng;
   LatLng? _confirmedLatLng;
   String? _buildingName;
   final MapController _mapController = MapController();
-  OverlayEntry? _overlayEntry;
 
   void _handleMapTap(LatLng point) {
     setState(() {
@@ -38,37 +36,57 @@ class _MapPageState extends State<MapSelectPage> {
   void _showNameDialog(LatLng point, String defaultBuildingName) {
     TextEditingController _controller =
         TextEditingController(text: defaultBuildingName);
+    bool _isError = false;
 
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: const Text('輸入建築物名稱'),
-          content: TextField(
-            controller: _controller,
-            decoration: const InputDecoration(
-              hintText: '建築物名稱',
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('取消'),
-            ),
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  _buildingName = _controller.text;
-                  _confirmedLatLng = point;
-                  _selectedLatLng = null;
-                });
-                Navigator.of(context).pop();
-              },
-              child: const Text('確認'),
-            ),
-          ],
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('輸入遺失地點'),
+              content: TextField(
+                controller: _controller,
+                decoration: InputDecoration(
+                  hintText: '遺失地點',
+                  errorText: _isError ? '請填入遺失地點' : null,
+                  errorBorder: _isError
+                      ? const OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red))
+                      : null,
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      _selectedLatLng = null;
+                    });
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('取消'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    if (_controller.text.isEmpty) {
+                      setState(() {
+                        _isError = true;
+                      });
+                    } else {
+                      setState(() {
+                        _buildingName = _controller.text;
+                        _confirmedLatLng = point;
+                        _selectedLatLng = null;
+                        _isError = false;
+                      });
+                      Navigator.of(context).pop();
+                    }
+                  },
+                  child: const Text('確認'),
+                ),
+              ],
+            );
+          },
         );
       },
     );
@@ -92,11 +110,6 @@ class _MapPageState extends State<MapSelectPage> {
     return result;
   }
 
-  void _removeOverlay() {
-    _overlayEntry?.remove();
-    _overlayEntry = null;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -113,7 +126,7 @@ class _MapPageState extends State<MapSelectPage> {
                     return AlertDialog(
                       title: const Text('儲存的位置'),
                       content: Text(
-                        '建築物名稱: $_buildingName\n經緯度: (${_confirmedLatLng!.latitude}, ${_confirmedLatLng!.longitude})',
+                        '遺失地點: $_buildingName\n經緯度: (${_confirmedLatLng!.latitude}, ${_confirmedLatLng!.longitude})',
                       ),
                       actions: [
                         TextButton(

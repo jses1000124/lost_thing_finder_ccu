@@ -3,6 +3,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import '../data/building_data.dart';
+
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
 
@@ -11,8 +12,6 @@ class MapPage extends StatefulWidget {
 }
 
 class _MapPageState extends State<MapPage> {
-
-
   LatLng? _currentLatLng;
   final MapController _mapController = MapController();
   OverlayEntry? _overlayEntry;
@@ -223,6 +222,6 @@ class _MapPageState extends State<MapPage> {
   }
 }
 
-// void main() => runApp(MaterialApp(
-//       home: MapPage(),
-//     ));
+void main() => runApp(MaterialApp(
+      home: MapPage(),
+    ));
