@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:provider/provider.dart';
 import 'package:geolocator/geolocator.dart';
+import '../models/post_provider.dart'; // Update the import path as needed
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -67,46 +69,68 @@ class _MapPageState extends State<MapPage> {
               LatLng currentLatLng =
                   snapshot.data ?? const LatLng(23.563333, 120.474111);
 
-              return FlutterMap(
-                mapController: _mapController,
-                options: MapOptions(
-                  center: currentLatLng,
-                  zoom: 15.0,
-                ),
-                children: [
-                  TileLayer(
-                    urlTemplate:
-                        "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-                  ),
-                  if (_currentLatLng != null)
-                    MarkerLayer(
-                      markers: [
-                        Marker(
-                          width: 10.0,
-                          height: 10.0,
-                          point: _currentLatLng!,
-                          child: Tooltip(
-                            message: "當前位置",
-                            child: Container(
+              return Consumer<PostProvider>(
+                builder: (context, postProvider, child) {
+                  return FlutterMap(
+                    mapController: _mapController,
+                    options: MapOptions(
+                      initialCenter: currentLatLng,
+                      initialZoom: 15.0,
+                    ),
+                    children: [
+                      TileLayer(
+                        urlTemplate:
+                            "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                      ),
+                      if (_currentLatLng != null)
+                        MarkerLayer(
+                          markers: [
+                            Marker(
                               width: 10.0,
                               height: 10.0,
-                              decoration: BoxDecoration(
-                                color: Colors.blue,
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.white.withOpacity(0.8),
-                                    spreadRadius: 10,
-                                    blurRadius: 10,
+                              point: _currentLatLng!,
+                              child: Tooltip(
+                                message: "當前位置",
+                                child: Container(
+                                  width: 10.0,
+                                  height: 10.0,
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue,
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.white.withOpacity(0.8),
+                                        spreadRadius: 10,
+                                        blurRadius: 10,
+                                      ),
+                                    ],
                                   ),
-                                ],
+                                ),
                               ),
                             ),
-                          ),
+                            ...postProvider.posts
+                                .where((post) =>
+                                    post.latitude != null &&
+                                    post.longitude != null)
+                                .map(
+                                  (post) => Marker(
+                                    width: 10.0,
+                                    height: 10.0,
+                                    point:
+                                        LatLng(post.latitude!, post.longitude!),
+                                    child: Tooltip(
+                                      message: post.lostThingName,
+                                      child: Icon(Icons.location_on,
+                                          color: Colors.red, size: 30.0),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                          ],
                         ),
-                      ],
-                    ),
-                ],
+                    ],
+                  );
+                },
               );
             },
           ),
@@ -126,7 +150,3 @@ class _MapPageState extends State<MapPage> {
     );
   }
 }
-
-// void main() => runApp(MaterialApp(
-//       home: MapPage(),
-//     ));

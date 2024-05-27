@@ -1,4 +1,3 @@
-import 'dart:ffi';
 
 import 'package:intl/intl.dart';
 
@@ -32,8 +31,8 @@ class LostThing {
   final int? headShotIndex;
   final int? mylosting;
   final Object? id;
-  final Object? latitude;
-  final Object? longitude;
+  final double? latitude;
+  final double? longitude;
 
   String get formattedDate {
     return formatter.format(date);
@@ -51,8 +50,8 @@ class LostThing {
       headShotIndex: map['userimg'] as int? ?? 0,
       mylosting: map['my_losting'] as int? ?? 0,
       id: map['id'] as Object? ?? 0,
-      latitude: map['latitude'] as Double? ?? 0,
-      longitude: map['longitude'] as Double? ?? 0,
+      latitude: map['latitude'] as double? ?? 0,
+      longitude: map['longitude'] as double? ?? 0,
     );
   }
   LostThing copyWith({
@@ -66,8 +65,8 @@ class LostThing {
     int? headShotIndex,
     int? mylosting,
     Object? id,
-    Object? latitude,
-    Object? longitude,
+    double? latitude,
+    double? longitude,
   }) {
     return LostThing(
       lostThingName: lostThingName ?? this.lostThingName,
