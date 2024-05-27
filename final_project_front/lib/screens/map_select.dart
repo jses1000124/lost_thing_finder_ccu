@@ -11,17 +11,16 @@ class MapSelectPage extends StatefulWidget {
 }
 
 class _MapPageState extends State<MapSelectPage> {
-  LatLng? _selectedLatLng;
   LatLng? _confirmedLatLng;
   String? _buildingName;
+  DateTime? _selectedTime;
   final MapController _mapController = MapController();
 
   void _handleMapTap(LatLng point) {
-    setState(() {
-      _selectedLatLng = point;
-    });
-    String buildingName = _getBuildingNameAtPoint(point);
-    _showNameDialog(point, buildingName);
+    if (_confirmedLatLng == null) {
+      String buildingName = _getBuildingNameAtPoint(point);
+      _showNameDialog(point, buildingName);
+    }
   }
 
   String _getBuildingNameAtPoint(LatLng point) {
@@ -49,7 +48,7 @@ class _MapPageState extends State<MapSelectPage> {
                 controller: _controller,
                 decoration: InputDecoration(
                   hintText: '遺失地點',
-                  errorText: _isError ? '請填入遺失地點' : null,
+                  errorText: _isError ? '請輸入遺失地點' : null,
                   errorBorder: _isError
                       ? const OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.red))
@@ -59,9 +58,6 @@ class _MapPageState extends State<MapSelectPage> {
               actions: [
                 TextButton(
                   onPressed: () {
-                    setState(() {
-                      _selectedLatLng = null;
-                    });
                     Navigator.of(context).pop();
                   },
                   child: const Text('取消'),
@@ -76,7 +72,7 @@ class _MapPageState extends State<MapSelectPage> {
                       setState(() {
                         _buildingName = _controller.text;
                         _confirmedLatLng = point;
-                        _selectedLatLng = null;
+                        _selectedTime = DateTime.now();
                         _isError = false;
                       });
                       Navigator.of(context).pop();
@@ -110,6 +106,34 @@ class _MapPageState extends State<MapSelectPage> {
     return result;
   }
 
+  void _showLostItemInfo() {
+    if (_buildingName != null &&
+        _confirmedLatLng != null &&
+        _selectedTime != null) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('遺失地點資訊'),
+            content: Text(
+              '遺失地點: $_buildingName\n'
+              '遺失時間: $_selectedTime\n'
+              '經緯度: (${_confirmedLatLng!.latitude}, ${_confirmedLatLng!.longitude})',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('關閉'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -119,27 +143,7 @@ class _MapPageState extends State<MapSelectPage> {
           if (_buildingName != null && _confirmedLatLng != null)
             IconButton(
               icon: const Icon(Icons.info),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: const Text('儲存的位置'),
-                      content: Text(
-                        '遺失地點: $_buildingName\n經緯度: (${_confirmedLatLng!.latitude}, ${_confirmedLatLng!.longitude})',
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text('關閉'),
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
+              onPressed: _showLostItemInfo,
             ),
         ],
       ),
@@ -171,21 +175,6 @@ class _MapPageState extends State<MapSelectPage> {
                   );
                 }).toList(),
               ),
-              if (_selectedLatLng != null)
-                MarkerLayer(
-                  markers: [
-                    Marker(
-                      width: 30.0,
-                      height: 30.0,
-                      point: _selectedLatLng!,
-                      child: const Icon(
-                        Icons.location_on,
-                        color: Colors.red,
-                        size: 30.0,
-                      ),
-                    ),
-                  ],
-                ),
               if (_confirmedLatLng != null)
                 MarkerLayer(
                   markers: [
@@ -193,10 +182,13 @@ class _MapPageState extends State<MapSelectPage> {
                       width: 30.0,
                       height: 30.0,
                       point: _confirmedLatLng!,
-                      child: const Icon(
-                        Icons.location_on,
-                        color: Colors.blue,
-                        size: 30.0,
+                      child: GestureDetector(
+                        onTap: _showLostItemInfo,
+                        child: const Icon(
+                          Icons.location_on,
+                          color: Colors.red,
+                          size: 30.0,
+                        ),
                       ),
                     ),
                   ],
