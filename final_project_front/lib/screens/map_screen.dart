@@ -1,9 +1,11 @@
+import 'package:final_project/models/lost_thing_and_Url.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import 'package:geolocator/geolocator.dart';
 import '../models/post_provider.dart'; // Update the import path as needed
+import 'lost_thing_detail_screen.dart'; // Update the import path as needed
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -16,39 +18,88 @@ class _MapPageState extends State<MapPage> {
   LatLng? _currentLatLng;
   final MapController _mapController = MapController();
 
-  Future<LatLng> _determineLatLng() async {
+  Future<void> _determineLatLng() async {
     bool serviceEnabled;
     LocationPermission permission;
 
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      return const LatLng(23.563333, 120.474111);
+      setState(() {
+        _currentLatLng = const LatLng(23.563333, 120.474111);
+      });
+      return;
     }
 
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        return const LatLng(23.563333, 120.474111);
+        setState(() {
+          _currentLatLng = const LatLng(23.563333, 120.474111);
+        });
+        return;
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
-      return const LatLng(23.563333, 120.474111);
+      setState(() {
+        _currentLatLng = const LatLng(23.563333, 120.474111);
+      });
+      return;
     }
 
     Position position = await Geolocator.getCurrentPosition();
-    return LatLng(position.latitude, position.longitude);
+    setState(() {
+      _currentLatLng = LatLng(position.latitude, position.longitude);
+    });
   }
 
   @override
   void initState() {
     super.initState();
-    _determineLatLng().then((latlng) {
-      setState(() {
-        _currentLatLng = latlng;
-      });
-    });
+    _determineLatLng();
+  }
+
+  Future<void> _showNavigateDialog(
+      BuildContext context, LostThing lostThing) async {
+    bool? confirm = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('確認查看${lostThing.lostThingName}'),
+          content: Text('你確定要查看${lostThing.lostThingName}的詳細信息嗎？'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('取消'),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+            ),
+            TextButton(
+              child: const Text('確定'),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirm == true) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (ctx) => LostThingDetailScreen(lostThings: lostThing),
+        ),
+      );
+    }
+  }
+
+  Future<void> _locateCurrentPosition() async {
+    await _determineLatLng();
+    if (_currentLatLng != null) {
+      _mapController.move(_currentLatLng!, 15.0);
+    }
   }
 
   @override
@@ -56,113 +107,108 @@ class _MapPageState extends State<MapPage> {
     return Scaffold(
       body: Stack(
         children: [
-          FutureBuilder<LatLng>(
-            future: _determineLatLng(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              }
+          if (_currentLatLng == null)
+            const Center(child: CircularProgressIndicator())
+          else
+            Consumer<PostProvider>(
+              builder: (context, postProvider, child) {
+                if (postProvider.posts.isEmpty) {
+                  return const Center(child: Text('No posts available'));
+                }
 
-              LatLng currentLatLng =
-                  snapshot.data ?? const LatLng(23.563333, 120.474111);
-
-              return Consumer<PostProvider>(
-                builder: (context, postProvider, child) {
-                  return FlutterMap(
-                    mapController: _mapController,
-                    options: MapOptions(
-                      initialCenter: currentLatLng,
-                      initialZoom: 15.0,
-                    ),
-                    children: [
-                      TileLayer(
-                        urlTemplate:
-                            "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                List<Marker> markers = [];
+                if (_currentLatLng != null) {
+                  markers.add(
+                    Marker(
+                      width: 10.0,
+                      height: 10.0,
+                      point: _currentLatLng!,
+                      child: Tooltip(
+                        message: "當前位置",
+                        child: Icon(
+                          Icons.person_pin_circle_rounded,
+                          color: Colors.purple,
+                          size: 30.0,
+                        ),
                       ),
-                      if (_currentLatLng != null)
-                        MarkerLayer(
-                          markers: [
-                            Marker(
-                              width: 10.0,
-                              height: 10.0,
-                              point: _currentLatLng!,
-                              child: Tooltip(
-                                message: "當前位置",
-                                child: Container(
-                                  width: 10.0,
-                                  height: 10.0,
-                                  decoration: BoxDecoration(
-                                    color: Colors.blue,
-                                    shape: BoxShape.circle,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.white.withOpacity(0.8),
-                                        spreadRadius: 10,
-                                        blurRadius: 10,
-                                      ),
-                                    ],
+                    ),
+                  );
+                }
+
+                for (LostThing post in postProvider.posts) {
+                  if (post.latitude != null && post.longitude != null) {
+                    markers.add(
+                      Marker(
+                        width: 100.0,
+                        height: 100.0,
+                        point: LatLng(post.latitude!, post.longitude!),
+                        child: GestureDetector(
+                          onTap: () => _showNavigateDialog(context, post),
+                          child: Column(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 4.0, horizontal: 8.0),
+                                decoration: BoxDecoration(
+                                  color: Colors.black54,
+                                  borderRadius: BorderRadius.circular(4.0),
+                                ),
+                                child: Text(
+                                  post.lostThingName,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12.0,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                               ),
-                            ),
-                            ...postProvider.posts
-                                .where((post) =>
-                                    post.latitude != null &&
-                                    post.longitude != null)
-                                .map(
-                                  (post) => Marker(
-                                    width: 100.0,
-                                    height: 100.0,
-                                    point:
-                                        LatLng(post.latitude!, post.longitude!),
-                                    child: Column(
-                                      children: [
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 4.0, horizontal: 8.0),
-                                          decoration: BoxDecoration(
-                                            color: Colors.black54,
-                                            borderRadius:
-                                                BorderRadius.circular(4.0),
-                                          ),
-                                          child: Text(
-                                            post.lostThingName,
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 12.0,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ),
-                                        ),
-                                        const Icon(
-                                          Icons.location_on,
-                                          color: Colors.red,
-                                          size: 30.0,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                )
-                                .toList(),
-                          ],
+                              Icon(
+                                Icons.location_on,
+                                color: post.mylosting == 0
+                                    ? Colors.red
+                                    : Colors.blue,
+                                size: 30.0,
+                              ),
+                            ],
+                          ),
                         ),
-                    ],
-                  );
-                },
-              );
-            },
-          ),
+                      ),
+                    );
+                  }
+                }
+
+                return FlutterMap(
+                  mapController: _mapController,
+                  options: MapOptions(
+                    initialCenter: _currentLatLng!,
+                    initialZoom: 15.0,
+                    interactionOptions: const InteractionOptions(
+                      enableMultiFingerGestureRace: true,
+                      flags: InteractiveFlag.doubleTapDragZoom |
+                          InteractiveFlag.doubleTapZoom |
+                          InteractiveFlag.drag |
+                          InteractiveFlag.flingAnimation |
+                          InteractiveFlag.pinchZoom |
+                          InteractiveFlag.scrollWheelZoom,
+                    ),
+                  ),
+                  children: [
+                    TileLayer(
+                      urlTemplate:
+                          "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                    ),
+                    MarkerLayer(
+                      markers: markers,
+                    ),
+                  ],
+                );
+              },
+            ),
           Positioned(
             right: 16.0,
             bottom: 16.0,
             child: FloatingActionButton(
-              onPressed: () async {
-                LatLng currentLatLng = await _determineLatLng();
-                _mapController.move(currentLatLng, 15.0);
-              },
+              onPressed: _locateCurrentPosition,
               child: const Icon(Icons.my_location),
             ),
           ),

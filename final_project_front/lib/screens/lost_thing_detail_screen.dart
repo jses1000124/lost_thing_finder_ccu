@@ -14,6 +14,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../widgets/show_alert_dialog.dart';
 import '../widgets/show_loading_dialog.dart';
+import 'post_in_map_screen.dart';
 
 class LostThingDetailScreen extends StatefulWidget {
   final LostThing lostThings;
@@ -109,7 +110,8 @@ class _LostThingState extends State<LostThingDetailScreen>
               .catchError((error) => print('Failed to delete file: $error'));
         }
 
-        showAlertDialog('成功', '貼文已刪除', context, success: true, popTwice: true);
+        showAlertDialog('成功', '貼文已刪除\n(需重啟app才可使用遺失物地圖)', context,
+            success: true, popTwice: true);
       } else if (code == 404) {
         showAlertDialog('錯誤', '貼文未找到', context);
       } else if (code == 403) {
@@ -199,9 +201,17 @@ class _LostThingState extends State<LostThingDetailScreen>
                 ),
                 const Spacer(),
                 Icon(Icons.location_on, color: theme.colorScheme.secondary),
-                Text(
-                  lostThings.location,
-                  style: theme.textTheme.titleMedium,
+                TextButton(
+                  child: Text(lostThings.location,
+                      style: theme.textTheme.titleMedium!.copyWith(
+                          color: const Color.fromARGB(255, 171, 202, 255))),
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (ctx) => PostMapPage(
+                        lostThing: lostThings,
+                      ),
+                    ));
+                  },
                 ),
               ],
             ),
