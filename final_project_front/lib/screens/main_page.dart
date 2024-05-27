@@ -7,7 +7,6 @@ import '../screens/lost_thing_screen.dart';
 import 'map_screen.dart';
 import '../screens/setting_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '../screens/developing_screen.dart';
 
 class BottomBar extends StatefulWidget {
   const BottomBar({super.key});
@@ -29,10 +28,7 @@ class _BottomBarState extends State<BottomBar> {
     _widgetOptions = [
       const LostThingScreen(),
       const FindedThingScreen(),
-      //正式版本再開啟
       const MapPage(),
-      //測試版本使用
-      // const DevelopingScreen(),
       const SettingsPage(),
     ];
   }
@@ -54,10 +50,7 @@ class _BottomBarState extends State<BottomBar> {
       _widgetOptions = [
         LostThingScreen(searchedThingName: searchVal),
         FindedThingScreen(searchedThingName: searchVal),
-        //正式版本再開啟
         const MapPage(),
-        //測試版本使用
-        // const DevelopingScreen(),
         const SettingsPage(),
       ];
     });

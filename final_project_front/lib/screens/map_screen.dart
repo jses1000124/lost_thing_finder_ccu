@@ -114,14 +114,35 @@ class _MapPageState extends State<MapPage> {
                                     post.longitude != null)
                                 .map(
                                   (post) => Marker(
-                                    width: 10.0,
-                                    height: 10.0,
+                                    width: 100.0,
+                                    height: 100.0,
                                     point:
                                         LatLng(post.latitude!, post.longitude!),
-                                    child: Tooltip(
-                                      message: post.lostThingName,
-                                      child: Icon(Icons.location_on,
-                                          color: Colors.red, size: 30.0),
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 4.0, horizontal: 8.0),
+                                          decoration: BoxDecoration(
+                                            color: Colors.black54,
+                                            borderRadius:
+                                                BorderRadius.circular(4.0),
+                                          ),
+                                          child: Text(
+                                            post.lostThingName,
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12.0,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ),
+                                        const Icon(
+                                          Icons.location_on,
+                                          color: Colors.red,
+                                          size: 30.0,
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 )

@@ -45,8 +45,7 @@ class GetUserData {
         String? returnedAccount = body['email'];
         int? userimgid = body['userimg'];
 
-        if (!kIsWeb)
-          OneSignal.login(returnedAccount!);
+        if (!kIsWeb) OneSignal.login(returnedAccount!);
         // build web要取消註解
         // else
         //   setExternalUserId(returnedAccount!);
