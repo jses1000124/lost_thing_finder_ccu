@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart'; // for kIsWeb
 import '../widgets/upload_image_widget.dart';
 import 'package:http/http.dart' as http;
+import '../screens/map_select.dart';
 
 class AddLostThing extends StatefulWidget {
   const AddLostThing({super.key});
@@ -22,15 +23,21 @@ class _AddLostThingState extends State<AddLostThing> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
-  final _locationController = TextEditingController();
   String _imagepath = "";
   DateTime? _selectedDate;
   String? _postType;
   Uint8List _imageBytes = Uint8List(0);
+  String? _selectedLongitude;
+  String? _selectedLatitude;
+  String? _buildingName;
 
   void _submitForm() {
     if (_selectedDate == null) {
       showAlertDialog('日期尚未選擇', '請選擇一個日期才能提交', context);
+      return;
+    }
+    if (_selectedLongitude == null || _selectedLatitude == null) {
+      showAlertDialog('地點尚未選擇', '請選擇一個地點才能提交', context);
       return;
     }
     if (_formKey.currentState!.validate()) {
@@ -75,12 +82,14 @@ class _AddLostThingState extends State<AddLostThing> {
         body: jsonEncode({
           'title': _titleController.text,
           'context': _descriptionController.text,
-          'location': _locationController.text,
+          'location': _buildingName,
           'date': _selectedDate!.toIso8601String(),
           'image': imageUrl,
           'my_losting': _postType == '遺失物' ? '0' : '1',
           'author_email': email,
           'token': token,
+          'latitude': _selectedLatitude,
+          'longitude': _selectedLongitude,
         }),
         headers: {'Content-Type': 'application/json'},
       ).timeout(const Duration(seconds: 10));
@@ -121,11 +130,26 @@ class _AddLostThingState extends State<AddLostThing> {
     });
   }
 
+  Future<void> _selectLocation() async {
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const MapSelectPage(),
+      ),
+    );
+
+    if (result != null && result is Map<String, dynamic>) {
+      setState(() {
+        _selectedLatitude = result['latLng'].latitude.toString();
+        _selectedLongitude = result['latLng'].longitude.toString();
+        _buildingName = result['buildingName'];
+      });
+    }
+  }
+
   @override
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
-    _locationController.dispose();
     super.dispose();
   }
 
@@ -244,25 +268,27 @@ class _AddLostThingState extends State<AddLostThing> {
                     const SizedBox(width: 20),
                     Expanded(
                       flex: 2,
-                      child: TextFormField(
-                        decoration: const InputDecoration(
-                          labelText: '地點',
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.place),
-                          labelStyle: TextStyle(fontSize: 18),
-                        ),
-                        style: const TextStyle(fontSize: 18),
-                        controller: _locationController,
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return '請輸入地點';
-                          }
-                          return null;
-                        },
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.location_on, size: 30),
+                                onPressed: _selectLocation,
+                              ),
+                              TextButton(
+                                child: Text(_buildingName ?? '尚未選擇地點',
+                                    style: const TextStyle(fontSize: 18)),
+                                onPressed: _selectLocation,
+                                style: ButtonStyle(
+                                    foregroundColor:
+                                        WidgetStateProperty.all(Colors.white)),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-                    // Space between the text field and dropdown
                   ],
                 ),
                 const SizedBox(height: 20),
