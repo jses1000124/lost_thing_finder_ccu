@@ -2,7 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
-import '../data/building_data.dart';
+import '../data/building_data.dart'; // 確保這個路徑正確，並且包含 buildings 資料
+
+// 遺失物品類別
+class LostItem {
+  final String name;
+  final LatLng location;
+  final DateTime time;
+
+  LostItem({
+    required this.name,
+    required this.location,
+    required this.time,
+  });
+}
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -15,6 +28,7 @@ class _MapPageState extends State<MapPage> {
   LatLng? _currentLatLng;
   final MapController _mapController = MapController();
   OverlayEntry? _overlayEntry;
+  List<LostItem> _lostItems = [];
 
   Future<LatLng> _determineLatLng() async {
     bool serviceEnabled;
@@ -129,6 +143,74 @@ class _MapPageState extends State<MapPage> {
     return LatLng(latitude / points.length, longitude / points.length);
   }
 
+  void _addLostItem(LatLng point) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        final TextEditingController nameController = TextEditingController();
+        return AlertDialog(
+          title: const Text('新增遺失物'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameController,
+                decoration: const InputDecoration(labelText: '物品名稱'),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: const Text('取消'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('儲存'),
+              onPressed: () {
+                setState(() {
+                  _lostItems.add(LostItem(
+                    name: nameController.text,
+                    location: point,
+                    time: DateTime.now(),
+                  ));
+                });
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showLostItemInfo(LostItem item) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(item.name),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('位置: ${item.location.latitude}, ${item.location.longitude}'),
+              Text('時間: ${item.time}'),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: const Text('確定'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -154,6 +236,7 @@ class _MapPageState extends State<MapPage> {
                   zoom: 15.0,
                   onTap: (tapPosition, point) {
                     _handlePolygonHover(point, tapPosition);
+                    _addLostItem(point);
                   },
                 ),
                 children: [
@@ -199,6 +282,24 @@ class _MapPageState extends State<MapPage> {
                             ),
                           ),
                         ),
+                        ..._lostItems.map((item) {
+                          return Marker(
+                            width: 10.0,
+                            height: 10.0,
+                            point: item.location,
+                            child: GestureDetector(
+                              onTap: () => _showLostItemInfo(item),
+                              child: Container(
+                                width: 10.0,
+                                height: 10.0,
+                                decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                            ),
+                          );
+                        }).toList(),
                       ],
                     ),
                 ],
