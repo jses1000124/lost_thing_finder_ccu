@@ -242,8 +242,7 @@ class _MapPageState extends State<MapPage> {
                 children: [
                   TileLayer(
                     urlTemplate:
-                        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                    subdomains: ['a', 'b', 'c'],
+                        "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
                   ),
                   PolygonLayer(
                     polygons: buildings.map((building) {
@@ -323,6 +322,6 @@ class _MapPageState extends State<MapPage> {
   }
 }
 
-void main() => runApp(MaterialApp(
-      home: MapPage(),
-    ));
+// void main() => runApp(MaterialApp(
+//       home: MapPage(),
+//     ));

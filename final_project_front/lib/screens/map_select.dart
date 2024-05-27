@@ -156,9 +156,7 @@ class _MapPageState extends State<MapSelectPage> {
             ),
             children: [
               TileLayer(
-                urlTemplate:
-                    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                subdomains: ['a', 'b', 'c'],
+                urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
               ),
               PolygonLayer(
                 polygons: buildings.map((building) {
@@ -209,7 +207,7 @@ class _MapPageState extends State<MapSelectPage> {
   }
 }
 
-void main() => runApp(MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: MapSelectPage(),
-    ));
+// void main() => runApp(MaterialApp(
+//       debugShowCheckedModeBanner: false,
+//       home: MapSelectPage(),
+//     ));

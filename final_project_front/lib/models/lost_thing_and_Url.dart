@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:intl/intl.dart';
 
 const String basedApiUrl = 'https://www.ccufinder.ninja:5000';
@@ -16,6 +18,8 @@ class LostThing {
     this.headShotIndex,
     this.mylosting,
     this.id,
+    this.latitude,
+    this.longitude,
   });
 
   final String postUser;
@@ -28,6 +32,8 @@ class LostThing {
   final int? headShotIndex;
   final int? mylosting;
   final Object? id;
+  final Object? latitude;
+  final Object? longitude;
 
   String get formattedDate {
     return formatter.format(date);
@@ -45,6 +51,8 @@ class LostThing {
       headShotIndex: map['userimg'] as int? ?? 0,
       mylosting: map['my_losting'] as int? ?? 0,
       id: map['id'] as Object? ?? 0,
+      latitude: map['latitude'] as Double? ?? 0,
+      longitude: map['longitude'] as Double? ?? 0,
     );
   }
   LostThing copyWith({
@@ -58,6 +66,8 @@ class LostThing {
     int? headShotIndex,
     int? mylosting,
     Object? id,
+    Object? latitude,
+    Object? longitude,
   }) {
     return LostThing(
       lostThingName: lostThingName ?? this.lostThingName,
@@ -70,9 +80,12 @@ class LostThing {
       headShotIndex: headShotIndex ?? this.headShotIndex,
       mylosting: mylosting ?? this.mylosting,
       id: id ?? this.id,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
     );
   }
-    Map<String, dynamic> toMap() {
+
+  Map<String, dynamic> toMap() {
     return {
       'id': id,
       'title': lostThingName,
@@ -84,6 +97,8 @@ class LostThing {
       'my_losting': mylosting,
       'author_nickname': postUser,
       'userimg': headShotIndex,
+      'latitude': latitude,
+      'longitude': longitude,
     };
   }
 }
