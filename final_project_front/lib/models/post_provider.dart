@@ -103,6 +103,7 @@ class PostProvider with ChangeNotifier {
       'my_losting': updatedPost.mylosting,
       'latitude': updatedPost.latitude.toString(),
       'longitude': updatedPost.longitude.toString(),
+      'image': updatedPost.imageUrl,
     };
 
     try {

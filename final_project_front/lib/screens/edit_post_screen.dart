@@ -1,9 +1,7 @@
 import 'dart:io';
-
 import 'package:final_project/data/upload_image.dart';
 import 'package:final_project/screens/map_select.dart';
 import 'package:final_project/widgets/upload_image_widget.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +25,6 @@ class _EditPostPageState extends State<EditPostPage> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
   late TextEditingController _contentController;
-  late TextEditingController _locationController;
   String? _selectedLatitude;
   String? _selectedLongitude;
   String? _buildingName;
@@ -44,8 +41,6 @@ class _EditPostPageState extends State<EditPostPage> {
     _nameController =
         TextEditingController(text: widget.lostThing.lostThingName);
     _contentController = TextEditingController(text: widget.lostThing.content);
-    _locationController =
-        TextEditingController(text: widget.lostThing.location);
     _selectedDate = widget.lostThing.date;
     _selectedPostType = widget.lostThing.mylosting;
     _selectedImageUrl = widget.lostThing.imageUrl;
@@ -58,7 +53,6 @@ class _EditPostPageState extends State<EditPostPage> {
   void dispose() {
     _nameController.dispose();
     _contentController.dispose();
-    _locationController.dispose();
     super.dispose();
   }
 
@@ -99,6 +93,10 @@ class _EditPostPageState extends State<EditPostPage> {
         _selectedLatitude == null ||
         _buildingName == null) {
       showAlertDialog('地點尚未選擇', '請選擇一個地點才能提交', context);
+      return;
+    }
+    if (_selectedDate == null) {
+      showAlertDialog('日期尚未選擇', '請選擇日期才能提交', context);
       return;
     }
     if (_formKey.currentState?.validate() ?? false) {
