@@ -323,7 +323,7 @@ class _EditPostPageState extends State<EditPostPage> {
                           ""; // Reset image path when using web image bytes
                     });
                   },
-                  child: _imagepath.isEmpty && _imageBytes.isEmpty
+                  child: !_isPickedImage || !_selectedImageUrl!.isEmpty
                       ? Container(
                           height: 150,
                           width: double.infinity,
@@ -334,14 +334,14 @@ class _EditPostPageState extends State<EditPostPage> {
                           child: const Icon(Icons.camera_alt, size: 50),
                         )
                       : kIsWeb
-                          ? _isPickedImage || _selectedImageUrl!.isEmpty
-                              ? Image.network(_selectedImageUrl!,
+                          ? _imagepath.isEmpty && _imageBytes.isEmpty
+                              ? Image.memory(_imageBytes, fit: BoxFit.cover)
+                              : Image.network(_selectedImageUrl!,
                                   fit: BoxFit.cover)
-                              : Image.memory(_imageBytes, fit: BoxFit.cover)
                           : _isPickedImage || _selectedImageUrl!.isEmpty
-                              ? Image.network(_selectedImageUrl!,
-                                  fit: BoxFit.cover)
-                              : Image.file(File(_imagepath), fit: BoxFit.cover),
+                              ? Image.file(File(_imagepath), fit: BoxFit.cover)
+                              : Image.network(_selectedImageUrl!,
+                                  fit: BoxFit.cover),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
