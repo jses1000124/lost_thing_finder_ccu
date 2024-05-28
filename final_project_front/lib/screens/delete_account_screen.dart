@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:email_validator/email_validator.dart';
@@ -75,6 +78,36 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
       ).timeout(const Duration(seconds: 5));
 
       if (response.statusCode == 200) {
+        final querySnapshot = await FirebaseFirestore.instance
+            .collection('chat')
+            .where('member', arrayContains: email)
+            .get();
+
+        for (var doc in querySnapshot.docs) {
+          // Delete user's chat data
+          await FirebaseFirestore.instance
+              .collection('chat')
+              .doc(doc.id)
+              .delete();
+
+          // Delete chat images from Firebase Storage
+          final ListResult result = await FirebaseStorage.instance
+              .ref('chatImage/${doc.id}')
+              .listAll();
+
+          // 刪除資料夾中的所有文件
+          for (var fileRef in result.items) {
+            await fileRef.delete();
+          }
+        }
+
+        // Delete user's lost things img
+        final ListResult result =
+            await FirebaseStorage.instance.ref('lostThings/${email}').listAll();
+        for (var fileRef in result.items) {
+          await fileRef.delete();
+        }
+
         if (mounted) {
           showAlertDialog('成功', '帳號已刪除', context);
         }

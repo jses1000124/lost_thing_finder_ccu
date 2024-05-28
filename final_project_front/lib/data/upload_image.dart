@@ -15,7 +15,7 @@ Future<XFile?> compressImage(File file) async {
     file.absolute.path,
     format: CompressFormat.jpeg,
     targetPath,
-    quality: 80,
+    quality: 70,
   );
 
   return result;

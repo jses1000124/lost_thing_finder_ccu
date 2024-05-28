@@ -34,6 +34,7 @@ class _EditPostPageState extends State<EditPostPage> {
   Uint8List _imageBytes = Uint8List(0);
   String _imagepath = '';
   bool _isPickedImage = false;
+  String? _posterEmail;
 
   @override
   void initState() {
@@ -47,6 +48,7 @@ class _EditPostPageState extends State<EditPostPage> {
     _selectedLatitude = widget.lostThing.latitude.toString();
     _selectedLongitude = widget.lostThing.longitude.toString();
     _buildingName = widget.lostThing.location;
+    _posterEmail = widget.lostThing.postUserEmail;
   }
 
   @override
@@ -107,10 +109,12 @@ class _EditPostPageState extends State<EditPostPage> {
       String? upload_image;
 
       if (kIsWeb)
-        upload_image = await uploadImageWeb(context, 'lostThing', _imageBytes);
+        upload_image = await uploadImageWeb(
+            context, 'lostThing/$_posterEmail', _imageBytes);
       else
-        upload_image =
-            await uploadImageOther(context, 'lostThing', filePath: _imagepath);
+        upload_image = await uploadImageOther(
+            context, 'lostThing/$_posterEmail',
+            filePath: _imagepath);
 
       // Delete the old image
       if (_imagepath.isNotEmpty) {

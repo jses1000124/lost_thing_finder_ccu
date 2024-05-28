@@ -77,7 +77,7 @@ class _ChatMessageState extends State<ChatMessage> {
   }
 
   void _showCameraImage() async {
-    var url = await uploadCameraImage(context, 'chatImage');
+    var url = await uploadCameraImage(context, 'chatImage/${widget.chatID}');
     setState(() {
       imageURL = url;
     });
@@ -96,12 +96,14 @@ class _ChatMessageState extends State<ChatMessage> {
         print("not get image file");
         return;
       }
-      await uploadImageWeb(context, 'chatImage', result.files.single.bytes!)
+      await uploadImageWeb(
+              context, 'chatImage/${widget.chatID}', result.files.single.bytes!)
           .then((value) {
         imageURL = value;
       });
     } else {
-      await uploadImageOther(context, 'chatImage').then((value) {
+      await uploadImageOther(context, 'chatImage/${widget.chatID}')
+          .then((value) {
         imageURL = value;
       });
     }
