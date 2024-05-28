@@ -101,6 +101,8 @@ class PostProvider with ChangeNotifier {
       'location': updatedPost.location,
       'date': updatedPost.date.toIso8601String(),
       'my_losting': updatedPost.mylosting,
+      'latitude': updatedPost.latitude.toString(),
+      'longitude': updatedPost.longitude.toString(),
     };
 
     try {

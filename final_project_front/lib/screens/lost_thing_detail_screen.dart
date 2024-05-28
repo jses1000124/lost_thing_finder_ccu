@@ -110,8 +110,7 @@ class _LostThingState extends State<LostThingDetailScreen>
               .catchError((error) => print('Failed to delete file: $error'));
         }
 
-        showAlertDialog('成功', '貼文已刪除\n(需重啟app才可使用遺失物地圖)', context,
-            success: true, popTwice: true);
+        showAlertDialog('成功', '貼文已刪除', context, success: true, popTwice: true);
       } else if (code == 404) {
         showAlertDialog('錯誤', '貼文未找到', context);
       } else if (code == 403) {

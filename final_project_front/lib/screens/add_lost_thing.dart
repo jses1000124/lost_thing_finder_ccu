@@ -36,7 +36,7 @@ class _AddLostThingState extends State<AddLostThing> {
       showAlertDialog('日期尚未選擇', '請選擇一個日期才能提交', context);
       return;
     }
-    if (_selectedLongitude == null || _selectedLatitude == null) {
+    if (_selectedLongitude == null || _selectedLatitude == null || _buildingName == null) {
       showAlertDialog('地點尚未選擇', '請選擇一個地點才能提交', context);
       return;
     }
