@@ -31,21 +31,26 @@ class _AddLostThingState extends State<AddLostThing> {
   String? _selectedLatitude;
   String? _buildingName;
 
-  void _submitForm() {
+  void _submitForm() async {
     if (_selectedDate == null) {
       showAlertDialog('日期尚未選擇', '請選擇一個日期才能提交', context);
       return;
     }
-    if (_selectedLongitude == null || _selectedLatitude == null || _buildingName == null) {
+    if (_selectedLongitude == null ||
+        _selectedLatitude == null ||
+        _buildingName == null) {
       showAlertDialog('地點尚未選擇', '請選擇一個地點才能提交', context);
       return;
     }
     if (_formKey.currentState!.validate()) {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final String email = prefs.getString('email') ?? '';
       if (_imagepath.isNotEmpty || _imageBytes.isNotEmpty) {
         showLoadingDialog(context);
         if (kIsWeb) {
           debugPrint('Uploading image from web');
-          uploadImageWeb(context, 'lostThing', _imageBytes).then((imageUrl) {
+          uploadImageWeb(context, 'lostThing/$email', _imageBytes)
+              .then((imageUrl) {
             postDetails(imageUrl);
           }).catchError((error) {
             Navigator.of(context).pop(); // Close loading dialog
@@ -53,7 +58,7 @@ class _AddLostThingState extends State<AddLostThing> {
           });
         } else if (!kIsWeb) {
           debugPrint('Uploading image from device');
-          uploadImageOther(context, 'lostThing', filePath: _imagepath)
+          uploadImageOther(context, 'lostThing/$email', filePath: _imagepath)
               .then((imageUrl) {
             postDetails(imageUrl);
           }).catchError((error) {
