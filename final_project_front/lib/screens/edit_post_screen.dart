@@ -334,11 +334,11 @@ class _EditPostPageState extends State<EditPostPage> {
                           child: const Icon(Icons.camera_alt, size: 50),
                         )
                       : kIsWeb
-                          ? _imagepath.isEmpty && _imageBytes.isEmpty
+                          ? !_imagepath.isEmpty && !_imageBytes.isEmpty
                               ? Image.memory(_imageBytes, fit: BoxFit.cover)
                               : Image.network(_selectedImageUrl!,
                                   fit: BoxFit.cover)
-                          : _isPickedImage || _selectedImageUrl!.isEmpty
+                          : !_imagepath.isEmpty && !_imageBytes.isEmpty
                               ? Image.file(File(_imagepath), fit: BoxFit.cover)
                               : Image.network(_selectedImageUrl!,
                                   fit: BoxFit.cover),
