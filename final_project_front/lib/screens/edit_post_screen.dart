@@ -112,7 +112,7 @@ class _EditPostPageState extends State<EditPostPage> {
         upload_image =
             await uploadImageOther(context, 'lostThing', filePath: _imagepath);
 
-      //delete the old image
+      // Delete the old image
       if (_imagepath.isNotEmpty) {
         if (widget.lostThing.imageUrl.isNotEmpty) {
           FirebaseStorage.instance
@@ -261,7 +261,7 @@ class _EditPostPageState extends State<EditPostPage> {
                       onPressed: _selectLocation,
                       style: ButtonStyle(
                           foregroundColor:
-                              WidgetStateProperty.all(Colors.white)),
+                              MaterialStateProperty.all(Colors.white)),
                     ),
                     const SizedBox(width: 20),
                     Expanded(
@@ -276,11 +276,9 @@ class _EditPostPageState extends State<EditPostPage> {
                           ),
                           IconButton(
                             onPressed: _presentDatePicker,
-                            style: const ButtonStyle(
-                                iconSize: WidgetStatePropertyAll(30)),
-                            icon: const Icon(
-                              Icons.calendar_month,
-                            ),
+                            style: ButtonStyle(
+                                iconSize: WidgetStateProperty.all(30)),
+                            icon: const Icon(Icons.calendar_month),
                           ),
                         ],
                       ),
@@ -323,25 +321,42 @@ class _EditPostPageState extends State<EditPostPage> {
                           ""; // Reset image path when using web image bytes
                     });
                   },
-                  child: !_isPickedImage || !_selectedImageUrl!.isEmpty
-                      ? Container(
-                          height: 150,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(Icons.camera_alt, size: 50),
-                        )
-                      : kIsWeb
-                          ? !_imagepath.isEmpty && !_imageBytes.isEmpty
+                  child: _isPickedImage
+                      ? kIsWeb
+                          ? _imageBytes.isNotEmpty
                               ? Image.memory(_imageBytes, fit: BoxFit.cover)
-                              : Image.network(_selectedImageUrl!,
-                                  fit: BoxFit.cover)
-                          : !_imagepath.isEmpty && !_imageBytes.isEmpty
+                              : Container(
+                                  height: 150,
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.grey),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: const Icon(Icons.camera_alt, size: 50),
+                                )
+                          : _imagepath.isNotEmpty
                               ? Image.file(File(_imagepath), fit: BoxFit.cover)
-                              : Image.network(_selectedImageUrl!,
-                                  fit: BoxFit.cover),
+                              : Container(
+                                  height: 150,
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.grey),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: const Icon(Icons.camera_alt, size: 50),
+                                )
+                      : _selectedImageUrl != null &&
+                              _selectedImageUrl!.isNotEmpty
+                          ? Image.network(_selectedImageUrl!, fit: BoxFit.cover)
+                          : Container(
+                              height: 150,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Icon(Icons.camera_alt, size: 50),
+                            ),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -354,7 +369,9 @@ class _EditPostPageState extends State<EditPostPage> {
                     ),
                     const SizedBox(width: 60),
                     ElevatedButton(
-                        onPressed: _savePost, child: const Text('儲存')),
+                      onPressed: _savePost,
+                      child: const Text('儲存'),
+                    ),
                   ],
                 )
               ],
