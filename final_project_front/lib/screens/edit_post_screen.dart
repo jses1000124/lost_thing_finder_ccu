@@ -255,19 +255,6 @@ class _EditPostPageState extends State<EditPostPage> {
                 const SizedBox(height: 20),
                 Row(
                   children: [
-                    IconButton(
-                      icon: const Icon(Icons.location_on, size: 30),
-                      onPressed: _selectLocation,
-                    ),
-                    TextButton(
-                      child: Text(_buildingName ?? '尚未選擇地點',
-                          style: const TextStyle(fontSize: 18)),
-                      onPressed: _selectLocation,
-                      style: ButtonStyle(
-                          foregroundColor:
-                              WidgetStateProperty.all(Colors.white)),
-                    ),
-                    const SizedBox(width: 20),
                     Expanded(
                       child: Column(
                         children: [
@@ -286,6 +273,19 @@ class _EditPostPageState extends State<EditPostPage> {
                           ),
                         ],
                       ),
+                    ),
+                    const SizedBox(width: 20),
+                    IconButton(
+                      icon: const Icon(Icons.location_on, size: 30),
+                      onPressed: _selectLocation,
+                    ),
+                    TextButton(
+                      child: Text(_buildingName ?? '尚未選擇地點',
+                          style: const TextStyle(fontSize: 18)),
+                      onPressed: _selectLocation,
+                      style: ButtonStyle(
+                          foregroundColor:
+                              WidgetStateProperty.all(Colors.white)),
                     ),
                   ],
                 ),
