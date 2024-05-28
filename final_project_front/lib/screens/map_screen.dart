@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:geolocator/geolocator.dart';
 import '../models/post_provider.dart'; // Update the import path as needed
 import 'lost_thing_detail_screen.dart'; // Update the import path as needed
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -126,7 +127,7 @@ class _MapPageState extends State<MapPage> {
                       child: Tooltip(
                         message: "當前位置",
                         child: Icon(
-                          Icons.person_pin_circle_rounded,
+                          FontAwesomeIcons.locationArrow,
                           color: Colors.purple,
                           size: 30.0,
                         ),
