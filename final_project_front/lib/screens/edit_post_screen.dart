@@ -1,3 +1,4 @@
+import 'package:final_project/screens/map_select.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:final_project/models/lost_thing_and_Url.dart';
@@ -20,6 +21,9 @@ class _EditPostPageState extends State<EditPostPage> {
   late TextEditingController _nameController;
   late TextEditingController _contentController;
   late TextEditingController _locationController;
+  String? _selectedLatitude;
+  String? _selectedLongitude;
+  String? _buildingName;
   DateTime? _selectedDate;
   int? _selectedPostType;
   String? _selectedImagePath;
@@ -35,6 +39,9 @@ class _EditPostPageState extends State<EditPostPage> {
     _selectedDate = widget.lostThing.date;
     _selectedPostType = widget.lostThing.mylosting;
     _selectedImagePath = widget.lostThing.imageUrl;
+    _selectedLatitude = widget.lostThing.latitude.toString();
+    _selectedLongitude = widget.lostThing.longitude.toString();
+    _buildingName = widget.lostThing.location;
   }
 
   @override
@@ -61,7 +68,29 @@ class _EditPostPageState extends State<EditPostPage> {
     }
   }
 
+  Future<void> _selectLocation() async {
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const MapSelectPage(),
+      ),
+    );
+
+    if (result != null && result is Map<String, dynamic>) {
+      setState(() {
+        _selectedLatitude = result['latLng'].latitude.toString();
+        _selectedLongitude = result['latLng'].longitude.toString();
+        _buildingName = result['buildingName'];
+      });
+    }
+  }
+
   Future<void> _savePost() async {
+    if (_selectedLongitude == null ||
+        _selectedLatitude == null ||
+        _buildingName == null) {
+      showAlertDialog('地點尚未選擇', '請選擇一個地點才能提交', context);
+      return;
+    }
     if (_formKey.currentState?.validate() ?? false) {
       final postProvider = Provider.of<PostProvider>(context, listen: false);
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -71,9 +100,11 @@ class _EditPostPageState extends State<EditPostPage> {
       LostThing updatedLostThing = widget.lostThing.copyWith(
         lostThingName: _nameController.text,
         content: _contentController.text,
-        location: _locationController.text,
+        location: _buildingName,
         date: _selectedDate,
         mylosting: _selectedPostType,
+        latitude: double.parse(_selectedLatitude!),
+        longitude: double.parse(_selectedLongitude!),
       );
       showLoadingDialog(context);
 
@@ -195,28 +226,20 @@ class _EditPostPageState extends State<EditPostPage> {
                 const SizedBox(height: 20),
                 Row(
                   children: [
-                    Expanded(
-                      flex: 2,
-                      child: TextFormField(
-                        controller: _locationController,
-                        decoration: InputDecoration(
-                          labelText: '地點',
-                          labelStyle: theme.textTheme.titleMedium,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return '請輸入地點';
-                          }
-                          return null;
-                        },
-                      ),
+                    IconButton(
+                      icon: const Icon(Icons.location_on, size: 30),
+                      onPressed: _selectLocation,
+                    ),
+                    TextButton(
+                      child: Text(_buildingName ?? '尚未選擇地點',
+                          style: const TextStyle(fontSize: 18)),
+                      onPressed: _selectLocation,
+                      style: ButtonStyle(
+                          foregroundColor:
+                              WidgetStateProperty.all(Colors.white)),
                     ),
                     const SizedBox(width: 20),
                     Expanded(
-                      flex: 1,
                       child: Column(
                         children: [
                           Text(
