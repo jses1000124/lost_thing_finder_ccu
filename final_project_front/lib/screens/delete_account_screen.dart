@@ -103,7 +103,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
 
         // Delete user's lost things img
         final ListResult result =
-            await FirebaseStorage.instance.ref('lostThings/${email}').listAll();
+            await FirebaseStorage.instance.ref('lostThing/${email}').listAll();
         for (var fileRef in result.items) {
           await fileRef.delete();
         }
