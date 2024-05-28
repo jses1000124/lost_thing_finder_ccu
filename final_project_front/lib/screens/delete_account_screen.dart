@@ -1,13 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:final_project/screens/login_screen.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:email_validator/email_validator.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/lost_thing_and_Url.dart';
+import '../widgets/show_alert_dialog.dart';
 
 class DeleteAccountScreen extends StatefulWidget {
   const DeleteAccountScreen({super.key, required this.token});
@@ -53,6 +55,19 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
         );
       },
     );
+  }
+
+  Future<void> _logout() async {
+    OneSignal.logout();
+
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('autoLogin', false);
+    await prefs.setString('account', '');
+    await prefs.setString('password', '').then((value) {
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+          (route) => false);
+    });
   }
 
   Future<void> _deleteAccount() async {
@@ -109,7 +124,8 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
         }
 
         if (mounted) {
-          showAlertDialog('成功', '帳號已刪除', context);
+          showAlertDialog('成功', '帳號已刪除', context, success: true);
+          _logout();
         }
       } else {
         if (mounted) {
@@ -125,26 +141,6 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
         showAlertDialog('錯誤', '發生未預期的錯誤\n${e}', context);
       }
     }
-  }
-
-  void showAlertDialog(String title, String message, BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(title),
-          content: Text(message),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('確定'),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   void _validateForm() {
