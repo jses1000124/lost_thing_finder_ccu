@@ -85,6 +85,17 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
 
         for (var doc in querySnapshot.docs) {
           // Delete user's chat data
+          DocumentReference docRef =
+              FirebaseFirestore.instance.collection('chat').doc(doc.id);
+
+          // 刪除子集合中的所有文檔
+          CollectionReference subcollectionRef = docRef.collection('message');
+
+          QuerySnapshot subcollectionSnapshot = await subcollectionRef.get();
+          for (var subDoc in subcollectionSnapshot.docs) {
+            await subDoc.reference.delete();
+          }
+
           await FirebaseFirestore.instance
               .collection('chat')
               .doc(doc.id)
