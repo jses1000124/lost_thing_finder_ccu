@@ -1,6 +1,6 @@
 [
     {
-      "origin": ["*"],
+      "origin": ["https://www.ccufinder.ninja/"],
       "method": ["GET", "POST"],
       "maxAgeSeconds": 3600
     }
