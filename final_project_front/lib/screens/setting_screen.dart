@@ -18,6 +18,7 @@ import 'package:mailto/mailto.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../widgets/show_alert_dialog.dart';
 import '../widgets/show_loading_dialog.dart';
+import '../screens/delete_account_screen.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -164,6 +165,23 @@ class _SettingsPageState extends State<SettingsPage> {
                 title: const Text('登出'),
                 leading: const Icon(Icons.logout),
                 onPressed: (BuildContext context) => logout(),
+              ),
+              SettingsTile(
+                title: const Text(
+                  '刪除帳號',
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 255, 120, 110),
+                  ),
+                ),
+                leading: const Icon(
+                  Icons.delete,
+                  color: Color.fromARGB(255, 255, 120, 110),
+                ),
+                onPressed: (BuildContext context) {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => DeleteAccountScreen(token: token!),
+                  ));
+                },
               ),
             ],
           ),

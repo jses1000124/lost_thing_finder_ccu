@@ -261,7 +261,7 @@ class _EditPostPageState extends State<EditPostPage> {
                       onPressed: _selectLocation,
                       style: ButtonStyle(
                           foregroundColor:
-                              MaterialStateProperty.all(Colors.white)),
+                              WidgetStateProperty.all(Colors.white)),
                     ),
                     const SizedBox(width: 20),
                     Expanded(
