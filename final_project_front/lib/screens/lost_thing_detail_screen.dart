@@ -100,14 +100,9 @@ class _LostThingState extends State<LostThingDetailScreen>
       if (code == 200) {
         // Delete the image from Firebase Storage
         if (widget.lostThings.imageUrl.isNotEmpty) {
-          Uri uri = Uri.parse(widget.lostThings.imageUrl);
-          String fileName = uri.pathSegments[4];
-          FirebaseStorage.instance
-              .ref()
-              .child(fileName)
-              .delete()
-              .then((i) => print("Delete success"))
-              .catchError((error) => print('Failed to delete file: $error'));
+          await FirebaseStorage.instance
+              .refFromURL(widget.lostThings.imageUrl)
+              .delete();
         }
 
         showAlertDialog('成功', '貼文已刪除', context, success: true, popTwice: true);

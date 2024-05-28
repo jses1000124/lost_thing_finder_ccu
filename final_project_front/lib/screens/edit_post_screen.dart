@@ -1,4 +1,11 @@
+import 'dart:io';
+
+import 'package:final_project/data/upload_image.dart';
 import 'package:final_project/screens/map_select.dart';
+import 'package:final_project/widgets/upload_image_widget.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:final_project/models/lost_thing_and_Url.dart';
@@ -26,7 +33,10 @@ class _EditPostPageState extends State<EditPostPage> {
   String? _buildingName;
   DateTime? _selectedDate;
   int? _selectedPostType;
-  String? _selectedImagePath;
+  String? _selectedImageUrl;
+  Uint8List _imageBytes = Uint8List(0);
+  String _imagepath = '';
+  bool _isPickedImage = false;
 
   @override
   void initState() {
@@ -38,7 +48,7 @@ class _EditPostPageState extends State<EditPostPage> {
         TextEditingController(text: widget.lostThing.location);
     _selectedDate = widget.lostThing.date;
     _selectedPostType = widget.lostThing.mylosting;
-    _selectedImagePath = widget.lostThing.imageUrl;
+    _selectedImageUrl = widget.lostThing.imageUrl;
     _selectedLatitude = widget.lostThing.latitude.toString();
     _selectedLongitude = widget.lostThing.longitude.toString();
     _buildingName = widget.lostThing.location;
@@ -96,6 +106,22 @@ class _EditPostPageState extends State<EditPostPage> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       if (!mounted) return; // Ensure the widget is still mounted
       String? token = prefs.getString('token');
+      String? upload_image;
+
+      if (kIsWeb)
+        upload_image = await uploadImageWeb(context, 'lostThing', _imageBytes);
+      else
+        upload_image =
+            await uploadImageOther(context, 'lostThing', filePath: _imagepath);
+
+      //delete the old image
+      if (_imagepath.isNotEmpty) {
+        if (widget.lostThing.imageUrl.isNotEmpty) {
+          FirebaseStorage.instance
+              .refFromURL(widget.lostThing.imageUrl)
+              .delete();
+        }
+      }
 
       LostThing updatedLostThing = widget.lostThing.copyWith(
         lostThingName: _nameController.text,
@@ -105,6 +131,7 @@ class _EditPostPageState extends State<EditPostPage> {
         mylosting: _selectedPostType,
         latitude: double.parse(_selectedLatitude!),
         longitude: double.parse(_selectedLongitude!),
+        imageUrl: upload_image,
       );
       showLoadingDialog(context);
 
@@ -282,11 +309,42 @@ class _EditPostPageState extends State<EditPostPage> {
                 ),
                 const SizedBox(height: 20),
                 Center(
-                  child: _selectedImagePath == ''
+                  child: _isPickedImage || _selectedImageUrl!.isEmpty
                       ? const SizedBox()
-                      : Image.network(_selectedImagePath!, fit: BoxFit.cover),
+                      : Image.network(_selectedImageUrl!, fit: BoxFit.cover),
                 ),
                 const SizedBox(height: 20),
+                UploadImageWidget(
+                  onImagePicked: (path) {
+                    setState(() {
+                      _isPickedImage = true;
+                      _imagepath = path;
+                      _imageBytes = Uint8List(
+                          0); // Reset image bytes when using file path
+                    });
+                  },
+                  onImageWebPicked: (bytes) {
+                    setState(() {
+                      _isPickedImage = true;
+                      _imageBytes = bytes;
+                      _imagepath =
+                          ""; // Reset image path when using web image bytes
+                    });
+                  },
+                  child: _imagepath.isEmpty && _imageBytes.isEmpty
+                      ? Container(
+                          height: 150,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Icon(Icons.camera_alt, size: 50),
+                        )
+                      : kIsWeb
+                          ? Image.memory(_imageBytes, fit: BoxFit.cover)
+                          : Image.file(File(_imagepath), fit: BoxFit.cover),
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

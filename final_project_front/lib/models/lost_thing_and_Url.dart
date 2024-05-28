@@ -1,4 +1,3 @@
-
 import 'package:intl/intl.dart';
 
 const String basedApiUrl = 'https://www.ccufinder.ninja:5000';
