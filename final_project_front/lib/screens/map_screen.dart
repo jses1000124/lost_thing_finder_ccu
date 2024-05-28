@@ -18,6 +18,7 @@ class MapPage extends StatefulWidget {
 class _MapPageState extends State<MapPage> {
   LatLng? _currentLatLng;
   final MapController _mapController = MapController();
+  final int _retryLimit = 3;
 
   Future<void> _determineLatLng() async {
     bool serviceEnabled;
@@ -53,6 +54,15 @@ class _MapPageState extends State<MapPage> {
     setState(() {
       _currentLatLng = LatLng(position.latitude, position.longitude);
     });
+  }
+
+  Future<void> _retryTileLoading(TileImage tile, int retryCount) async {
+    if (retryCount < _retryLimit) {
+      await Future.delayed(Duration(seconds: 1));
+      tile.load();
+    } else {
+      print('Failed to load tile after $_retryLimit attempts: $tile');
+    }
   }
 
   @override
@@ -185,18 +195,17 @@ class _MapPageState extends State<MapPage> {
                     initialZoom: 15.0,
                     interactionOptions: const InteractionOptions(
                       enableMultiFingerGestureRace: true,
-                      flags: InteractiveFlag.doubleTapDragZoom |
-                          InteractiveFlag.doubleTapZoom |
-                          InteractiveFlag.drag |
-                          InteractiveFlag.flingAnimation |
-                          InteractiveFlag.pinchZoom |
-                          InteractiveFlag.scrollWheelZoom,
+                      flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
                     ),
                   ),
                   children: [
                     TileLayer(
                       urlTemplate:
                           "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                      errorTileCallback: (tile, error, stackTrace) async {
+                        await _retryTileLoading(tile, 0);
+                        debugPrint('Failed to load tile: $tile, error: $error');
+                      },
                     ),
                     MarkerLayer(
                       markers: markers,
