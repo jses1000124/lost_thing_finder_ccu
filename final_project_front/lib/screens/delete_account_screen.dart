@@ -75,17 +75,8 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
       ).timeout(const Duration(seconds: 5));
 
       if (response.statusCode == 200) {
-        final body = json.decode(response.body);
-        final String message = body['message'];
-
-        if (message == 'success') {
-          if (mounted) {
-            showAlertDialog('成功', '帳號已刪除', context);
-          }
-        } else {
-          if (mounted) {
-            showAlertDialog('失敗', '密碼錯誤', context);
-          }
+        if (mounted) {
+          showAlertDialog('成功', '帳號已刪除', context);
         }
       } else {
         if (mounted) {
@@ -96,9 +87,9 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
       if (mounted) {
         showAlertDialog('失敗', '請稍後再試', context);
       }
-    } on SocketException {
+    } catch (e) {
       if (mounted) {
-        showAlertDialog('失敗', '請稍後再試', context);
+        showAlertDialog('錯誤', '發生未預期的錯誤\n${e}', context);
       }
     }
   }
