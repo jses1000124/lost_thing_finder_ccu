@@ -306,12 +306,6 @@ class _EditPostPageState extends State<EditPostPage> {
                   },
                 ),
                 const SizedBox(height: 20),
-                Center(
-                  child: _isPickedImage || _selectedImageUrl!.isEmpty
-                      ? const SizedBox()
-                      : Image.network(_selectedImageUrl!, fit: BoxFit.cover),
-                ),
-                const SizedBox(height: 20),
                 UploadImageWidget(
                   onImagePicked: (path) {
                     setState(() {
@@ -340,8 +334,14 @@ class _EditPostPageState extends State<EditPostPage> {
                           child: const Icon(Icons.camera_alt, size: 50),
                         )
                       : kIsWeb
-                          ? Image.memory(_imageBytes, fit: BoxFit.cover)
-                          : Image.file(File(_imagepath), fit: BoxFit.cover),
+                          ? _isPickedImage || _selectedImageUrl!.isEmpty
+                              ? Image.network(_selectedImageUrl!,
+                                  fit: BoxFit.cover)
+                              : Image.memory(_imageBytes, fit: BoxFit.cover)
+                          : _isPickedImage || _selectedImageUrl!.isEmpty
+                              ? Image.network(_selectedImageUrl!,
+                                  fit: BoxFit.cover)
+                              : Image.file(File(_imagepath), fit: BoxFit.cover),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
