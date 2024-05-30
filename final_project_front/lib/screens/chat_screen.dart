@@ -12,7 +12,8 @@ class ChatScreen extends StatefulWidget {
       required this.chatID,
       required this.chatUserEmail,
       required this.chatUserNickname,
-      required this.chatUserImage});
+      required this.chatUserImage,
+      });
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();

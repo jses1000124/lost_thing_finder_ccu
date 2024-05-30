@@ -1,12 +1,18 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:final_project/data/post_notification.dart';
 import 'package:final_project/data/upload_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
+import '../models/post_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
+import '../models/lost_thing_and_Url.dart';
+
+import '../screens/lost_thing_detail_screen.dart';
 
 class ChatMessage extends StatefulWidget {
   final String chatID;
@@ -27,7 +33,6 @@ class ChatMessage extends StatefulWidget {
 }
 
 class _ChatMessageState extends State<ChatMessage> {
-  final List<types.Message> _messages = [];
   late Future<SharedPreferences> _prefs;
   String? authAccount;
   String? myNickname;
@@ -139,22 +144,6 @@ class _ChatMessageState extends State<ChatMessage> {
         imageURL.isNotEmpty ? '📷 圖片' : message.text);
   }
 
-  void _handlePreviewDataFetched(
-    types.TextMessage message,
-    types.PreviewData previewData,
-  ) {
-    final index = _messages.indexWhere((element) => element.id == message.id);
-    if (index >= 0) {
-      final updatedMessage = (_messages[index] as types.TextMessage).copyWith(
-        previewData: previewData,
-      );
-
-      setState(() {
-        _messages[index] = updatedMessage;
-      });
-    }
-  }
-
   List<types.Message> _mapFirestoreDataToChatMessages(
       List<DocumentSnapshot> chatDocs) {
     return chatDocs.map((doc) {
@@ -167,7 +156,18 @@ class _ChatMessageState extends State<ChatMessage> {
         imageUrl: isCurrentUser ? myImg : widget.chatUserImage,
       );
 
-      if (chatMessage['imageURL'] != null &&
+      if (chatMessage['type'] == 'custom') {
+        return types.CustomMessage(
+          author: user,
+          createdAt:
+              (chatMessage['createdAt'] as Timestamp).millisecondsSinceEpoch,
+          id: doc.id,
+          metadata: {
+            'type': 'info',
+            'postID': chatMessage['postID'] ?? '',
+          },
+        );
+      } else if (chatMessage['imageURL'] != null &&
           chatMessage['imageURL'].isNotEmpty) {
         return types.ImageMessage(
           author: user,
@@ -190,10 +190,103 @@ class _ChatMessageState extends State<ChatMessage> {
           text: chatMessage['text'] ?? '',
           metadata: {
             'isRead': chatMessage['isRead'] ?? false,
+            'type': chatMessage['type'],
           },
         );
       }
     }).toList();
+  }
+
+  Widget _buildCustomMessage(types.CustomMessage message,
+      {required int messageWidth}) {
+    if (message.metadata != null && message.metadata!['type'] == 'info') {
+      String postID = message.metadata!['postID'];
+
+      PostProvider postProvider = Provider.of<PostProvider>(context);
+      LostThing? post = postProvider.posts.firstWhere(
+          (element) => element.id.toString() == postID,
+          orElse: () => LostThing(
+              lostThingName: '已刪除的貼文',
+              content: '已刪除的貼文',
+              date: DateTime.now(),
+              postUser: '已刪除的貼文',
+              postUserEmail: '已刪除的貼文',
+              imageUrl: '',
+              location: '已刪除的貼文',
+              mylosting: 0,
+              id: -1,
+              latitude: 0,
+              longitude: 0));
+
+      return InkWell(
+        onTap: () {
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => LostThingDetailScreen(
+                    lostThings: post,
+                  )));
+        },
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              post.imageUrl != ''
+                  ? Container(
+                      width: 100,
+                      height: 100,
+                      // padding: EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: CachedNetworkImageProvider(post.imageUrl),
+                          fit: BoxFit.cover,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    )
+                  : const SizedBox(width: 150),
+              SizedBox(width: 10),
+              Expanded(
+                child: Center(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        post.lostThingName,
+                        style: const TextStyle(
+                          fontSize: 20,
+                        ),
+                      ),
+                      Divider(color: Colors.white),
+                      Row(
+                        children: [
+                          Icon(Icons.location_on),
+                          SizedBox(width: 5),
+                          Text(
+                            post.location,
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Icon(Icons.date_range),
+                          SizedBox(width: 5),
+                          Text(
+                            post.formattedDate,
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    return const SizedBox();
   }
 
   @override
@@ -226,7 +319,6 @@ class _ChatMessageState extends State<ChatMessage> {
             inputBackgroundColor:
                 Theme.of(context).colorScheme.secondary.withOpacity(0.1),
           ),
-          hideBackgroundOnEmojiMessages: true,
           messages: messages,
           onSendPressed: (types.PartialText message) {
             _sendMessage(message, imageURL: '');
@@ -239,7 +331,7 @@ class _ChatMessageState extends State<ChatMessage> {
           onAttachmentPressed: () {
             _showOptions(context);
           },
-          onPreviewDataFetched: _handlePreviewDataFetched,
+          customMessageBuilder: _buildCustomMessage,
         );
       },
     );

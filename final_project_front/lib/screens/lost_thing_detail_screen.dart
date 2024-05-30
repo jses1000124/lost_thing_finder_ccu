@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:final_project/data/create_new_room.dart';
 import 'package:final_project/data/get_nickname_and_userimage.dart';
+import 'package:final_project/data/reference_post.dart';
 import 'package:final_project/models/lost_thing_and_Url.dart';
 import 'package:final_project/screens/chat_screen.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -263,13 +264,16 @@ class _LostThingState extends State<LostThingDetailScreen>
     List<dynamic> data = (await getNickname([postUserEmail]))[postUserEmail]!;
     String nickname = data[0];
     String chatUserImage = data[1];
-    if (!mounted) return; // Check if mounted before using context
+
+    referencePost(chatID, authEmail, widget.lostThings);
+
     Navigator.of(context).pushReplacement(MaterialPageRoute(
       builder: (ctx) => ChatScreen(
-          chatID: chatID,
-          chatUserEmail: postUserEmail,
-          chatUserNickname: nickname,
-          chatUserImage: chatUserImage),
+        chatID: chatID,
+        chatUserEmail: postUserEmail,
+        chatUserNickname: nickname,
+        chatUserImage: chatUserImage,
+      ),
     ));
   }
 }
