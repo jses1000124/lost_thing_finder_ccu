@@ -201,6 +201,8 @@ class _ChatMessageState extends State<ChatMessage> {
       {required int messageWidth}) {
     if (message.metadata != null && message.metadata!['type'] == 'info') {
       String postID = message.metadata!['postID'];
+      bool isMe = message.author.id == authAccount;
+      Color color = isMe ? Colors.white : Colors.black;
 
       PostProvider postProvider = Provider.of<PostProvider>(context);
       LostThing? post = postProvider.posts.firstWhere(
@@ -252,28 +254,26 @@ class _ChatMessageState extends State<ChatMessage> {
                     children: [
                       Text(
                         post.lostThingName,
-                        style: const TextStyle(
-                          fontSize: 20,
-                        ),
+                        style: TextStyle(fontSize: 20, color: color),
                       ),
-                      Divider(color: Colors.white),
+                      Divider(color: color),
                       Row(
                         children: [
-                          Icon(Icons.location_on),
+                          Icon(Icons.location_on, color: color),
                           SizedBox(width: 5),
                           Text(
                             post.location,
-                            style: const TextStyle(fontSize: 16),
+                            style: TextStyle(fontSize: 16, color: color),
                           ),
                         ],
                       ),
                       Row(
                         children: [
-                          Icon(Icons.date_range),
+                          Icon(Icons.date_range, color: color),
                           SizedBox(width: 5),
                           Text(
                             post.formattedDate,
-                            style: const TextStyle(fontSize: 16),
+                            style: TextStyle(fontSize: 16, color: color),
                           ),
                         ],
                       ),
