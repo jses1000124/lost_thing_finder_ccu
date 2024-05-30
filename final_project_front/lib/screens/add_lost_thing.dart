@@ -90,7 +90,7 @@ class _AddLostThingState extends State<AddLostThing> {
           'location': _buildingName,
           'date': _selectedDate!.toIso8601String(),
           'image': imageUrl,
-          'my_losting': _postType == '遺失物' ? '0' : '1',
+          'my_losting': _postType == '尋獲物' ? '0' : '1',
           'author_email': email,
           'token': token,
           'latitude': _selectedLatitude,
@@ -182,9 +182,9 @@ class _AddLostThingState extends State<AddLostThing> {
                         value: _postType,
                         items: [
                           DropdownMenuItem(
-                            value: '遺失物',
+                            value: '尋獲物',
                             child: Text(
-                              '遺失物',
+                              '尋獲物',
                               style: TextStyle(
                                 color: Theme.of(context).brightness ==
                                         Brightness.dark

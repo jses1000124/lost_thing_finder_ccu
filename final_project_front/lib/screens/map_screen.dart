@@ -193,6 +193,8 @@ class _MapPageState extends State<MapPage> {
                   options: MapOptions(
                     initialCenter: _currentLatLng!,
                     initialZoom: 15.0,
+                    minZoom: 1.0,
+                    maxZoom: 22.0,
                     interactionOptions: const InteractionOptions(
                       enableMultiFingerGestureRace: true,
                       flags: InteractiveFlag.all & ~InteractiveFlag.rotate,

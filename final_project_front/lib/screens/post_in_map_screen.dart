@@ -86,14 +86,11 @@ class _MapPageState extends State<PostMapPage> {
                       widget.lostThing
                           .longitude!), // Focus on lostThing's location
                   initialZoom: 18.0, // Zoom level increased
+                  minZoom: 1.0,
+                  maxZoom: 22.0,
                   interactionOptions: const InteractionOptions(
                     enableMultiFingerGestureRace: true,
-                    flags: InteractiveFlag.doubleTapDragZoom |
-                        InteractiveFlag.doubleTapZoom |
-                        InteractiveFlag.drag |
-                        InteractiveFlag.flingAnimation |
-                        InteractiveFlag.pinchZoom |
-                        InteractiveFlag.scrollWheelZoom,
+                    flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
                   ),
                 ),
                 children: [

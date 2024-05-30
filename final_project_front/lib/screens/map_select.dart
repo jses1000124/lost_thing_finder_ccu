@@ -154,6 +154,12 @@ class _MapSelectPageState extends State<MapSelectPage> {
             options: MapOptions(
               initialCenter: const LatLng(23.563333, 120.474111),
               initialZoom: 15.0,
+              minZoom: 1.0,
+              maxZoom: 22.0,
+              interactionOptions: const InteractionOptions(
+                enableMultiFingerGestureRace: true,
+                flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
+              ),
               onTap: (tapPosition, point) {
                 _handleMapTap(point);
               },

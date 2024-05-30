@@ -17,7 +17,7 @@ class BottomBar extends StatefulWidget {
 
 class _BottomBarState extends State<BottomBar> {
   int _selectedIndex = 0;
-  String _title = '遺失物';
+  String _title = '尋獲物';
   static String searchVal = '';
   String searchType = 'title';
   List<Widget> _widgetOptions = [];
@@ -37,7 +37,7 @@ class _BottomBarState extends State<BottomBar> {
     setState(() {
       _selectedIndex = index;
       if (index == 0) {
-        _title = '遺失物';
+        _title = '尋獲物';
       } else {
         _title = '待尋物';
       }
@@ -116,7 +116,7 @@ class _BottomBarState extends State<BottomBar> {
             BottomNavigationBarItem(
                 icon: Icon(FontAwesomeIcons.question, size: 20),
                 activeIcon: Icon(FontAwesomeIcons.question),
-                label: "遺失物"),
+                label: "尋獲物"),
             BottomNavigationBarItem(
                 icon: Icon(FontAwesomeIcons.magnifyingGlass, size: 20),
                 activeIcon: Icon(FontAwesomeIcons.magnifyingGlass),
