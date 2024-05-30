@@ -106,15 +106,20 @@ class _EditPostPageState extends State<EditPostPage> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       if (!mounted) return; // Ensure the widget is still mounted
       String? token = prefs.getString('token');
-      String? upload_image;
+      String upload_image = _selectedImageUrl ?? '';
 
-      if (kIsWeb)
-        upload_image = await uploadImageWeb(
-            context, 'lostThing/$_posterEmail', _imageBytes);
-      else
-        upload_image = await uploadImageOther(
-            context, 'lostThing/$_posterEmail',
-            filePath: _imagepath);
+      if (kIsWeb) {
+        if (_imageBytes.isNotEmpty) {
+          upload_image = await uploadImageWeb(
+              context, 'lostThing/$_posterEmail', _imageBytes);
+        }
+      } else {
+        if (_imagepath.isNotEmpty) {
+          upload_image = await uploadImageOther(
+              context, 'lostThing/$_posterEmail',
+              filePath: _imagepath);
+        }
+      }
 
       // Delete the old image
       if (_imagepath.isNotEmpty) {
