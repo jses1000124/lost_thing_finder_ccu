@@ -30,7 +30,7 @@ final ThemeData lightTheme = ThemeData(
     brightness: Brightness.light,
     seedColor: const Color.fromARGB(255, 42, 76, 190),
     onSurface: Colors.white,
-    surface: Colors.grey[100],
+    surface: Colors.grey[300],
   ),
   textTheme: GoogleFonts.latoTextTheme().apply(
     bodyColor: Colors.black,
@@ -75,6 +75,8 @@ void main() async {
     OneSignal.Notifications.requestPermission(true);
     OneSignal.Notifications.permission;
   }
+
+// The promptForPushNotificationUWithUserResponse function will show the iOS or Android push notification prompt. We recommend removing the following code and instead using an In-App Message to prompt for notification permission
 
   final themeProvider = ThemeProvider();
   await themeProvider.loadThemeMode();

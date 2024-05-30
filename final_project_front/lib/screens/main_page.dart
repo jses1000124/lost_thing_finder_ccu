@@ -59,10 +59,12 @@ class _BottomBarState extends State<BottomBar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: _selectedIndex != 2 && _selectedIndex != 3
           ? PreferredSize(
               preferredSize: const Size.fromHeight(kToolbarHeight),
               child: EasySearchBar(
+                backgroundColor: Theme.of(context).colorScheme.surface,
                 searchHintText: '$_title搜尋',
                 showClearSearchIcon: true,
                 putActionsOnRight: true,
@@ -87,6 +89,7 @@ class _BottomBarState extends State<BottomBar> {
           ? FloatingActionButton(
               // web won't use mini
               mini: true,
+              foregroundColor: Colors.white,
               onPressed: () {
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => const AddLostThing()));
@@ -108,7 +111,10 @@ class _BottomBarState extends State<BottomBar> {
           unselectedLabelStyle: const TextStyle(
             fontSize: 14,
           ),
-          backgroundColor: Theme.of(context).colorScheme.surface,
+          backgroundColor:
+              Theme.of(context).colorScheme.brightness == Brightness.light
+                  ? Colors.white
+                  : Theme.of(context).colorScheme.surface,
           selectedItemColor: const Color.fromARGB(255, 35, 108, 243),
           unselectedItemColor: const Color(0xFF546480),
           type: BottomNavigationBarType.fixed,
