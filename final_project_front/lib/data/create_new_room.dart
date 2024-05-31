@@ -29,6 +29,7 @@ Future<String> createNewChatRoom(String postUserEmail, String authEmail) async {
       authEmail.replaceAll('.', '_'): true
     },
     'isLastMessageImage': false,
+    'currentPostID': '',
   });
   return roomRef.id;
 }

@@ -147,10 +147,15 @@ class _ChatListScreenState extends State<ChatListScreen> {
                                         nickname.length > 10
                                             ? '${nickname.substring(0, 10)}...'
                                             : nickname,
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Theme.of(context)
+                                                      .colorScheme
+                                                      .brightness ==
+                                                  Brightness.dark
+                                              ? Colors.white
+                                              : Colors.black,
+                                        ),
                                       ),
                                       if (doc['lastMessage'] != '')
                                         Text(
@@ -190,14 +195,6 @@ class _ChatListScreenState extends State<ChatListScreen> {
                               ],
                             ),
                             onTap: () async {
-                              // Mark the chat as read
-                              await FirebaseFirestore.instance
-                                  .collection('chat')
-                                  .doc(doc.id)
-                                  .update({
-                                'readStatus.${_sanitizeEmail(authaccount!)}':
-                                    true,
-                              });
                               if (context.mounted) {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(

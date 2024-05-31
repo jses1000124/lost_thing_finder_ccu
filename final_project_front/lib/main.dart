@@ -48,10 +48,16 @@ final ThemeData darkTheme = ThemeData(
   colorScheme: ColorScheme.fromSeed(
     brightness: Brightness.dark,
     seedColor: const Color(0xFF6200EE),
+    onSurface: Colors.black,
   ),
   textTheme: GoogleFonts.latoTextTheme().apply(
     bodyColor: Colors.white,
     displayColor: Colors.white,
+  ),
+  appBarTheme: AppBarTheme(
+    backgroundColor: Colors.black,
+    titleTextStyle: const TextStyle(color: Colors.white, fontSize: 20),
+    iconTheme: IconThemeData(color: Colors.grey[500]),
   ),
 );
 

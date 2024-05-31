@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:easy_search_bar/easy_search_bar.dart';
+import 'package:flutter_displaymode/flutter_displaymode.dart';
 import '../widgets/chaticon_with_notification.dart';
 import 'add_lost_thing.dart';
 import '../screens/finded_lost_thing_screen.dart';
@@ -24,6 +25,7 @@ class _BottomBarState extends State<BottomBar> {
 
   @override
   void initState() {
+    setOptimalDisplayMode();
     super.initState();
     _widgetOptions = [
       const LostThingScreen(),
@@ -31,6 +33,23 @@ class _BottomBarState extends State<BottomBar> {
       const MapPage(),
       const SettingsPage(),
     ];
+  }
+
+  Future<void> setOptimalDisplayMode() async {
+    final List<DisplayMode> supported = await FlutterDisplayMode.supported;
+    final DisplayMode active = await FlutterDisplayMode.active;
+
+    final List<DisplayMode> sameResolution = supported
+        .where((DisplayMode m) =>
+            m.width == active.width && m.height == active.height)
+        .toList()
+      ..sort((DisplayMode a, DisplayMode b) =>
+          b.refreshRate.compareTo(a.refreshRate));
+
+    final DisplayMode mostOptimalMode =
+        sameResolution.isNotEmpty ? sameResolution.first : active;
+
+    await FlutterDisplayMode.setPreferredMode(mostOptimalMode);
   }
 
   void _onItemTapped(int index) {

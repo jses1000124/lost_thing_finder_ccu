@@ -7,13 +7,13 @@ class ChatScreen extends StatefulWidget {
   final String chatUserNickname;
   final String chatUserImage;
 
-  const ChatScreen(
-      {super.key,
-      required this.chatID,
-      required this.chatUserEmail,
-      required this.chatUserNickname,
-      required this.chatUserImage,
-      });
+  const ChatScreen({
+    super.key,
+    required this.chatID,
+    required this.chatUserEmail,
+    required this.chatUserNickname,
+    required this.chatUserImage,
+  });
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -38,6 +38,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<Widget> chatScreen(BuildContext context) async {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Theme.of(context).primaryColor,
         title: Text(widget.chatUserNickname),
       ),
       body: Column(

@@ -5,10 +5,10 @@ packages:
     dependency: transitive
     description:
       name: _flutterfire_internals
-      sha256: e4be6711f96d3d4eebe79728897d645b7a5585bbfdd6d534878d202c171266d7
+      sha256: "37a42d06068e2fe3deddb2da079a8c4d105f241225ba27b7122b37e9865fd8f7"
       url: "https://pub.dev"
     source: hosted
-    version: "1.3.34"
+    version: "1.3.35"
   archive:
     dependency: transitive
     description:
@@ -101,26 +101,26 @@ packages:
     dependency: "direct main"
     description:
       name: cloud_firestore
-      sha256: e461ea9ab23959102a780efcbccfe33c2ac46269928bc57093bbc0b526afc801
+      sha256: a0f161b92610e078b4962d7e6ebeb66dc9cce0ada3514aeee442f68165d78185
       url: "https://pub.dev"
     source: hosted
-    version: "4.17.3"
+    version: "4.17.5"
   cloud_firestore_platform_interface:
     dependency: transitive
     description:
       name: cloud_firestore_platform_interface
-      sha256: "2e0b8db9a759ffc71086019f1bd27237e5e888ab1e99c507067ff8616acdfa24"
+      sha256: "6a55b319f8d33c307396b9104512e8130a61904528ab7bd8b5402678fca54b81"
       url: "https://pub.dev"
     source: hosted
-    version: "6.2.3"
+    version: "6.2.5"
   cloud_firestore_web:
     dependency: transitive
     description:
       name: cloud_firestore_web
-      sha256: "37b6974bef5b0a7ecd31037ffb7d7bfe6bb9d2ac6c064fbea395411ef0a64d55"
+      sha256: "89dfa1304d3da48b3039abbb2865e3d30896ef858e569a16804a99f4362283a9"
       url: "https://pub.dev"
     source: hosted
-    version: "3.12.3"
+    version: "3.12.5"
   collection:
     dependency: transitive
     description:
@@ -293,10 +293,10 @@ packages:
     dependency: "direct main"
     description:
       name: firebase_core
-      sha256: "4b5100e2dbc3fe72c2d4241a046d3f01457fe11293283a324f5c52575e3406f8"
+      sha256: "26de145bb9688a90962faec6f838247377b0b0d32cc0abecd9a4e43525fc856c"
       url: "https://pub.dev"
     source: hosted
-    version: "2.31.1"
+    version: "2.32.0"
   firebase_core_platform_interface:
     dependency: transitive
     description:
@@ -390,6 +390,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.6.13"
+  flutter_displaymode:
+    dependency: "direct main"
+    description:
+      name: flutter_displaymode
+      sha256: "42c5e9abd13d28ed74f701b60529d7f8416947e58256e6659c5550db719c57ef"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.6.0"
   flutter_firebase_chat_core:
     dependency: "direct main"
     description:
@@ -479,18 +487,18 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_map
-      sha256: cda8d72135b697f519287258b5294a57ce2f2a5ebf234f0e406aad4dc14c9399
+      sha256: ead3532d99548140346684cf737a4c0a6f59f02f62ee4e406597f8364afbf1a2
       url: "https://pub.dev"
     source: hosted
-    version: "6.1.0"
+    version: "7.0.0"
   flutter_map_tile_caching:
     dependency: "direct main"
     description:
       name: flutter_map_tile_caching
-      sha256: "24412e067317ba6f03d8568c024b400ac37bfe364719033f8048d7bca86b80d3"
+      sha256: ab4dcd37a5b6bfd1e37f5f335f17eea359e2f53e7a8e9e092f1966fdda60737b
       url: "https://pub.dev"
     source: hosted
-    version: "9.0.1"
+    version: "9.1.0"
   flutter_parsed_text:
     dependency: transitive
     description:
@@ -721,10 +729,10 @@ packages:
     dependency: "direct main"
     description:
       name: js
-      sha256: f2c445dce49627136094980615a031419f7f3eb393237e4ecd97ac15dea343f3
+      sha256: c1b2e9b5ea78c45e1a0788d29606ba27dc5f71f019f32ca5140f61ef071838cf
       url: "https://pub.dev"
     source: hosted
-    version: "0.6.7"
+    version: "0.7.1"
   json_annotation:
     dependency: transitive
     description:
@@ -857,18 +865,18 @@ packages:
     dependency: transitive
     description:
       name: objectbox
-      sha256: "9fb2810156e8f78d82ecf672c36a1aba2c1de16d7903675335e00e374bdc3ba8"
+      sha256: "70ff2a7538f6f8bb56136734d574f5bdc1cf29c50cd7207a14ea0c641ecb88ca"
       url: "https://pub.dev"
     source: hosted
-    version: "2.5.1"
+    version: "4.0.1"
   objectbox_flutter_libs:
     dependency: transitive
     description:
       name: objectbox_flutter_libs
-      sha256: dca86b2d1074110573b69cbd9afb6b67ab9d2c824704c6ac5187e546418baf9c
+      sha256: "97adc5f95d16f33c7114d56e5dec617db4300cd11ae5022134cf76fa5f30084d"
       url: "https://pub.dev"
     source: hosted
-    version: "2.5.1"
+    version: "4.0.1"
   octo_image:
     dependency: transitive
     description:
@@ -1102,18 +1110,18 @@ packages:
     dependency: "direct main"
     description:
       name: socket_io_client
-      sha256: ede469f3e4c55e8528b4e023bdedbc20832e8811ab9b61679d1ba3ed5f01f23b
+      sha256: "15c9deae04e2b21065adbe864a641e0a5fc2499ff4c89e98a3877aea22ce841c"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.3+1"
+    version: "3.0.0-beta.2"
   socket_io_common:
     dependency: transitive
     description:
       name: socket_io_common
-      sha256: "2ab92f8ff3ebbd4b353bf4a98bee45cc157e3255464b2f90f66e09c4472047eb"
+      sha256: "5ad0f12e1b17f4300b0d6a27feaf1b7c1153ca21498ba307f0297b81449f7a44"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.3"
+    version: "3.0.0-beta.0"
   source_span:
     dependency: transitive
     description:

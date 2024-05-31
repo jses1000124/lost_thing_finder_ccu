@@ -11,7 +11,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import '../models/lost_thing_and_Url.dart';
-
 import '../screens/lost_thing_detail_screen.dart';
 
 class ChatMessage extends StatefulWidget {
@@ -43,15 +42,36 @@ class _ChatMessageState extends State<ChatMessage> {
   void initState() {
     super.initState();
     _prefs = SharedPreferences.getInstance();
-    _loadUserPrefs();
+    _loadUserPrefs().then((_) {
+      _changeReadStatus();
+    });
   }
 
-  void _loadUserPrefs() async {
+  Future<void> _loadUserPrefs() async {
     final prefs = await _prefs;
     setState(() {
       authAccount = prefs.getString('email');
       myNickname = prefs.getString('nickname');
       myImg = prefs.getString('avatarid');
+    });
+  }
+
+  void _changeReadStatus() {
+    FirebaseFirestore.instance
+        .collection('chat')
+        .doc(widget.chatID)
+        .update({'readStatus.${authAccount?.replaceAll('.', '_')}': true});
+
+    FirebaseFirestore.instance
+        .collection('chat')
+        .doc(widget.chatID)
+        .collection('message')
+        .where('userEmail', isNotEqualTo: authAccount)
+        .get()
+        .then((value) {
+      for (DocumentSnapshot doc in value.docs) {
+        doc.reference.update({'isRead': true});
+      }
     });
   }
 
@@ -137,7 +157,8 @@ class _ChatMessageState extends State<ChatMessage> {
       'isLastMessageImage': imageURL.isNotEmpty ? true : false,
       'lastUpdated': Timestamp.now(),
       'lastMessage': message.text,
-      'readStatus.${widget.chatUserEmail.replaceAll('.', '_')}': false
+      'readStatus.${widget.chatUserEmail.replaceAll('.', '_')}': false,
+      'readStatus.${authAccount!.replaceAll('.', '_')}': true
     });
 
     sendNotification(widget.chatUserEmail, myNickname!,
@@ -148,13 +169,7 @@ class _ChatMessageState extends State<ChatMessage> {
       List<DocumentSnapshot> chatDocs) {
     return chatDocs.map((doc) {
       final chatMessage = doc.data() as Map<String, dynamic>;
-      final isCurrentUser = chatMessage['userEmail'] == authAccount;
-
-      final user = types.User(
-        id: chatMessage['userEmail'],
-        firstName: isCurrentUser ? myNickname : widget.chatNickName,
-        imageUrl: isCurrentUser ? myImg : widget.chatUserImage,
-      );
+      final user = types.User(id: chatMessage['userEmail']);
 
       if (chatMessage['type'] == 'custom') {
         return types.CustomMessage(
@@ -177,19 +192,36 @@ class _ChatMessageState extends State<ChatMessage> {
           name: 'Image',
           size: 50,
           uri: chatMessage['imageURL'],
-          metadata: {
-            'isRead': chatMessage['isRead'] ?? false,
-          },
         );
       } else {
         return types.TextMessage(
+          previewData: chatMessage['previewData'] != null
+              ? types.PreviewData(
+                  description: chatMessage['previewData']['description'],
+                  image: chatMessage['previewData']['image']['height'] != null
+                      ? types.PreviewDataImage(
+                          height: chatMessage['previewData']['image']['height'],
+                          url: chatMessage['previewData']['image']['url'],
+                          width: chatMessage['previewData']['image']['width'],
+                        )
+                      : null,
+                  link: chatMessage['previewData']['link'],
+                  title: chatMessage['previewData']['title'],
+                )
+              : null,
+          repliedMessage: types.TextMessage(
+              author: user,
+              id: chatMessage['repliedMessage'] ?? '',
+              text: 'user replied message'),
+          status: chatMessage['isRead']
+              ? types.Status.seen
+              : types.Status.delivered,
           author: user,
           createdAt:
               (chatMessage['createdAt'] as Timestamp).millisecondsSinceEpoch,
           id: doc.id,
           text: chatMessage['text'] ?? '',
           metadata: {
-            'isRead': chatMessage['isRead'] ?? false,
             'type': chatMessage['type'],
           },
         );
@@ -232,20 +264,19 @@ class _ChatMessageState extends State<ChatMessage> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              post.imageUrl != ''
-                  ? Container(
-                      width: 100,
-                      height: 100,
-                      // padding: EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: CachedNetworkImageProvider(post.imageUrl),
-                          fit: BoxFit.cover,
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    )
-                  : const SizedBox(width: 150),
+              if (post.imageUrl != '')
+                Container(
+                  width: 100,
+                  height: 100,
+                  // padding: EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: CachedNetworkImageProvider(post.imageUrl),
+                      fit: BoxFit.cover,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
               SizedBox(width: 10),
               Expanded(
                 child: Center(
@@ -289,6 +320,29 @@ class _ChatMessageState extends State<ChatMessage> {
     return const SizedBox();
   }
 
+  void _handlePreviewDataFetched(
+    types.TextMessage message,
+    types.PreviewData previewData,
+  ) {
+    FirebaseFirestore.instance
+        .collection('chat')
+        .doc(widget.chatID)
+        .collection('message')
+        .doc(message.id)
+        .update({
+      'previewData': {
+        'description': previewData.description,
+        'image': {
+          'height': previewData.image?.height,
+          'url': previewData.image?.url,
+          'width': previewData.image?.width,
+        },
+        'link': previewData.link,
+        'title': previewData.title,
+      },
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
@@ -315,9 +369,13 @@ class _ChatMessageState extends State<ChatMessage> {
 
         return Chat(
           theme: DefaultChatTheme(
-            backgroundColor: Theme.of(context).colorScheme.surface,
+            backgroundColor: Theme.of(context).colorScheme.onSurface,
             inputBackgroundColor:
                 Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+            inputTextColor:
+                Theme.of(context).colorScheme.brightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.black,
           ),
           messages: messages,
           onSendPressed: (types.PartialText message) {
@@ -332,6 +390,7 @@ class _ChatMessageState extends State<ChatMessage> {
             _showOptions(context);
           },
           customMessageBuilder: _buildCustomMessage,
+          onPreviewDataFetched: _handlePreviewDataFetched,
         );
       },
     );
