@@ -14,22 +14,11 @@ import 'models/user_nicknames.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 //銘宏大帥哥可以給我們高分一點嗎拜託
 
-//http 繞過ssl
-// class MyHttpOverrides extends HttpOverrides {
-//   @override
-//   HttpClient createHttpClient(SecurityContext? context) {
-//     return super.createHttpClient(context)
-//       ..badCertificateCallback =
-//           (X509Certificate cert, String host, int port) => true;
-//   }
-// }
-
 final ThemeData lightTheme = ThemeData(
   useMaterial3: true,
   colorScheme: ColorScheme.fromSeed(
     brightness: Brightness.light,
     seedColor: const Color.fromARGB(255, 42, 76, 190),
-    onSurface: Colors.white,
     surface: Colors.grey[300],
   ),
   textTheme: GoogleFonts.latoTextTheme().apply(
@@ -48,14 +37,12 @@ final ThemeData darkTheme = ThemeData(
   colorScheme: ColorScheme.fromSeed(
     brightness: Brightness.dark,
     seedColor: const Color(0xFF6200EE),
-    onSurface: Colors.black,
   ),
   textTheme: GoogleFonts.latoTextTheme().apply(
     bodyColor: Colors.white,
     displayColor: Colors.white,
   ),
   appBarTheme: AppBarTheme(
-    backgroundColor: Colors.black,
     titleTextStyle: const TextStyle(color: Colors.white, fontSize: 20),
     iconTheme: IconThemeData(color: Colors.grey[500]),
   ),
@@ -63,8 +50,6 @@ final ThemeData darkTheme = ThemeData(
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // 繞過ssl
-  // HttpOverrides.global = MyHttpOverrides();
   // Initialize Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   if (kIsWeb) {

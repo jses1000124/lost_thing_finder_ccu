@@ -19,6 +19,8 @@ class AutoLoginHandler extends StatefulWidget {
 }
 
 class _AutoLoginHandlerState extends State<AutoLoginHandler> {
+  bool _isLoading = true;
+
   @override
   void initState() {
     super.initState();
@@ -27,7 +29,6 @@ class _AutoLoginHandlerState extends State<AutoLoginHandler> {
 
   Future<void> _checkAndLogin() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (!mounted) return; // Ensure the widget is still mounted
     final postProvider = Provider.of<PostProvider>(context, listen: false);
 
     bool autoLogin = prefs.getBool('autoLogin') ?? false;
@@ -46,35 +47,37 @@ class _AutoLoginHandlerState extends State<AutoLoginHandler> {
           apiUrl,
           body: jsonEncode(requestBody),
           headers: {'Content-Type': 'application/json'},
-        ).timeout(const Duration(seconds: 5)); // Set a 5-second timeout
+        ).timeout(const Duration(seconds: 5));
 
-        if (response.statusCode == 200 && mounted) {
+        if (response.statusCode == 200) {
           await prefs.setString('token', jsonDecode(response.body)['token']);
-          if(!mounted) return; // Ensure the widget is still mounted
           await GetUserData().getUserData(context);
-          // 等待直到 PostProvider 的数据加载完毕
-          await Future.doWhile(() =>
-              Future.delayed(const Duration(milliseconds: 100),
-                  () => postProvider.isLoading)).then((value) => {
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => const BottomBar()),
-                  (Route<dynamic> route) => false,
-                )
-              });
-        } else if (mounted) {
+          await Future.doWhile(() => Future.delayed(
+              const Duration(milliseconds: 100), () => postProvider.isLoading));
+          if (mounted) {
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => const BottomBar()),
+              (Route<dynamic> route) => false,
+            );
+          }
+        } else {
           _handleLoginError(response.statusCode);
         }
       } catch (e) {
-        if (mounted) {
-          showAlertDialog('Error', 'An unexpected error occurred: $e', context,
-              toLogin: true);
-        }
+        showAlertDialog('Error', 'An unexpected error occurred: $e', context,
+            toLogin: true);
       }
     } else {
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => const LoginScreen()),
         (Route<dynamic> route) => false,
       );
+    }
+
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -91,20 +94,11 @@ class _AutoLoginHandlerState extends State<AutoLoginHandler> {
 
   @override
   Widget build(BuildContext context) {
-    // Showing a loader while we check for auto login
-    return FutureBuilder(
-      future: _checkAndLogin(),
-      builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
-          );
-        } else {
-          return const SizedBox();
-        }
-      },
+    return Scaffold(
+      body: Center(
+        child:
+            _isLoading ? const CircularProgressIndicator() : const SizedBox(),
+      ),
     );
   }
 }

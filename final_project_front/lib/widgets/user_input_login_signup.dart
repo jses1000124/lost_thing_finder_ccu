@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class InputToLoginSignUp extends StatelessWidget {
   final TextEditingController controller;
+  final FocusNode focusNode;
   final Icon icon;
   final String labelText;
   final String? errorText;
@@ -11,6 +12,7 @@ class InputToLoginSignUp extends StatelessWidget {
   const InputToLoginSignUp({
     super.key,
     required this.controller,
+    required this.focusNode,
     required this.icon,
     required this.labelText,
     this.errorText,
@@ -22,6 +24,7 @@ class InputToLoginSignUp extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextFormField(
       controller: controller,
+      focusNode: focusNode,
       readOnly: readOnly,
       decoration: InputDecoration(
         prefixIcon: icon,

@@ -19,8 +19,9 @@ class VerifyEmailScreen extends StatefulWidget {
 class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController codeController = TextEditingController();
+  final FocusNode _emailFocusNode = FocusNode();
+  final FocusNode _codeFocusNode = FocusNode();
   final _formKey = GlobalKey<FormState>();
-  var canSeePassword = true;
   bool _emailVerified = false;
   String? _emailError;
 
@@ -110,6 +111,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                 children: [
                   TextField(
                     controller: codeController,
+                    focusNode: _codeFocusNode,
                     keyboardType: TextInputType.number,
                     decoration: const InputDecoration(
                       hintText: '6位數驗證碼',
@@ -136,8 +138,6 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     );
   }
 
-
-
   Future<void> verifyEmail() async {
     final Uri apiUrl = Uri.parse('$basedApiUrl/send_verification_code');
     Map<String, String> requestBody = {
@@ -154,7 +154,6 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
             if (response.statusCode == 200) {
               _showVerificationCodeDialog();
             } else {
-              Navigator.of(context).pop(); // 關閉加載對話框
               showAlertDialog('錯誤', '請稍後再試', context);
             }
           });
@@ -169,25 +168,20 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     }
   }
 
-
+  @override
+  void dispose() {
+    _emailController.dispose();
+    codeController.dispose();
+    _emailFocusNode.dispose();
+    _codeFocusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('驗證信箱'),
-        // actions: [
-        //   IconButton(
-        //     icon: const Icon(Icons.arrow_back),
-        //     onPressed: () {
-        //       Navigator.of(context).pushReplacement(
-        //         MaterialPageRoute(
-        //           builder: (context) => const LoginScreen(),
-        //         ),
-        //       );
-        //     },
-        //   ),
-        // ],
       ),
       body: Container(
         alignment: Alignment.center,
@@ -201,6 +195,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
               children: [
                 InputToLoginSignUp(
                     controller: _emailController,
+                    focusNode: _emailFocusNode,
                     icon: const Icon(Icons.mail),
                     labelText: '信箱',
                     errorText: _emailError,
@@ -232,11 +227,5 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    super.dispose();
   }
 }

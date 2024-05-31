@@ -11,6 +11,7 @@ import 'package:flutter/foundation.dart'; // for kIsWeb
 import '../widgets/upload_image_widget.dart';
 import 'package:http/http.dart' as http;
 import '../screens/map_select.dart';
+import 'package:intl/intl.dart';
 
 class AddLostThing extends StatefulWidget {
   const AddLostThing({super.key});
@@ -23,8 +24,10 @@ class _AddLostThingState extends State<AddLostThing> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final FocusNode _titleFocusNode = FocusNode();
+  final FocusNode _descriptionFocusNode = FocusNode();
   String _imagepath = "";
-  DateTime? _selectedDate;
+  DateTime? _selectedDate = formatter.parse(formatter.format(DateTime.now()));
   String? _postType;
   Uint8List _imageBytes = Uint8List(0);
   String? _selectedLongitude;
@@ -56,7 +59,7 @@ class _AddLostThingState extends State<AddLostThing> {
             Navigator.of(context).pop(); // Close loading dialog
             showAlertDialog('上傳失敗', '圖片上傳失敗，請重試', context);
           });
-        } else if (!kIsWeb) {
+        } else {
           debugPrint('Uploading image from device');
           uploadImageOther(context, 'lostThing/$email', filePath: _imagepath)
               .then((imageUrl) {
@@ -155,6 +158,8 @@ class _AddLostThingState extends State<AddLostThing> {
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
+    _titleFocusNode.dispose();
+    _descriptionFocusNode.dispose();
     super.dispose();
   }
 
@@ -235,6 +240,7 @@ class _AddLostThingState extends State<AddLostThing> {
                         ),
                         style: const TextStyle(fontSize: 18),
                         controller: _titleController,
+                        focusNode: _titleFocusNode,
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         validator: (value) {
                           if (value!.isEmpty) {
@@ -255,16 +261,20 @@ class _AddLostThingState extends State<AddLostThing> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
-                              _selectedDate == null
-                                  ? '日期還沒選擇'
-                                  : formatter.format(_selectedDate!),
-                              style: const TextStyle(fontSize: 16)),
+                            _selectedDate == null
+                                ? '日期還沒選擇'
+                                : formatter.format(_selectedDate!),
+                            style: TextStyle(
+                              fontSize: 16,
+                              // color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
                           IconButton(
                             onPressed: _presentDatePicker,
-                            style: const ButtonStyle(
-                                iconSize: WidgetStatePropertyAll(30)),
-                            icon: const Icon(
-                              Icons.calendar_month,
+                            icon: const Icon(Icons.calendar_month, size: 30),
+                            style: ButtonStyle(
+                              foregroundColor: WidgetStateProperty.all(
+                                  Theme.of(context).colorScheme.primary),
                             ),
                           ),
                         ],
@@ -285,9 +295,6 @@ class _AddLostThingState extends State<AddLostThing> {
                                 child: Text(_buildingName ?? '尚未選擇地點',
                                     style: const TextStyle(fontSize: 18)),
                                 onPressed: _selectLocation,
-                                style: ButtonStyle(
-                                    foregroundColor:
-                                        WidgetStateProperty.all(Colors.white)),
                               ),
                             ],
                           ),
@@ -305,6 +312,7 @@ class _AddLostThingState extends State<AddLostThing> {
                       labelStyle: TextStyle(fontSize: 22)),
                   style: const TextStyle(fontSize: 18),
                   controller: _descriptionController,
+                  focusNode: _descriptionFocusNode,
                   maxLines: 6,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: (value) {
@@ -349,7 +357,9 @@ class _AddLostThingState extends State<AddLostThing> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     TextButton(
-                      onPressed: Navigator.of(context).pop,
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
                       child: const Text(
                         '取消',
                         style: TextStyle(

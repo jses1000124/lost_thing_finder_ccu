@@ -23,6 +23,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _accountController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  final FocusNode _accountFocusNode = FocusNode();
+  final FocusNode _passwordFocusNode = FocusNode();
   var canSeePassword = true;
   bool _autoLogin = false;
 
@@ -118,6 +120,8 @@ class _LoginScreenState extends State<LoginScreen> {
   void dispose() {
     _accountController.dispose();
     _passwordController.dispose();
+    _accountFocusNode.dispose();
+    _passwordFocusNode.dispose();
     super.dispose();
   }
 
@@ -143,36 +147,45 @@ class _LoginScreenState extends State<LoginScreen> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 60),
-                InputToLoginSignUp(
-                  controller: _accountController,
-                  icon: const Icon(Icons.person),
-                  labelText: '帳號或信箱',
-                  errorText: _emailOrAccountError,
-                  onChanged: _validateEmail,
-                ),
-                const SizedBox(height: 20),
-                TextFormField(
-                  controller: _passwordController,
-                  decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.lock),
-                    labelText: '密碼',
-                    errorText: _passwordError,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    suffixIcon: IconButton(
-                      icon: Icon(canSeePassword
-                          ? Icons.visibility
-                          : Icons.visibility_off),
-                      onPressed: () {
-                        setState(() {
-                          canSeePassword = !canSeePassword;
-                        });
-                      },
-                    ),
+                FocusScope(
+                  node: FocusScopeNode(),
+                  child: Column(
+                    children: [
+                      InputToLoginSignUp(
+                        controller: _accountController,
+                        focusNode: _accountFocusNode,
+                        icon: const Icon(Icons.person),
+                        labelText: '帳號或信箱',
+                        errorText: _emailOrAccountError,
+                        onChanged: _validateEmail,
+                      ),
+                      const SizedBox(height: 20),
+                      TextFormField(
+                        controller: _passwordController,
+                        focusNode: _passwordFocusNode,
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(Icons.lock),
+                          labelText: '密碼',
+                          errorText: _passwordError,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          suffixIcon: IconButton(
+                            icon: Icon(canSeePassword
+                                ? Icons.visibility
+                                : Icons.visibility_off),
+                            onPressed: () {
+                              setState(() {
+                                canSeePassword = !canSeePassword;
+                              });
+                            },
+                          ),
+                        ),
+                        obscureText: canSeePassword,
+                        onChanged: _validatePassword,
+                      ),
+                    ],
                   ),
-                  obscureText: canSeePassword,
-                  onChanged: _validatePassword,
                 ),
                 SizedBox(
                   child: Row(
@@ -214,10 +227,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         fixedSize: const Size(150, 50),
                       ),
                       onPressed: _login,
-                      // onPressed: () => Navigator.of(context).pushReplacement(
-                      //     MaterialPageRoute(
-                      //         builder: (context) =>
-                      //             const BottomBar())),
                       child: const Text('登入', style: TextStyle(fontSize: 25)),
                     ),
                   ],

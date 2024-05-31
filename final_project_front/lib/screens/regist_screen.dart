@@ -24,6 +24,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       TextEditingController();
   final TextEditingController codeController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  final FocusNode _usernameFocusNode = FocusNode();
+  final FocusNode _accountFocusNode = FocusNode();
+  final FocusNode _passwordFocusNode = FocusNode();
+  final FocusNode _confirmPasswordFocusNode = FocusNode();
   var canSeePassword = true;
   bool _emailVerified = false;
 
@@ -129,10 +133,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
           );
       // 設定超時時間
     } on TimeoutException catch (_) {
-      if(!mounted) return; // Ensure the widget is still mounted
+      if (!mounted) return; // Ensure the widget is still mounted
       showAlertDialog('超時', '驗證碼請求超時', context, popTwice: true);
     } catch (e) {
-      if(!mounted) return; // Ensure the widget is still mounted
+      if (!mounted) return; // Ensure the widget is still mounted
       showAlertDialog('錯誤', '未知錯誤：$e', context, popTwice: true);
     }
   }
@@ -178,8 +182,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-
-
   Future<void> verifyEmail() async {
     final Uri apiUrl = Uri.parse('$basedApiUrl/send_verification_code');
     Map<String, String> requestBody = {
@@ -199,10 +201,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
             }
           });
     } on TimeoutException catch (_) {
-      if(!mounted) return; // Ensure the widget is still mounted
+      if (!mounted) return; // Ensure the widget is still mounted
       showAlertDialog('超時', '驗證郵件請求超時', context, popTwice: true);
     } catch (e) {
-      if(!mounted) return; // Ensure the widget is still mounted
+      if (!mounted) return; // Ensure the widget is still mounted
       showAlertDialog('錯誤', '未知錯誤：$e', context, popTwice: true);
     }
   }
@@ -248,10 +250,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
             }
           });
     } on TimeoutException catch (_) {
-      if(!mounted) return; // Ensure the widget is still mounted
+      if (!mounted) return; // Ensure the widget is still mounted
       showAlertDialog('超時', '註冊請求超時', context, popTwice: true);
     } catch (e) {
-      if(!mounted) return; // Ensure the widget is still mounted
+      if (!mounted) return; // Ensure the widget is still mounted
       showAlertDialog('錯誤', '未知錯誤：$e', context, popTwice: true);
     }
   }
@@ -271,6 +273,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     codeController.dispose();
+    _usernameFocusNode.dispose();
+    _accountFocusNode.dispose();
+    _passwordFocusNode.dispose();
+    _confirmPasswordFocusNode.dispose();
     super.dispose();
   }
 
@@ -289,6 +295,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               children: [
                 InputToLoginSignUp(
                     controller: _usernameController,
+                    focusNode: _usernameFocusNode,
                     icon: const Icon(Icons.person),
                     labelText: '帳號',
                     errorText: _usernameError,
@@ -296,6 +303,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 20),
                 InputToLoginSignUp(
                     controller: _accountController,
+                    focusNode: _accountFocusNode,
                     icon: const Icon(Icons.mail),
                     readOnly: _emailVerified,
                     labelText: '信箱',
@@ -304,6 +312,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 20),
                 TextFormField(
                   controller: _passwordController,
+                  focusNode: _passwordFocusNode,
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.lock),
                     labelText: '密碼',
@@ -328,6 +337,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 20),
                 TextFormField(
                   controller: _confirmPasswordController,
+                  focusNode: _confirmPasswordFocusNode,
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.lock_outline),
                     labelText: '確認密碼',

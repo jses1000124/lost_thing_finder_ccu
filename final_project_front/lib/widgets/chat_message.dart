@@ -369,7 +369,7 @@ class _ChatMessageState extends State<ChatMessage> {
 
         return Chat(
           theme: DefaultChatTheme(
-            backgroundColor: Theme.of(context).colorScheme.onSurface,
+            backgroundColor: Theme.of(context).colorScheme.surface,
             inputBackgroundColor:
                 Theme.of(context).colorScheme.secondary.withOpacity(0.1),
             inputTextColor:
