@@ -268,7 +268,6 @@ class _ChatMessageState extends State<ChatMessage> {
                 Container(
                   width: 100,
                   height: 100,
-                  // padding: EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     image: DecorationImage(
                       image: CachedNetworkImageProvider(post.imageUrl),
@@ -285,6 +284,7 @@ class _ChatMessageState extends State<ChatMessage> {
                     children: [
                       Text(
                         post.lostThingName,
+                        maxLines: 3,
                         style: TextStyle(fontSize: 20, color: color),
                       ),
                       Divider(color: color),
@@ -293,7 +293,9 @@ class _ChatMessageState extends State<ChatMessage> {
                           Icon(Icons.location_on, color: color),
                           SizedBox(width: 5),
                           Text(
-                            post.location,
+                            post.location.length > 7
+                                ? post.location.substring(0, 7) + '...'
+                                : post.location,
                             style: TextStyle(fontSize: 16, color: color),
                           ),
                         ],
