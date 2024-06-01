@@ -197,7 +197,6 @@ class _LostThingState extends State<LostThingDetailScreen>
                 const Spacer(),
                 Icon(Icons.location_on, color: theme.colorScheme.secondary),
                 Flexible(
-                  flex: 4,
                   child: TextButton(
                     child: Text(
                       lostThings.location,
