@@ -9,7 +9,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../models/user_nicknames.dart';
 // build web要取消註解
-import 'web_register_notification.dart';
+// import 'web_register_notification.dart';
 
 class GetUserData {
   Future<void> getUserData(BuildContext context) async {
@@ -44,11 +44,10 @@ class GetUserData {
         String? returnedAccount = body['email'];
         int? userimgid = body['userimg'];
 
-        if (!kIsWeb)
-          OneSignal.login(returnedAccount!);
+        if (!kIsWeb) OneSignal.login(returnedAccount!);
         // build web要取消註解
-        else
-          setExternalUserId(returnedAccount!);
+        // else
+        //   setExternalUserId(returnedAccount!);
 
         if (username != null) {
           await prefs.setString('username', username);

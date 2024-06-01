@@ -196,21 +196,26 @@ class _LostThingState extends State<LostThingDetailScreen>
                 ),
                 const Spacer(),
                 Icon(Icons.location_on, color: theme.colorScheme.secondary),
-                TextButton(
-                  child: Text(
-                    lostThings.location,
-                    style: theme.textTheme.titleMedium!.copyWith(
-                      color: const Color.fromARGB(255, 171, 202, 255),
-                    ),
-                    softWrap: true,
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                      builder: (ctx) => PostMapPage(
-                        lostThing: lostThings,
+                Flexible(
+                  flex: 4,
+                  child: TextButton(
+                    child: Text(
+                      lostThings.location,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleMedium!.copyWith(
+                        color: const Color.fromARGB(255, 171, 202, 255),
                       ),
-                    ));
-                  },
+                      softWrap: true,
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (ctx) => PostMapPage(
+                          lostThing: lostThings,
+                        ),
+                      ));
+                    },
+                  ),
                 ),
               ],
             ),

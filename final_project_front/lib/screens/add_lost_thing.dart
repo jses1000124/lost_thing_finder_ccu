@@ -290,10 +290,16 @@ class _AddLostThingState extends State<AddLostThing> {
                                 icon: const Icon(Icons.location_on, size: 30),
                                 onPressed: _selectLocation,
                               ),
-                              TextButton(
-                                child: Text(_buildingName ?? '尚未選擇地點',
-                                    style: const TextStyle(fontSize: 18)),
-                                onPressed: _selectLocation,
+                              Flexible(
+                                child: TextButton(
+                                  child: Text(
+                                    _buildingName ?? '尚未選擇地點',
+                                    style: const TextStyle(fontSize: 18),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  onPressed: _selectLocation,
+                                ),
                               ),
                             ],
                           ),
