@@ -93,6 +93,7 @@ class LostThingItem extends StatelessWidget {
                       )
                     : const SizedBox(),
               ),
+              const SizedBox(width: 8),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -100,12 +101,14 @@ class LostThingItem extends StatelessWidget {
                     Text(
                       lostThing.lostThingName,
                       style: const TextStyle(
-                        fontSize: 20,
-                      ),
+                          fontSize: 20, overflow: TextOverflow.ellipsis),
+                      maxLines: 1,
                     ),
                     Text(
                       '位置: ${lostThing.location}',
-                      style: const TextStyle(fontSize: 16),
+                      style: const TextStyle(
+                          fontSize: 16, overflow: TextOverflow.ellipsis),
+                      maxLines: 1,
                     ),
                     Text(
                       '日期: ${lostThing.formattedDate}',
