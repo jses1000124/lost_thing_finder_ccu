@@ -46,6 +46,7 @@ class _MapSelectPageState extends State<MapSelectPage> {
             return AlertDialog(
               title: const Text('輸入遺失地點'),
               content: TextField(
+                maxLength: 20,
                 controller: _controller,
                 decoration: InputDecoration(
                   hintText: '遺失地點',

@@ -11,7 +11,6 @@ import 'package:flutter/foundation.dart'; // for kIsWeb
 import '../widgets/upload_image_widget.dart';
 import 'package:http/http.dart' as http;
 import '../screens/map_select.dart';
-import 'package:intl/intl.dart';
 
 class AddLostThing extends StatefulWidget {
   const AddLostThing({super.key});

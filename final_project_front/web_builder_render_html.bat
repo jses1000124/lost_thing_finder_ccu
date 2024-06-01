@@ -1,1 +1,1 @@
-flutter build web --release --csp --web-renderer=html --dart2js-optimization O4
+flutter build web --release --csp --web-renderer=html --source-maps
