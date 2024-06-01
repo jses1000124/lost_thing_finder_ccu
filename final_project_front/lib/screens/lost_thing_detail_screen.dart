@@ -200,7 +200,7 @@ class _LostThingState extends State<LostThingDetailScreen>
                   child: TextButton(
                     child: Text(
                       lostThings.location,
-                      maxLines: 3,
+                      maxLines: 5,
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.titleMedium!.copyWith(
                         color: const Color.fromARGB(255, 171, 202, 255),
@@ -208,11 +208,13 @@ class _LostThingState extends State<LostThingDetailScreen>
                       softWrap: true,
                     ),
                     onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (ctx) => PostMapPage(
-                          lostThing: lostThings,
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (ctx) => PostMapPage(
+                            lostThing: lostThings,
+                          ),
                         ),
-                      ));
+                      );
                     },
                   ),
                 ),

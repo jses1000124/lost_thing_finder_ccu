@@ -4,6 +4,7 @@ import 'package:final_project/models/lost_thing_and_Url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../widgets/show_alert_dialog.dart';
+import '../widgets/show_loading_dialog.dart';
 
 class NewPassword extends StatefulWidget {
   const NewPassword({super.key, required this.email, required this.code});
@@ -62,6 +63,7 @@ class _NewPasswordState extends State<NewPassword> {
       'identifier': widget.email,
       'code': widget.code,
     };
+    showLoadingDialog(context);
 
     try {
       final response = await http.post(
@@ -73,22 +75,28 @@ class _NewPasswordState extends State<NewPassword> {
       if (!mounted) return;
 
       if (response.statusCode == 200) {
-        showAlertDialog('成功', '密碼設定成功', context, success: true);
+        Navigator.of(context).pop();
+        showAlertDialog('成功', '密碼設定成功', context, success: true, toLogin: true);
       } else {
         if (response.statusCode == 401) {
+          Navigator.of(context).pop();
           showAlertDialog('失敗', '無效的密碼', context);
         } else if (response.statusCode == 404) {
+          Navigator.of(context).pop();
           showAlertDialog('失敗', '帳號未找到', context);
         } else {
+          Navigator.of(context).pop();
           showAlertDialog('錯誤', '發生未預期的錯誤', context);
         }
       }
     } on TimeoutException catch (_) {
       if (mounted) {
+        Navigator.of(context).pop();
         showAlertDialog('超時', '請求超時', context);
       }
     } catch (e) {
       if (mounted) {
+        Navigator.of(context).pop();
         showAlertDialog('錯誤', '發生未預期的錯誤：$e', context);
       }
     }
