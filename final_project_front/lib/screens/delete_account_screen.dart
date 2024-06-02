@@ -10,6 +10,7 @@ import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/lost_thing_and_Url.dart';
 import '../widgets/show_alert_dialog.dart';
+import '../widgets/show_loading_dialog.dart';
 
 class DeleteAccountScreen extends StatefulWidget {
   const DeleteAccountScreen({super.key, required this.token});
@@ -84,6 +85,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
       'password': password,
       'token': token,
     };
+    showLoadingDialog(context);
 
     try {
       final response = await http.post(
@@ -135,20 +137,24 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
         }
 
         if (mounted) {
+          Navigator.of(context).pop();
           showAlertDialog('成功', '帳號已刪除', context, success: true);
           _logout();
         }
       } else {
         if (mounted) {
+          Navigator.of(context).pop();
           showAlertDialog('失敗', '請稍後再試', context);
         }
       }
     } on TimeoutException {
       if (mounted) {
+        Navigator.of(context).pop();
         showAlertDialog('失敗', '請稍後再試', context);
       }
     } catch (e) {
       if (mounted) {
+        Navigator.of(context).pop();
         showAlertDialog('錯誤', '發生未預期的錯誤\n${e}', context);
       }
     }
