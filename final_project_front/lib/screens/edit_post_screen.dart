@@ -261,6 +261,7 @@ class _EditPostPageState extends State<EditPostPage> {
                 Row(
                   children: [
                     Expanded(
+                      flex: 1,
                       child: Column(
                         children: [
                           Text(
@@ -275,7 +276,7 @@ class _EditPostPageState extends State<EditPostPage> {
                             style: ButtonStyle(
                               iconSize: WidgetStateProperty.all(30),
                               foregroundColor: WidgetStateProperty.all(
-                                  Theme.of(context).primaryColor),
+                                  Theme.of(context).colorScheme.primary),
                             ),
                             icon: const Icon(Icons.calendar_month),
                           ),
@@ -283,17 +284,27 @@ class _EditPostPageState extends State<EditPostPage> {
                       ),
                     ),
                     const SizedBox(width: 20),
-                    IconButton(
-                      icon: const Icon(Icons.location_on, size: 30),
-                      onPressed: _selectLocation,
-                    ),
-                    TextButton(
-                      child: Text(_buildingName ?? '尚未選擇地點',
-                          style: const TextStyle(fontSize: 18)),
-                      onPressed: _selectLocation,
-                      style: ButtonStyle(
-                          foregroundColor: WidgetStateProperty.all(
-                              Theme.of(context).primaryColor)),
+                    Expanded(
+                      flex: 2,
+                      child: Row(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.location_on, size: 30),
+                            onPressed: _selectLocation,
+                          ),
+                          TextButton(
+                            child: Text(
+                              _buildingName ?? '尚未選擇地點',
+                              style: const TextStyle(fontSize: 18),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            onPressed: _selectLocation,
+                            style: ButtonStyle(
+                                foregroundColor: WidgetStateProperty.all(
+                                    Theme.of(context).colorScheme.primary)),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
