@@ -182,26 +182,6 @@ class _EditPostPageState extends State<EditPostPage> {
                 Row(
                   children: [
                     Expanded(
-                      flex: 2,
-                      child: TextFormField(
-                        controller: _nameController,
-                        decoration: InputDecoration(
-                          labelText: '物品名稱',
-                          labelStyle: theme.textTheme.titleMedium,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return '請輸入物品名稱';
-                          }
-                          return null;
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 20),
-                    Expanded(
                       flex: 1,
                       child: DropdownButtonFormField<String>(
                         decoration: const InputDecoration(
@@ -255,6 +235,26 @@ class _EditPostPageState extends State<EditPostPage> {
                         style: const TextStyle(fontSize: 18),
                       ),
                     ),
+                    const SizedBox(width: 20),
+                    Expanded(
+                      flex: 2,
+                      child: TextFormField(
+                        controller: _nameController,
+                        decoration: InputDecoration(
+                          labelText: '物品名稱',
+                          labelStyle: theme.textTheme.titleMedium,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return '請輸入物品名稱';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 20),
@@ -273,7 +273,10 @@ class _EditPostPageState extends State<EditPostPage> {
                           IconButton(
                             onPressed: _presentDatePicker,
                             style: ButtonStyle(
-                                iconSize: WidgetStateProperty.all(30)),
+                              iconSize: WidgetStateProperty.all(30),
+                              foregroundColor: WidgetStateProperty.all(
+                                  Theme.of(context).primaryColor),
+                            ),
                             icon: const Icon(Icons.calendar_month),
                           ),
                         ],
@@ -289,8 +292,8 @@ class _EditPostPageState extends State<EditPostPage> {
                           style: const TextStyle(fontSize: 18)),
                       onPressed: _selectLocation,
                       style: ButtonStyle(
-                          foregroundColor:
-                              WidgetStateProperty.all(Colors.white)),
+                          foregroundColor: WidgetStateProperty.all(
+                              Theme.of(context).primaryColor)),
                     ),
                   ],
                 ),
