@@ -192,13 +192,13 @@ class _EditPostPageState extends State<EditPostPage> {
                         value: _selectedPostType == null
                             ? null
                             : _selectedPostType == 0
-                                ? '遺失物'
+                                ? '尋獲物'
                                 : '待尋物',
                         items: [
                           DropdownMenuItem(
-                            value: '遺失物',
+                            value: '尋獲物',
                             child: Text(
-                              '遺失物',
+                              '尋獲物',
                               style: TextStyle(
                                 color: Theme.of(context).brightness ==
                                         Brightness.dark
@@ -223,7 +223,7 @@ class _EditPostPageState extends State<EditPostPage> {
                         hint: const Text('請選取'),
                         onChanged: (String? newValue) {
                           setState(() {
-                            _selectedPostType = newValue == '遺失物' ? 0 : 1;
+                            _selectedPostType = newValue == '尋獲物' ? 0 : 1;
                           });
                         },
                         validator: (value) {
