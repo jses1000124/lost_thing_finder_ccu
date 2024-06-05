@@ -298,6 +298,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     focusNode: _usernameFocusNode,
                     icon: const Icon(Icons.person),
                     labelText: '帳號',
+                    maxlength: 15,
                     errorText: _usernameError,
                     onChanged: _validateUsername),
                 const SizedBox(height: 20),

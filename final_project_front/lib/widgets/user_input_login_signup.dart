@@ -8,6 +8,7 @@ class InputToLoginSignUp extends StatelessWidget {
   final String? errorText;
   final void Function(String)? onChanged;
   final bool readOnly;
+  final int? maxlength;
 
   const InputToLoginSignUp({
     super.key,
@@ -18,6 +19,7 @@ class InputToLoginSignUp extends StatelessWidget {
     this.errorText,
     this.onChanged,
     this.readOnly = false,
+    this.maxlength,
   });
 
   @override
@@ -26,6 +28,7 @@ class InputToLoginSignUp extends StatelessWidget {
       controller: controller,
       focusNode: focusNode,
       readOnly: readOnly,
+      maxLength: maxlength,
       decoration: InputDecoration(
         prefixIcon: icon,
         labelText: labelText,

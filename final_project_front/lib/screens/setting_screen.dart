@@ -301,7 +301,7 @@ class _SettingsPageState extends State<SettingsPage> {
             child: ListBody(
               children: [
                 TextField(
-                  maxLength: 10,
+                  maxLength: 15,
                   decoration: const InputDecoration(
                     hintText: '請輸入新暱稱',
                   ),
