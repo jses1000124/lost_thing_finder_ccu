@@ -4,7 +4,7 @@
 
 ## 目錄
 
-- [Flutter Project](#flutter-project)
+- [CCU Finder](#ccu-finder)
   - [目錄](#目錄)
   - [功能](#功能)
   - [安裝](#安裝)
