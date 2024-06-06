@@ -35,6 +35,8 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       if (value.isEmpty) {
         _emailOrAccountError = '請輸入信箱或帳號';
+      } else if (!RegExp(r'^[A-Za-z0-9!@#\$&*~]+$').hasMatch(value)) {
+        _emailOrAccountError = '信箱或帳號只能包含英文和符號';
       } else {
         _emailOrAccountError = null;
       }
@@ -45,6 +47,8 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       if (value.isEmpty) {
         _passwordError = '請輸入密碼';
+      } else if (!RegExp(r'^[A-Za-z0-9!@#\$&*~]+$').hasMatch(value)) {
+        _passwordError = '密碼只能包含英文和符號';
       } else {
         _passwordError = null;
       }
@@ -87,7 +91,7 @@ class _LoginScreenState extends State<LoginScreen> {
               await GetUserData().getUserData(context);
               await prefs.setBool('autoLogin', _autoLogin).then((value) =>
                   Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => const BottomBar())));
+                      builder: (context) => const MainPage())));
             } else {
               // 根據不同的錯誤代碼顯示不同的錯誤信息
               if (response.statusCode == 401) {

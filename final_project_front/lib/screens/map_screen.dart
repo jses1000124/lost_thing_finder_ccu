@@ -4,8 +4,8 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import 'package:geolocator/geolocator.dart';
-import '../models/post_provider.dart'; // Update the import path as needed
-import 'lost_thing_detail_screen.dart'; // Update the import path as needed
+import '../models/post_provider.dart'; 
+import 'lost_thing_detail_screen.dart'; 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class MapPage extends StatefulWidget {
@@ -27,7 +27,7 @@ class _MapPageState extends State<MapPage> {
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       setState(() {
-        _currentLatLng = const LatLng(23.563333, 120.474111);
+        _currentLatLng = null;
       });
       return;
     }
@@ -37,7 +37,7 @@ class _MapPageState extends State<MapPage> {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
         setState(() {
-          _currentLatLng = const LatLng(23.563333, 120.474111);
+          _currentLatLng = null;
         });
         return;
       }
@@ -45,7 +45,7 @@ class _MapPageState extends State<MapPage> {
 
     if (permission == LocationPermission.deniedForever) {
       setState(() {
-        _currentLatLng = const LatLng(23.563333, 120.474111);
+        _currentLatLng = null;
       });
       return;
     }
@@ -118,104 +118,102 @@ class _MapPageState extends State<MapPage> {
     return Scaffold(
       body: Stack(
         children: [
-          if (_currentLatLng == null)
-            const Center(child: CircularProgressIndicator())
-          else
-            Consumer<PostProvider>(
-              builder: (context, postProvider, child) {
-                if (postProvider.posts.isEmpty) {
-                  return const Center(child: Text('No posts available'));
-                }
+          Consumer<PostProvider>(
+            builder: (context, postProvider, child) {
+              if (postProvider.posts.isEmpty) {
+                return const Center(child: Text('目前沒有遺失物喔'));
+              }
 
-                List<Marker> markers = [];
-                if (_currentLatLng != null) {
+              List<Marker> markers = [];
+              if (_currentLatLng != null) {
+                markers.add(
+                  Marker(
+                    width: 10.0,
+                    height: 10.0,
+                    point: _currentLatLng!,
+                    child: Tooltip(
+                      message: "當前位置",
+                      child: Icon(
+                        FontAwesomeIcons.locationArrow,
+                        color: Colors.purple,
+                        size: 30.0,
+                      ),
+                    ),
+                  ),
+                );
+              }
+
+              for (LostThing post in postProvider.posts) {
+                if (post.latitude != null && post.longitude != null) {
                   markers.add(
                     Marker(
-                      width: 10.0,
-                      height: 10.0,
-                      point: _currentLatLng!,
-                      child: Tooltip(
-                        message: "當前位置",
-                        child: Icon(
-                          FontAwesomeIcons.locationArrow,
-                          color: Colors.purple,
-                          size: 30.0,
+                      width: 100.0,
+                      height: 100.0,
+                      point: LatLng(post.latitude!, post.longitude!),
+                      child: GestureDetector(
+                        onTap: () => _showNavigateDialog(context, post),
+                        child: Column(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 4.0, horizontal: 8.0),
+                              decoration: BoxDecoration(
+                                color: Colors.black54,
+                                borderRadius: BorderRadius.circular(4.0),
+                              ),
+                              child: Text(
+                                post.lostThingName,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12.0,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ),
+                            Icon(
+                              Icons.location_on,
+                              color: post.mylosting == 0
+                                  ? Colors.red
+                                  : Colors.blue,
+                              size: 30.0,
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   );
                 }
+              }
 
-                for (LostThing post in postProvider.posts) {
-                  if (post.latitude != null && post.longitude != null) {
-                    markers.add(
-                      Marker(
-                        width: 100.0,
-                        height: 100.0,
-                        point: LatLng(post.latitude!, post.longitude!),
-                        child: GestureDetector(
-                          onTap: () => _showNavigateDialog(context, post),
-                          child: Column(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 4.0, horizontal: 8.0),
-                                decoration: BoxDecoration(
-                                  color: Colors.black54,
-                                  borderRadius: BorderRadius.circular(4.0),
-                                ),
-                                child: Text(
-                                  post.lostThingName,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12.0,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ),
-                              Icon(
-                                Icons.location_on,
-                                color: post.mylosting == 0
-                                    ? Colors.red
-                                    : Colors.blue,
-                                size: 30.0,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  }
-                }
-
-                return FlutterMap(
-                  mapController: _mapController,
-                  options: MapOptions(
-                    initialCenter: _currentLatLng!,
-                    initialZoom: 15.0,
-                    minZoom: 1.0,
-                    maxZoom: 22.0,
-                    interactionOptions: const InteractionOptions(
-                      enableMultiFingerGestureRace: true,
-                      flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
-                    ),
+              return FlutterMap(
+                mapController: _mapController,
+                options: MapOptions(
+                  initialCenter: _currentLatLng ??
+                      LatLng(23.563333, 120.474111), // Default location
+                  initialZoom: 15.0,
+                  minZoom: 1.0,
+                  maxZoom: 22.0,
+                  interactionOptions: const InteractionOptions(
+                    enableMultiFingerGestureRace: true,
+                    flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
                   ),
-                  children: [
-                    TileLayer(
-                      urlTemplate:
-                          "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-                      errorTileCallback: (tile, error, stackTrace) async {
-                        await _retryTileLoading(tile, 0);
-                        debugPrint('Failed to load tile: $tile, error: $error');
-                      },
-                    ),
-                    MarkerLayer(
-                      markers: markers,
-                    ),
-                  ],
-                );
-              },
-            ),
+                ),
+                children: [
+                  TileLayer(
+                    urlTemplate:
+                        "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                    errorTileCallback: (tile, error, stackTrace) async {
+                      await _retryTileLoading(tile, 0);
+                      debugPrint('Failed to load tile: $tile, error: $error');
+                    },
+                  ),
+                  MarkerLayer(
+                    markers: markers,
+                  ),
+                ],
+              );
+            },
+          ),
           Positioned(
             right: 16.0,
             bottom: 16.0,

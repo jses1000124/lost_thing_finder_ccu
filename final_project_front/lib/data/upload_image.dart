@@ -68,7 +68,6 @@ Future<String> uploadImageWeb(
 
 Future<String> uploadCameraImage(
     BuildContext context, String saveFolder) async {
-  // 获取本地文件
   ImagePicker picker = ImagePicker();
   XFile? image = await picker.pickImage(source: ImageSource.camera);
   File file = File(image!.path);
@@ -76,15 +75,12 @@ Future<String> uploadCameraImage(
   File? compressedImage = File((await compressImage(file))!.path);
 
   if (await compressedImage.exists()) {
-    // 创建 Firebase Storage 参考
     Reference ref = FirebaseStorage.instance
         .ref()
         .child('$saveFolder/${DateTime.now().millisecondsSinceEpoch}');
 
-    // 创建上传任务
     UploadTask uploadTask = ref.putFile(compressedImage);
     if (!context.mounted) return '';
-    // 显示上传进度对话框
     await showDialog(
       context: context,
       barrierDismissible: false,
@@ -92,8 +88,6 @@ Future<String> uploadCameraImage(
         return UploadProgressDialog(uploadTask: uploadTask);
       },
     );
-
-    // 上传完成后获取下载 URL
     String imageUrl = await (await uploadTask).ref.getDownloadURL();
     debugPrint('File uploaded');
     return imageUrl;
@@ -102,39 +96,10 @@ Future<String> uploadCameraImage(
   }
 }
 
-// Future<String> uploadImageWeb(
-//     BuildContext context, String saveFolder, Uint8List file) async {
-//   // 获取文件
 
-//   // 创建 Firebase Storage 参考
-//   Reference ref = FirebaseStorage.instance
-//       .ref()
-//       .child('$saveFolder/${DateTime.now().millisecondsSinceEpoch}');
-
-//   Uint8List? compressedImage = await compressWebImage(file);
-//   if (compressedImage == null) {
-//     throw Exception('Image compression failed');
-//   }
-//   // 创建上传任务
-//   UploadTask uploadTask = ref.putData(compressedImage!);
-//   // 显示上传进度对话框
-//   await showDialog(
-//     context: context,
-//     barrierDismissible: false,
-//     builder: (BuildContext context) {
-//       return UploadProgressDialog(uploadTask: uploadTask);
-//     },
-//   );
-
-//   // 上传完成后获取下载 URL
-//   String imageUrl = await (await uploadTask).ref.getDownloadURL();
-//   debugPrint('File uploaded to $imageUrl');
-//   return imageUrl;
-// }
 
 Future<String> uploadImageOther(BuildContext context, String saveFolder,
     {String filePath = ''}) async {
-  // 获取本地文件
   File? file;
   if (filePath == '') {
     ImagePicker picker = ImagePicker();
@@ -148,15 +113,12 @@ Future<String> uploadImageOther(BuildContext context, String saveFolder,
   File? compressedImage = File((await compressImage(file))!.path);
 
   if (await compressedImage.exists()) {
-    // 创建 Firebase Storage 参考
     Reference ref = FirebaseStorage.instance
         .ref()
         .child('$saveFolder/${DateTime.now().millisecondsSinceEpoch}');
 
-    // 创建上传任务
     UploadTask uploadTask = ref.putFile(compressedImage);
     if (!context.mounted) return '';
-    // 显示上传进度对话框
     await showDialog(
       context: context,
       barrierDismissible: false,
@@ -165,7 +127,6 @@ Future<String> uploadImageOther(BuildContext context, String saveFolder,
       },
     );
 
-    // 上传完成后获取下载 URL
     String imageUrl = await (await uploadTask).ref.getDownloadURL();
     debugPrint('File uploaded');
     return imageUrl;

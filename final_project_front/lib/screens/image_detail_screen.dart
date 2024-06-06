@@ -20,18 +20,18 @@ class ImageDetailScreen extends StatelessWidget {
         boundaryMargin: const EdgeInsets.all(20),
         minScale: 0.1,
         maxScale: 10.0,
-        clipBehavior: Clip.none, // Allow image to exceed boundary
+        clipBehavior: Clip.none,
         child: Center(
           child: CachedNetworkImage(
             imageUrl: imageURL,
             placeholder: (context, url) => const CircularProgressIndicator(),
             errorWidget: (context, url, error) => const Icon(Icons.error),
             fit: BoxFit.contain,
-            cacheKey: imageURL, // 使用圖片URL作為緩存鍵
+            cacheKey: imageURL, 
             cacheManager: CacheManager(Config(
               'customCacheKey',
-              stalePeriod: const Duration(days: 2), // 7天內不會重新加載
-              maxNrOfCacheObjects: 100, // 最大緩存圖片數量
+              stalePeriod: const Duration(days: 4), 
+              maxNrOfCacheObjects: 100,
             )),
           ),
         ),

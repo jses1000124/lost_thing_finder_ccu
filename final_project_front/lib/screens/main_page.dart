@@ -9,14 +9,14 @@ import 'map_screen.dart';
 import '../screens/setting_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class BottomBar extends StatefulWidget {
-  const BottomBar({super.key});
+class MainPage extends StatefulWidget {
+  const MainPage({super.key});
 
   @override
-  State<BottomBar> createState() => _BottomBarState();
+  State<MainPage> createState() => _MainPageState();
 }
 
-class _BottomBarState extends State<BottomBar> {
+class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
   String _title = '尋獲物';
   static String searchVal = '';

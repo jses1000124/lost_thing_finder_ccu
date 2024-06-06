@@ -56,7 +56,7 @@ class _AutoLoginHandlerState extends State<AutoLoginHandler> {
               const Duration(milliseconds: 100), () => postProvider.isLoading));
           if (mounted) {
             Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => const BottomBar()),
+              MaterialPageRoute(builder: (context) => const MainPage()),
               (Route<dynamic> route) => false,
             );
           }

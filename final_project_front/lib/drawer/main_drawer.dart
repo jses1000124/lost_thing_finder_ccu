@@ -43,7 +43,7 @@ class MainDrawer extends StatelessWidget {
                         Expanded(
                           child: Text(
                             userPrefs
-                                .nickname, // Directly use the nickname from UserPreferences
+                                .nickname,
                             style: const TextStyle(
                                 fontSize: 20, overflow: TextOverflow.ellipsis),
                           ),

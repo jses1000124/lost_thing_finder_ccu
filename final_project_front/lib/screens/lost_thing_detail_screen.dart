@@ -95,8 +95,8 @@ class _LostThingState extends State<LostThingDetailScreen>
     try {
       showLoadingDialog(context);
       int code = await postProvider.deletePost(widget.lostThings.id, _token!);
-      if (!mounted) return; // Check again after the asynchronous operation
-      Navigator.of(context).pop(); // Close the loading dialog
+      if (!mounted) return;
+      Navigator.of(context).pop(); 
 
       if (code == 200) {
         // Delete the image from Firebase Storage
@@ -108,17 +108,21 @@ class _LostThingState extends State<LostThingDetailScreen>
 
         showAlertDialog('成功', '貼文已刪除', context, success: true, popTwice: true);
       } else if (code == 404) {
+        Navigator.of(context).pop(); 
         showAlertDialog('錯誤', '貼文未找到', context);
       } else if (code == 403) {
+        Navigator.of(context).pop(); 
         showAlertDialog('錯誤', '權限不足', context);
       } else if (code == 408) {
+        Navigator.of(context).pop(); 
         showAlertDialog('錯誤', '請求超時', context);
       } else {
+        Navigator.of(context).pop(); 
         showAlertDialog('錯誤', '發生錯誤：$code', context);
       }
     } catch (e) {
-      if (!mounted) return; // Check again if an exception occurs
-      Navigator.of(context).pop(); // Close the loading dialog
+      if (!mounted) return;
+      Navigator.of(context).pop(); 
       showAlertDialog('錯誤', '發生錯誤：$e', context);
     }
   }

@@ -41,6 +41,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     setState(() {
       if (value.isEmpty) {
         _usernameError = '請輸入帳號';
+      } else if (!RegExp(r'^[A-Za-z0-9!@#\$&*~]+$').hasMatch(value)) {
+        _usernameError = '帳號只能包含英文和符號';
       } else {
         _usernameError = null;
       }
@@ -63,6 +65,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     setState(() {
       if (value.isEmpty) {
         _passwordError = '請輸入密碼';
+        _passwordComplexityError = null;
+      } else if (!RegExp(r'^[A-Za-z0-9!@#\$&*~]+$').hasMatch(value)) {
+        _passwordError = '密碼只能包含英文和符號';
         _passwordComplexityError = null;
       } else if (value.length < 8 ||
           !RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$').hasMatch(value)) {

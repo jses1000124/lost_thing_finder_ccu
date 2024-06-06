@@ -12,7 +12,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'models/theme_provider.dart';
 import 'models/user_nicknames.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
-//銘宏大帥哥可以給我們高分一點嗎拜託
+//銘宏大帥哥、秉燁大帥哥、巧蓉大美女、宥愷大帥哥、渟瀚大帥哥可以給我們高分一點嗎拜託
 
 final ThemeData lightTheme = ThemeData(
   useMaterial3: true,

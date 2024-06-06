@@ -24,7 +24,6 @@ class _LostThingScreenState extends State<LostThingScreen> {
     
     
     return Consumer<PostProvider>(builder: (context, postProvider, child) {
-      // Automatically rebuild this part of the UI whenever postProvider notifies listeners
       List<LostThing> filteredLostThings = [];
       if (widget.searchedThingName.isEmpty) {
         filteredLostThings =

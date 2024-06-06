@@ -143,8 +143,8 @@ class _EditPostPageState extends State<EditPostPage> {
       showLoadingDialog(context);
 
       int statusCode = await postProvider.updatePost(updatedLostThing, token!);
-      if (!mounted) return; // Ensure the widget is still mounted
-      Navigator.of(context).pop(); // Close the loading dialog
+      if (!mounted) return;
+      Navigator.of(context).pop();
 
       if (statusCode == 200) {
         showAlertDialog('成功', '貼文已更新', context, success: true, popTwice: true);
@@ -333,7 +333,7 @@ class _EditPostPageState extends State<EditPostPage> {
                       _isPickedImage = true;
                       _imagepath = path;
                       _imageBytes = Uint8List(
-                          0); // Reset image bytes when using file path
+                          0);
                     });
                   },
                   onImageWebPicked: (bytes) {
@@ -341,7 +341,7 @@ class _EditPostPageState extends State<EditPostPage> {
                       _isPickedImage = true;
                       _imageBytes = bytes;
                       _imagepath =
-                          ""; // Reset image path when using web image bytes
+                          "";
                     });
                   },
                   child: _isPickedImage
