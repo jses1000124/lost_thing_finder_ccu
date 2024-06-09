@@ -31,7 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
   String? _emailOrAccountError;
   String? _passwordError;
 
-  void _validateEmail(String value) {
+  void _validateAccountEmail(String value) {
     setState(() {
       if (value.isEmpty) {
         _emailOrAccountError = '請輸入信箱或帳號';
@@ -161,7 +161,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         icon: const Icon(Icons.person),
                         labelText: '帳號或信箱',
                         errorText: _emailOrAccountError,
-                        onChanged: _validateEmail,
+                        onChanged: _validateAccountEmail,
                       ),
                       const SizedBox(height: 20),
                       TextFormField(

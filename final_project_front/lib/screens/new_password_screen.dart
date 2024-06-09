@@ -24,12 +24,19 @@ class _NewPasswordState extends State<NewPassword> {
 
   String? _passwordError;
   String? _confirmPasswordError;
+  String? _passwordComplexityError;
 
   void _validatePassword(String value) {
     setState(() {
       if (value.isEmpty) {
         _passwordError = '請輸入密碼';
+        _passwordComplexityError = null;
+      } else if (value.length < 8 ||
+          !RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$').hasMatch(value)) {
+        _passwordError = null;
+        _passwordComplexityError = '密碼必須有8個字，且須由英文加數字組合';
       } else {
+        _passwordComplexityError = null;
         _passwordError = null;
       }
     });
@@ -48,12 +55,15 @@ class _NewPasswordState extends State<NewPassword> {
   }
 
   Future<void> _newPassword() async {
-    if (_passwordError != null || _confirmPasswordError != null) {
+    if (_passwordError != null ||
+        _confirmPasswordError != null ||
+        _passwordComplexityError != null) {
       if (mounted) {
-        showAlertDialog('失敗', '請填寫密碼', context);
+        showAlertDialog('失敗', '請確認密碼是否正確填寫', context);
       }
       return;
     }
+    if (!_formKey.currentState!.validate()) return;
 
     final String password = _passwordController.text;
 
@@ -120,6 +130,7 @@ class _NewPasswordState extends State<NewPassword> {
                   TextFormField(
                     controller: _passwordController,
                     decoration: InputDecoration(
+                      errorText: _passwordError,
                       prefixIcon: const Icon(Icons.lock),
                       labelText: '密碼',
                       border: OutlineInputBorder(
@@ -136,6 +147,9 @@ class _NewPasswordState extends State<NewPassword> {
                         },
                       ),
                     ),
+                    onChanged: (value) {
+                      _validatePassword(value);
+                    },
                     obscureText: canSeePassword,
                     validator: (value) {
                       _validatePassword(value!);
@@ -146,6 +160,7 @@ class _NewPasswordState extends State<NewPassword> {
                   TextFormField(
                     controller: _confirmPasswordController,
                     decoration: InputDecoration(
+                      errorText: _confirmPasswordError,
                       prefixIcon: const Icon(Icons.lock_outline),
                       labelText: '確認密碼',
                       border: OutlineInputBorder(
@@ -163,11 +178,24 @@ class _NewPasswordState extends State<NewPassword> {
                       ),
                     ),
                     obscureText: canSeePassword,
+                    onChanged: (value) {
+                      _validateConfirmPassword(value);
+                    },
                     validator: (value) {
                       _validateConfirmPassword(value!);
                       return _confirmPasswordError;
                     },
                   ),
+                  if (_passwordComplexityError != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Text(
+                        _passwordComplexityError!,
+                        style: const TextStyle(
+                            color: Color.fromARGB(255, 255, 136, 128),
+                            fontSize: 14),
+                      ),
+                    ),
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: _newPassword,
