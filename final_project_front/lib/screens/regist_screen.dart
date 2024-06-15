@@ -100,9 +100,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     } else if (!_formKey.currentState!.validate()) {
       return;
     } else {
-      showLoadingDialog(context); // 顯示加載對話框
+      showLoadingDialog(context); 
       verifyEmail().catchError((error) {
-        Navigator.of(context).pop(); // 有錯誤也需要關閉加載對話框
+        Navigator.of(context).pop(); 
         showAlertDialog('錯誤', '出現錯誤: $error', context);
       });
     }
@@ -124,11 +124,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
           .then(
             (response) {
               if (response.statusCode == 200) {
-                Navigator.of(context).pop(); // Close the loading dialog
+                Navigator.of(context).pop(); 
                 setState(() {
-                  _emailVerified = true; // Move setState outside the dialog
+                  _emailVerified = true; 
                 });
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop(); 
                 _signUp();
               } else {
                 showAlertDialog('錯誤', '驗證碼錯誤', context);
@@ -136,12 +136,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
               }
             },
           );
-      // 設定超時時間
     } on TimeoutException catch (_) {
-      if (!mounted) return; // Ensure the widget is still mounted
+      if (!mounted) return; 
       showAlertDialog('超時', '驗證碼請求超時', context, popTwice: true);
     } catch (e) {
-      if (!mounted) return; // Ensure the widget is still mounted
+      if (!mounted) return;
       showAlertDialog('錯誤', '未知錯誤：$e', context, popTwice: true);
     }
   }
@@ -149,7 +148,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void _showVerificationCodeDialog() {
     showDialog(
       context: context,
-      barrierDismissible: false, // Makes dialog modal
+      barrierDismissible: false,
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setState) {
@@ -197,7 +196,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           .post(apiUrl,
               body: jsonEncode(requestBody),
               headers: {'Content-Type': 'application/json'})
-          .timeout(const Duration(seconds: 5)) // 設定超時時間
+          .timeout(const Duration(seconds: 5))
           .then((response) {
             if (response.statusCode == 200) {
               _showVerificationCodeDialog();
@@ -206,10 +205,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
             }
           });
     } on TimeoutException catch (_) {
-      if (!mounted) return; // Ensure the widget is still mounted
+      if (!mounted) return;
       showAlertDialog('超時', '驗證郵件請求超時', context, popTwice: true);
     } catch (e) {
-      if (!mounted) return; // Ensure the widget is still mounted
+      if (!mounted) return;
       showAlertDialog('錯誤', '未知錯誤：$e', context, popTwice: true);
     }
   }
@@ -241,7 +240,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           .post(apiUrl,
               body: jsonEncode(requestBody),
               headers: {'Content-Type': 'application/json'})
-          .timeout(const Duration(seconds: 5)) // 設定超時時間
+          .timeout(const Duration(seconds: 5))
           .then((response) {
             if (response.statusCode == 201) {
               showAlertDialog('成功', '帳號已成功建立', context, isRegister: true);
@@ -255,10 +254,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
             }
           });
     } on TimeoutException catch (_) {
-      if (!mounted) return; // Ensure the widget is still mounted
+      if (!mounted) return; 
       showAlertDialog('超時', '註冊請求超時', context, popTwice: true);
     } catch (e) {
-      if (!mounted) return; // Ensure the widget is still mounted
+      if (!mounted) return; 
       showAlertDialog('錯誤', '未知錯誤：$e', context, popTwice: true);
     }
   }

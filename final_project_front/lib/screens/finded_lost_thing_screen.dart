@@ -23,8 +23,6 @@ class _FindedThingScreenState extends State<FindedThingScreen> {
     return Consumer<PostProvider>(
       builder: (context, postProvider, child) {
         List<LostThing> filteredFoundThings = [];
-
-        // Filter the items every time the provider updates
         if (widget.searchedThingName.isEmpty) {
           filteredFoundThings =
               postProvider.posts.where((item) => item.mylosting == 1).toList();

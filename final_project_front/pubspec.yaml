@@ -43,7 +43,6 @@ dependencies:
   transparent_image: ^2.0.1
   fluentui_system_icons: ^1.1.238
   image_picker: ^1.1.1
-  flutter_settings_screens: ^0.3.4
   firebase_core: ^2.31.0
   cloud_firestore: ^4.17.5
   shared_preferences: ^2.2.3

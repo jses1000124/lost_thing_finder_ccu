@@ -36,7 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (value.isEmpty) {
         _emailOrAccountError = '請輸入信箱或帳號';
       } else if (!RegExp(r'^[A-Za-z0-9!@#\$&*~]+$').hasMatch(value)) {
-        _emailOrAccountError = '信箱或帳號只能包含英文和符號';
+        _emailOrAccountError = '信箱或帳號只能包含英文、數字和符號';
       } else {
         _emailOrAccountError = null;
       }
@@ -48,7 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (value.isEmpty) {
         _passwordError = '請輸入密碼';
       } else if (!RegExp(r'^[A-Za-z0-9!@#\$&*~]+$').hasMatch(value)) {
-        _passwordError = '密碼只能包含英文和符號';
+        _passwordError = '密碼只能包含英文、數字和符號';
       } else {
         _passwordError = null;
       }

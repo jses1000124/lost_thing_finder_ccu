@@ -52,7 +52,7 @@
    - 輸入 `Flutter: Launch Emulator` 並選擇你剛創建的 Android 模擬器。
    - 等待模擬器啟動完成。
 
-8. 使用以下命令運行應用：
+8. 使用以下指令運行程式：
     ```bash
     flutter run
     ```

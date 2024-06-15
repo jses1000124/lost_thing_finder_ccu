@@ -198,7 +198,7 @@ class _SettingsPageState extends State<SettingsPage> {
           title: const Text('選擇頭像'),
           content: SizedBox(
             width: double.maxFinite,
-            height: 300, // Set a fixed height to control the dialog size
+            height: 300, 
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -240,7 +240,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
       if (!mounted) return;
 
-      Navigator.of(context).pop(); // Close the loading dialog
+      Navigator.of(context).pop(); 
 
       if (response.statusCode == 200) {
         await userImgIdProvider
@@ -261,11 +261,11 @@ class _SettingsPageState extends State<SettingsPage> {
       }
     } on TimeoutException catch (_) {
       if (!mounted) return;
-      Navigator.of(context).pop(); // Close the loading dialog
+      Navigator.of(context).pop(); 
       showAlertDialog('超時', '請求超時', context);
     } catch (e) {
       if (!mounted) return;
-      Navigator.of(context).pop(); // Close the loading dialog
+      Navigator.of(context).pop(); 
       showAlertDialog('錯誤', '發生未預期的錯誤：$e', context);
     }
   }
@@ -356,10 +356,9 @@ class _SettingsPageState extends State<SettingsPage> {
         headers: {'Content-Type': 'application/json'},
       ).timeout(const Duration(seconds: 5));
 
-      if (!mounted) return; // Check if the widget is still mounted
+      if (!mounted) return; 
 
-      Navigator.of(context).pop(); // Close the loading dialog
-
+      Navigator.of(context).pop(); 
       if (response.statusCode == 200) {
         await Provider.of<UserPreferences>(context, listen: false)
             .updateNickname(newNickName);
@@ -382,12 +381,12 @@ class _SettingsPageState extends State<SettingsPage> {
       }
     } on TimeoutException catch (_) {
       if (mounted) {
-        Navigator.of(context).pop(); // Close the loading dialog
+        Navigator.of(context).pop();
         showAlertDialog('超時', '請求超時', context);
       }
     } catch (e) {
       if (mounted) {
-        Navigator.of(context).pop(); // Close the loading dialog
+        Navigator.of(context).pop(); 
         showAlertDialog('錯誤', '發生未預期的錯誤：$e', context);
       }
     }

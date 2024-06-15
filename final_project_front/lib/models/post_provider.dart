@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:async'; // Add this import for timeout handling
+import 'dart:async'; 
 import 'package:final_project/models/lost_thing_and_Url.dart';
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 class PostProvider with ChangeNotifier {
   List<LostThing> posts = [];
   late io.Socket socket;
-  bool isLoading = true; // Add this to track loading state
+  bool isLoading = true; 
 
   PostProvider() {
     connectAndListen();
@@ -30,8 +30,8 @@ class PostProvider with ChangeNotifier {
       print('Received posts data');
       try {
         posts = (data as List).map((item) => LostThing.fromMap(item)).toList();
-        posts = posts.reversed.toList(); // Reverse the list of posts
-        isLoading = false; // Update loading state
+        posts = posts.reversed.toList(); 
+        isLoading = false; 
 
         // Mask author emails before printing
         // var maskedData = posts.map((post) {
@@ -52,7 +52,7 @@ class PostProvider with ChangeNotifier {
 
     socket.onError((data) {
       print('Error: $data');
-      isLoading = false; // Ensure to update on error too
+      isLoading = false; 
       notifyListeners();
     });
   }
@@ -73,7 +73,7 @@ class PostProvider with ChangeNotifier {
           body: jsonEncode(requestBody),
           headers: {
             'Content-Type': 'application/json'
-          }).timeout(const Duration(seconds: 10)); // Set timeout duration
+          }).timeout(const Duration(seconds: 10)); 
 
       if (response.statusCode == 200) {
         posts.removeWhere((post) => post.id == postId);
@@ -84,7 +84,7 @@ class PostProvider with ChangeNotifier {
       }
     } on TimeoutException catch (_) {
       print('Error: Request timed out');
-      return 408; // HTTP status code for request timeout
+      return 408; 
     } catch (e) {
       print('Error deleting post: $e');
       return 8787;
@@ -111,10 +111,9 @@ class PostProvider with ChangeNotifier {
           body: jsonEncode(requestBody),
           headers: {
             'Content-Type': 'application/json'
-          }).timeout(const Duration(seconds: 10)); // Set timeout duration
+          }).timeout(const Duration(seconds: 10)); 
 
       if (response.statusCode == 200) {
-        // Find the post and update its details
         final index = posts.indexWhere((post) => post.id == updatedPost.id);
         if (index != -1) {
           posts[index] = updatedPost;
@@ -126,7 +125,7 @@ class PostProvider with ChangeNotifier {
       }
     } on TimeoutException catch (_) {
       print('Error: Request timed out');
-      return 408; // HTTP status code for request timeout
+      return 408; 
     } catch (e) {
       print('Error updating post: $e');
       return 8787;

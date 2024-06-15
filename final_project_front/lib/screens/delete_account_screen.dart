@@ -101,11 +101,8 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
             .get();
 
         for (var doc in querySnapshot.docs) {
-          // Delete user's chat data
           DocumentReference docRef =
               FirebaseFirestore.instance.collection('chat').doc(doc.id);
-
-          // 刪除子集合中的所有文檔
           CollectionReference subcollectionRef = docRef.collection('message');
 
           QuerySnapshot subcollectionSnapshot = await subcollectionRef.get();
@@ -117,19 +114,13 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
               .collection('chat')
               .doc(doc.id)
               .delete();
-
-          // Delete chat images from Firebase Storage
           final ListResult result = await FirebaseStorage.instance
               .ref('chatImage/${doc.id}')
               .listAll();
-
-          // 刪除資料夾中的所有文件
           for (var fileRef in result.items) {
             await fileRef.delete();
           }
         }
-
-        // Delete user's lost things img
         final ListResult result =
             await FirebaseStorage.instance.ref('lostThing/${email}').listAll();
         for (var fileRef in result.items) {

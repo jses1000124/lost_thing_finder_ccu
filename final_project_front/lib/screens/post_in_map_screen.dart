@@ -6,8 +6,8 @@ import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 
 class PostMapPage extends StatefulWidget {
-  final LostThing lostThing; // 添加这一行
-  const PostMapPage({super.key, required this.lostThing}); // 更新这一行
+  final LostThing lostThing;
+  const PostMapPage({super.key, required this.lostThing});
 
   @override
   State<PostMapPage> createState() => _MapPageState();

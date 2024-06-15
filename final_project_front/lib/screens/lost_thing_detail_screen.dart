@@ -243,12 +243,12 @@ class _LostThingState extends State<LostThingDetailScreen>
                         errorWidget: (context, url, error) =>
                             const Icon(Icons.error),
                         fit: BoxFit.cover,
-                        cacheKey: lostThings.imageUrl, // 使用圖片URL作為緩存鍵
+                        cacheKey: lostThings.imageUrl,
                         cacheManager: CacheManager(
                           Config(
                             'customCacheKey',
-                            stalePeriod: const Duration(days: 2), // 7天內不會重新加載
-                            maxNrOfCacheObjects: 100, // 最大緩存圖片數量
+                            stalePeriod: const Duration(days: 2),
+                            maxNrOfCacheObjects: 100,
                           ),
                         ),
                       ),

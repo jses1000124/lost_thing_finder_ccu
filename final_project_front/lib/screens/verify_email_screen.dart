@@ -87,12 +87,11 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
               }
             },
           );
-      // 設定超時時間
     } on TimeoutException catch (_) {
-      if(!mounted) return; // Ensure the widget is still mounted
+      if (!mounted) return;
       showAlertDialog('超時', '驗證碼請求超時', context);
     } catch (e) {
-      if(!mounted) return; // Ensure the widget is still mounted
+      if (!mounted) return;
       showAlertDialog('錯誤', '未知錯誤：$e', context);
     }
   }
@@ -100,7 +99,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   void _showVerificationCodeDialog() {
     showDialog(
       context: context,
-      barrierDismissible: false, // Makes dialog modal
+      barrierDismissible: false,
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setState) {
@@ -148,9 +147,9 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
           .post(apiUrl,
               body: jsonEncode(requestBody),
               headers: {'Content-Type': 'application/json'})
-          .timeout(const Duration(seconds: 10)) // 設定超時時間
+          .timeout(const Duration(seconds: 10))
           .then((response) {
-            Navigator.of(context).pop(); // 關閉加載對話框
+            Navigator.of(context).pop();
             if (response.statusCode == 200) {
               _showVerificationCodeDialog();
             } else {
@@ -158,12 +157,12 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
             }
           });
     } on TimeoutException catch (_) {
-      if(!mounted) return; // Ensure the widget is still mounted
-      Navigator.of(context).pop(); // 關閉加載對話框
+      if (!mounted) return; 
+      Navigator.of(context).pop(); 
       showAlertDialog('超時', '驗證郵件請求超時', context);
     } catch (e) {
-      if(!mounted) return; // Ensure the widget is still mounted
-      Navigator.of(context).pop(); // 關閉加載對話框
+      if (!mounted) return; 
+      Navigator.of(context).pop(); 
       showAlertDialog('錯誤', '未知錯誤：$e', context);
     }
   }
@@ -212,7 +211,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: _emailVerified
                         ? Colors.green
-                        : null, // Use green color when verified
+                        : null,
                   ),
                   child: Text(
                     _emailVerified ? '成功' : '驗證',

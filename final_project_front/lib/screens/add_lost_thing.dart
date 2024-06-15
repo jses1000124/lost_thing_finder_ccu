@@ -55,7 +55,7 @@ class _AddLostThingState extends State<AddLostThing> {
               .then((imageUrl) {
             postDetails(imageUrl);
           }).catchError((error) {
-            Navigator.of(context).pop(); // Close loading dialog
+            Navigator.of(context).pop();
             showAlertDialog('上傳失敗', '圖片上傳失敗，請重試', context);
           });
         } else {
@@ -64,7 +64,7 @@ class _AddLostThingState extends State<AddLostThing> {
               .then((imageUrl) {
             postDetails(imageUrl);
           }).catchError((error) {
-            Navigator.of(context).pop(); // Close loading dialog
+            Navigator.of(context).pop();
             showAlertDialog('上傳失敗', '圖片上傳失敗，請重試', context);
           });
         }
@@ -214,7 +214,6 @@ class _AddLostThingState extends State<AddLostThing> {
                         onChanged: (String? newValue) {
                           setState(() {
                             _postType = newValue;
-                            // Trigger form field validation to refresh and remove the error message
                             _formKey.currentState?.validate();
                           });
                         },
@@ -329,14 +328,14 @@ class _AddLostThingState extends State<AddLostThing> {
                     setState(() {
                       _imagepath = path;
                       _imageBytes = Uint8List(
-                          0); // Reset image bytes when using file path
+                          0); 
                     });
                   },
                   onImageWebPicked: (bytes) {
                     setState(() {
                       _imageBytes = bytes;
                       _imagepath =
-                          ""; // Reset image path when using web image bytes
+                          ""; 
                     });
                   },
                   child: _imagepath.isEmpty && _imageBytes.isEmpty

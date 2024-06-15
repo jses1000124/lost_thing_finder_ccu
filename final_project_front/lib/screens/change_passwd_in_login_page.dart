@@ -60,8 +60,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       ),
       validator: validator,
       onChanged: (value) {
-        setState(() {}); // Trigger UI update
-        _formKey.currentState!.validate(); // Trigger validation
+        setState(() {});
+        _formKey.currentState!.validate(); 
       },
     );
   }

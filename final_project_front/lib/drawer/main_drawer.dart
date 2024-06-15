@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/user_nicknames.dart'; // Import your UserPreferences model
+import '../models/user_nicknames.dart'; 
 import '../screens/setting_screen.dart';
 
 class MainDrawer extends StatelessWidget {
@@ -9,7 +9,6 @@ class MainDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<UserPreferences>(
-      // Using Consumer to listen to changes
       builder: (context, userPrefs, child) {
         return SizedBox(
           width: 200,
